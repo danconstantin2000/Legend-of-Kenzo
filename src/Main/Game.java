@@ -2,8 +2,7 @@ package Main;
 import javax.swing.JFrame;
 
 public class Game
-{//Github commentaryscsadsadsasda
-    //dsadsadsa
+{
     public static void main(String[] args)
     {
         JFrame window=new JFrame("The legend of Kenzo!");
