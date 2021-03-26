@@ -28,7 +28,7 @@ public class Level1State extends GameState{
         tileMap.setPosition(0,0);
        this.bg=new Background("/Backgrounds/BG5.png",0.1);
        player=new Player(tileMap);
-       player.setPosition(100,50);
+       player.setPosition(100,30);
     }
     public void update() {
     //update palyer

@@ -35,33 +35,34 @@ public class Player extends MapObject {
     // animations
     private ArrayList<BufferedImage[]> sprites;
     private final int[] numFrames = {
-            2, 8, 1, 2, 4, 2, 5
+            6, 6, 6, 2, 8, 2,8,4
     };
 
     // animation actions
-    private static final int IDLE = 0;
-    private static final int WALKING = 1;
-    private static final int JUMPING = 2;
+    private static final int ATTACK1 = 0;
+    private static final int ATTACK2=1;
+    private static final int DEATH = 2;
     private static final int FALLING = 3;
-    private static final int GLIDING = 4;
-    private static final int FIREBALL = 5;
-    private static final int SCRATCHING = 6;
+    private static final int IDLE=4;
+    private static final int JUMPING=5;
+    private static final int RUNNING=6;
+    private static final int TAKEHIT=7;
 
     public Player(TileMap tm) {
 
         super(tm);
 
-        width = 30;
-        height = 30 ;
-        cwidth = 20;
-        cheight = 20;
+        width = 200;
+        height = 200 ;
+        cwidth =20;
+        cheight =27;
 
         moveSpeed = 0.3;
         maxSpeed = 1.6;
         stopSpeed = 0.4;
-        fallSpeed = 0.15;
+        fallSpeed = 0.3;
         maxFallSpeed = 4.0;
-        jumpStart = -4.8;
+        jumpStart = -4.5;
         stopJumpSpeed = 0.3;
 
         facingRight = true;
@@ -81,36 +82,24 @@ public class Player extends MapObject {
 
             BufferedImage spritesheet = ImageIO.read(
                     getClass().getResourceAsStream(
-                            "/Sprites/Player/playersprites.gif"
+                            "/Sprites/Player/spritesheet (2).png"
                     )
             );
 
             sprites = new ArrayList<BufferedImage[]>();
-            for(int i = 0; i < 7; i++) {
+            for(int i = 0; i < 8; i++) {
 
                 BufferedImage[] bi =
                         new BufferedImage[numFrames[i]];
 
                 for(int j = 0; j < numFrames[i]; j++) {
 
-                    if(i != 6) {
                         bi[j] = spritesheet.getSubimage(
                                 j * width,
                                 i * height,
                                 width,
-                                height
-                        );
+                                height);
                     }
-                    else {
-                        bi[j] = spritesheet.getSubimage(
-                                j * width * 2,
-                                i * height,
-                                width,
-                                height
-                        );
-                    }
-
-                }
 
                 sprites.add(bi);
 
@@ -175,7 +164,7 @@ public class Player extends MapObject {
 
         // cannot move while attacking, except in air
         if(
-                (currentAction == SCRATCHING || currentAction == FIREBALL) &&
+                (currentAction == ATTACK1 || currentAction == ATTACK2) &&
                         !(jumping || falling)) {
             dx = 0;
         }
@@ -189,7 +178,7 @@ public class Player extends MapObject {
         // falling
         if(falling) {
 
-            if(dy > 0 && gliding) dy += fallSpeed * 0.1;
+            if(dy > 0 ) dy += fallSpeed * 0.1;
             else dy += fallSpeed;
 
             if(dy > 0) jumping = false;
@@ -210,35 +199,28 @@ public class Player extends MapObject {
 
         // set animation
         if(scratching) {
-            if(currentAction != SCRATCHING) {
-                currentAction = SCRATCHING;
-                animation.setFrames(sprites.get(SCRATCHING));
+            if(currentAction != ATTACK1) {
+                currentAction = ATTACK1;
+                animation.setFrames(sprites.get(ATTACK1));
                 animation.setDelay(50);
-                width = 60;
+                width = 200;//60;
             }
         }
         else if(firing) {
-            if(currentAction != FIREBALL) {
-                currentAction = FIREBALL;
-                animation.setFrames(sprites.get(FIREBALL));
+            if(currentAction != ATTACK2) {
+                currentAction = ATTACK2;
+                animation.setFrames(sprites.get(ATTACK2));
                 animation.setDelay(100);
-                width = 30;
+                width =200; //30;
             }
         }
-        else if(dy > 0) {
-            if(gliding) {
-                if(currentAction != GLIDING) {
-                    currentAction = GLIDING;
-                    animation.setFrames(sprites.get(GLIDING));
-                    animation.setDelay(100);
-                    width = 30;
-                }
-            }
-            else if(currentAction != FALLING) {
+        else if(dy > 0)
+        {
+             if(currentAction != FALLING) {
                 currentAction = FALLING;
                 animation.setFrames(sprites.get(FALLING));
                 animation.setDelay(100);
-                width = 30;
+                width = 200;//30;
             }
         }
         else if(dy < 0) {
@@ -246,15 +228,15 @@ public class Player extends MapObject {
                 currentAction = JUMPING;
                 animation.setFrames(sprites.get(JUMPING));
                 animation.setDelay(-1);
-                width = 30;
+                width = 200;//30;
             }
         }
         else if(left || right) {
-            if(currentAction != WALKING) {
-                currentAction = WALKING;
-                animation.setFrames(sprites.get(WALKING));
+            if(currentAction != RUNNING) {
+                currentAction = RUNNING;
+                animation.setFrames(sprites.get(RUNNING));
                 animation.setDelay(40);
-                width = 30;
+                width = 200;//30;
             }
         }
         else {
@@ -262,17 +244,19 @@ public class Player extends MapObject {
                 currentAction = IDLE;
                 animation.setFrames(sprites.get(IDLE));
                 animation.setDelay(400);
-                width = 30;
+                width = 200;//30;
             }
         }
 
         animation.update();
 
         // set direction
-        if(currentAction != SCRATCHING && currentAction != FIREBALL) {
+        if(currentAction !=ATTACK1 && currentAction !=ATTACK2) {
             if(right) facingRight = true;
             if(left) facingRight = false;
         }
+
+
 
     }
 
