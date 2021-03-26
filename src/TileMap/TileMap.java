@@ -52,16 +52,20 @@ public class TileMap {
             tileset=ImageIO.read(getClass().getResourceAsStream(s));
             numTilesAcross=tileset.getWidth()/tileSize;
             tiles=new Tile[3][numTilesAcross];
-
             BufferedImage subimage;
+
             for(int col=0;col<numTilesAcross;col++)
             {
+
+
+                tiles[0][0]=new Tile(null,Tile.NORMAL);
                 subimage=tileset.getSubimage(col*tileSize,0,tileSize,tileSize);
-                tiles[0][col]=new Tile(subimage,Tile.NORMAL);
+                tiles[0][col]=new Tile(subimage,Tile.BLOCKED);
                 subimage=tileset.getSubimage(col*tileSize,tileSize,tileSize,tileSize);
-                tiles[1][col]=new Tile(subimage,Tile.NORMAL);
+                tiles[1][col]=new Tile(subimage,Tile.BLOCKED);
                 subimage=tileset.getSubimage(col*tileSize,tileSize*2,tileSize,tileSize);
-                tiles[2][col]=new Tile(subimage,Tile.NORMAL);
+                tiles[2][col]=new Tile(subimage,Tile.BLOCKED);
+
 
             }
 
@@ -84,6 +88,10 @@ public class TileMap {
             map=new int[numRows][numCols];
             width=numCols*tileSize;
             height=numRows*tileSize;
+            xmin=GamePanel.WIDTH-width;
+            xmax=0;
+            ymin=GamePanel.HEIGHT-height;
+            ymax=0;
 
             String delims="\\s+";
             for(int row=0;row<numRows;row++)
@@ -115,6 +123,11 @@ public class TileMap {
         int rc=map[row][col];
         int r=rc/numTilesAcross;
         int c=rc%numTilesAcross;
+        /*
+        if(c==-1)
+        {
+            c=rc%numTilesAcross+1;
+        }*/
         return tiles[r][c].getType();
     }
     public void setPosition(double x,double y)
@@ -144,7 +157,10 @@ public class TileMap {
             for(int col=colOffset;col<colOffset+numColsToDraw;col++)
             {
                 if(col>=numCols)break;
-                if(map[row][col]==-1)continue;
+                if(map[row][col]==0){
+                    continue;
+                }
+                //HEREE
                 int rc=map[row][col];
                 int r=rc/numTilesAcross;
                 int c=rc%numTilesAcross;

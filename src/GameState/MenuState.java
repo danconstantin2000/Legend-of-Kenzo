@@ -18,7 +18,7 @@ public class MenuState extends GameState{
        try{
            bg=new Background("/Backgrounds/BG4.png",1);
            bg.setVector(-0.1,0);
-           titleColor=new Color(128,0,0);
+           titleColor=new Color(255,0,0);
            titleFont=new Font("Courier New",Font.BOLD,18);
            font=new Font("Courier New",Font.PLAIN,12);
        }
@@ -39,7 +39,8 @@ public class MenuState extends GameState{
         //draw title
         g.setColor(titleColor);
         g.setFont(titleFont);
-        g.drawString("The legend of Kenzo",80,70);
+        g.drawString("The legend of Kenzo",70,70);
+
 
         //draw menu options
         g.setFont(font);
