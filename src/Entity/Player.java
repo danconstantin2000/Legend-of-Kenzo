@@ -26,7 +26,7 @@ public class Player extends MapObject {
     //small Attack
     private boolean smallAttacking;
     private int smallAttackDamage;
-   // private int smallAttackRange;
+    private int smallAttackRange;
 
 
     // animations
@@ -66,13 +66,12 @@ public class Player extends MapObject {
 
         health = maxHealth = 5;
         energy = maxEnergy = 2500;
-
+        dead=false;
         energyCost = 500;
-        smallAttackDamage = 5;
-
-
+        smallAttackDamage = 1;
+        smallAttackRange=100;
         longAttackDamage = 8;
-        longAttackRange = 40;
+        longAttackRange = 100;
 
         // load sprites
         try {
@@ -125,6 +124,57 @@ public class Player extends MapObject {
     public void setLongAttacking(boolean b) {
         longAttacking=b;
     }
+    public void checkAttack(ArrayList<Enemy> enemies)
+    {
+        for(int i=0;i<enemies.size();i++) {
+            Enemy e = enemies.get(i);
+            //long attack
+            if (longAttacking) {
+                if (facingRight) {
+                    if (e.getx() > x && e.getx() < x + longAttackRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
+                        e.hit(longAttackDamage);
+                    }
+                } else {
+                    if (e.getx() < x && e.getx() > x - longAttackRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
+
+                        e.hit(longAttackDamage);
+                    }
+                }
+            } else if (smallAttacking) {
+                if (facingRight) {
+                    if (e.getx() > x && e.getx() < x + smallAttackRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
+                        e.hit(smallAttackDamage);
+                    }
+                } else {
+                    if (e.getx() < x && e.getx() > x - smallAttackRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
+
+                        e.hit(smallAttackDamage);
+                    }
+                }
+                //check enemy collision
+
+            }
+            if(intersects(e))
+            {
+                hit(e.getDamage());
+            }
+
+        }
+
+
+    }
+    public void hit(int damage)
+    {
+        if(flinching)return;
+        health-=damage;
+        if(health<0)health=0;
+        if(health==0){dead=true;
+        DeadAF=true;}
+        flinching=true;
+        flinchTimer=System.nanoTime();
+    }
+
+
     public void EnergyActions()
     {
         if(longAttacking) {
@@ -138,11 +188,12 @@ public class Player extends MapObject {
             if (energy < 0) {
                 energy = 0;
             }
-            if (energy > maxEnergy) {
-                energy = maxEnergy;
-            }
 
         }
+        if (energy > maxEnergy) {
+            energy = maxEnergy;
+        }
+
         energy++;
 
     }
@@ -215,7 +266,15 @@ public class Player extends MapObject {
 
         EnergyActions();
 
+        if(currentAction==DEATH)
+        {
+            if(animation.hasPlayedOnce())
+            {
+                health=5;
+                dead=false;
+            }
 
+        }
 
         if(currentAction==LONGATTACK)
         {
@@ -234,6 +293,14 @@ public class Player extends MapObject {
             }
         }
 
+        if(flinching)
+        {
+            long elapsed=(System.nanoTime()-flinchTimer)/1000000;
+            if(elapsed>1000)
+            {
+                flinching=false;
+            }
+        }
         // set animation
 
         if(longAttacking) {
@@ -241,7 +308,7 @@ public class Player extends MapObject {
             if(currentAction != LONGATTACK) {
                 currentAction = LONGATTACK;
                 animation.setFrames(sprites.get(LONGATTACK));
-                animation.setDelay(90);
+                animation.setDelay(60);
                 width =200;
                 height=185;
                 energy=energy-energyCost;
@@ -294,7 +361,22 @@ public class Player extends MapObject {
 
             }
         }
-        else {
+        else  if(dead)
+        {
+
+            if(currentAction!=DEATH)
+            {
+                currentAction=DEATH;
+                animation.setFrames(sprites.get(DEATH));
+                animation.setDelay(350);
+                width=200;
+                height=190;
+
+
+            }
+
+        }else
+            {
 
             if(currentAction != IDLE) {
                 currentAction = IDLE;
@@ -308,6 +390,7 @@ public class Player extends MapObject {
 
 
 
+
         // set direction
         if(currentAction !=LONGATTACK && currentAction !=SMALLATTACK) {
             if(right) facingRight = true;
@@ -315,18 +398,28 @@ public class Player extends MapObject {
                 facingRight = false;
             }
         }
+
+        if(dead)
+        {
+            DeadAF=true;
+            LongAttack=false;
+            SmallAttack=false;
+        }
         if(smallAttacking)
         {
             LongAttack=false;
             SmallAttack=true;
+            DeadAF=false;
         }
         else if(longAttacking)
         {
             LongAttack=true;
             SmallAttack=false;
+            DeadAF=false;
         }
         else
         {
+            DeadAF=false;
             LongAttack=false;
             SmallAttack=false;
         }

@@ -1,4 +1,5 @@
 package TileMap;
+import Entity.Tree;
 import Main.GamePanel;
 
 import java.awt.*;
@@ -43,6 +44,7 @@ public class TileMap {
         numRowsToDraw= GamePanel.HEIGHT/tileSize+2;
         numColsToDraw=GamePanel.WIDTH/tileSize+2;
         tween=0.07;
+
 
     }
     public void loadTiles(String s)
@@ -173,6 +175,7 @@ public class TileMap {
                 g.drawImage(tiles[r][c].getImage(),(int)x+col*tileSize,(int)y+row*tileSize,null);
             }
         }
+
     }
 
 
