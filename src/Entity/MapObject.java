@@ -55,7 +55,7 @@ public abstract class MapObject {
     protected boolean falling;
     protected boolean LongAttack;
     protected boolean SmallAttack;
-    protected boolean DeadAF;
+
 
     // movement attributes
     protected double moveSpeed;
@@ -232,19 +232,6 @@ public abstract class MapObject {
                     height,
                     null
             );
-        }
-        else if(DeadAF){
-            System.out.println("Aici????");
-            g.drawImage(
-                    animation.getImage(),
-                    (int) (x + xmap - width / 2 + width),
-                    (int) (y + ymap - height / 2  +5),
-                    -width,
-                    height,
-                    null
-            );
-
-
         }
         else
         {

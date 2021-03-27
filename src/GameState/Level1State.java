@@ -54,8 +54,8 @@ public class Level1State extends GameState{
         Point[] myPointArray=new Point[]{
                 new Point(300,10),
                 new Point(860, 10),
-                new Point(1525, 10),
-                new Point(1680, 10),
+                new Point(1515, 10),
+                new Point(1690, 10),
                 new Point(1800, 10)
 
         };

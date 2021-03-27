@@ -168,8 +168,7 @@ public class Player extends MapObject {
         if(flinching)return;
         health-=damage;
         if(health<0)health=0;
-        if(health==0){dead=true;
-        DeadAF=true;}
+        if(health==0){dead=true;}
         flinching=true;
         flinchTimer=System.nanoTime();
     }
@@ -179,9 +178,9 @@ public class Player extends MapObject {
     {
         if(longAttacking) {
 
-            if (energy+energyCost  < energyCost) {
+            if (energy < energyCost) {
                 longAttacking = false;
-                energy=energyCost+energy;
+
             }
 
 
@@ -399,27 +398,22 @@ public class Player extends MapObject {
             }
         }
 
-        if(dead)
-        {
-            DeadAF=true;
-            LongAttack=false;
-            SmallAttack=false;
-        }
+
         if(smallAttacking)
         {
             LongAttack=false;
             SmallAttack=true;
-            DeadAF=false;
+
         }
         else if(longAttacking)
         {
             LongAttack=true;
             SmallAttack=false;
-            DeadAF=false;
+
         }
         else
         {
-            DeadAF=false;
+
             LongAttack=false;
             SmallAttack=false;
         }
