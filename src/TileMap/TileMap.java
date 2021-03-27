@@ -113,10 +113,15 @@ public class TileMap {
     }
 
     public int getTileSize(){return tileSize;}
-    public int getx(){return (int)x;}
-    public int gety(){return (int)y;}
+    public double getx(){return x;}
+    public double gety(){return y;}
     public int getWidth(){return width;}
     public int getHeight(){return height;}
+    public void setTween(double tween)
+    {
+        this.tween=tween;
+    }
+
 
     public int getType(int row,int col)
     {

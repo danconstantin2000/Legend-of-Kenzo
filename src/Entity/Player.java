@@ -60,9 +60,9 @@ public class Player extends MapObject {
         moveSpeed = 0.3;
         maxSpeed = 1.6;
         stopSpeed = 0.4;
-        fallSpeed = 0.3;
+        fallSpeed = 0.1;
         maxFallSpeed = 4.0;
-        jumpStart = -4.5;
+        jumpStart = -3;
         stopJumpSpeed = 0.3;
 
         facingRight = true;
@@ -122,15 +122,13 @@ public class Player extends MapObject {
     public int getFire() { return fire; }
     public int getMaxFire() { return maxFire; }
 
-    public void setFiring() {
-        firing = true;
+    public void setFiring(boolean b) {
+        firing = b;
     }
-    public void setScratching() {
-        scratching = true;
+    public void setScratching(boolean b) {
+        scratching =b;
     }
-    public void setGliding(boolean b) {
-        gliding = b;
-    }
+
 
     private void getNextPosition() {
 
@@ -178,8 +176,8 @@ public class Player extends MapObject {
         // falling
         if(falling) {
 
-            if(dy > 0 ) dy += fallSpeed * 0.1;
-            else dy += fallSpeed;
+            dy += fallSpeed ;
+
 
             if(dy > 0) jumping = false;
             if(dy < 0 && !jumping) dy += stopJumpSpeed;
@@ -187,6 +185,7 @@ public class Player extends MapObject {
             if(dy > maxFallSpeed) dy = maxFallSpeed;
 
         }
+
 
     }
 
@@ -197,22 +196,55 @@ public class Player extends MapObject {
         checkTileMapCollision();
         setPosition(xtemp, ytemp);
 
+
+
+
+
+        if(currentAction==ATTACK1)
+        {
+            if(animation.hasPlayedOnce())
+            {
+                scratching=false;
+
+            }
+        }
+        if(currentAction==ATTACK2)
+        {
+            if(animation.hasPlayedOnce())
+            {
+                firing=false;
+
+        }
+        }
         // set animation
+
         if(scratching) {
+
             if(currentAction != ATTACK1) {
                 currentAction = ATTACK1;
                 animation.setFrames(sprites.get(ATTACK1));
-                animation.setDelay(50);
-                width = 200;//60;
+                animation.setDelay(90);
+                width =200;
+                height=185;
+
+
+                //60;
+
             }
+
+
         }
         else if(firing) {
+
             if(currentAction != ATTACK2) {
                 currentAction = ATTACK2;
                 animation.setFrames(sprites.get(ATTACK2));
-                animation.setDelay(100);
+                animation.setDelay(30);
                 width =200; //30;
+                height=190;
+
             }
+
         }
         else if(dy > 0)
         {
@@ -220,41 +252,71 @@ public class Player extends MapObject {
                 currentAction = FALLING;
                 animation.setFrames(sprites.get(FALLING));
                 animation.setDelay(100);
-                width = 200;//30;
-            }
+                width = 200;
+                height=200;
+
+             }
         }
         else if(dy < 0) {
-            if(currentAction != JUMPING) {
+
+                if(currentAction != JUMPING) {
                 currentAction = JUMPING;
                 animation.setFrames(sprites.get(JUMPING));
                 animation.setDelay(-1);
                 width = 200;//30;
+                height=200;
+
             }
         }
         else if(left || right) {
+
             if(currentAction != RUNNING) {
                 currentAction = RUNNING;
                 animation.setFrames(sprites.get(RUNNING));
                 animation.setDelay(40);
-                width = 200;//30;
+                width = 200;//30
+                height=200;
+
             }
         }
         else {
+
             if(currentAction != IDLE) {
                 currentAction = IDLE;
                 animation.setFrames(sprites.get(IDLE));
-                animation.setDelay(400);
+                animation.setDelay(150);
                 width = 200;//30;
+                height=200;
+
             }
         }
 
-        animation.update();
+
 
         // set direction
         if(currentAction !=ATTACK1 && currentAction !=ATTACK2) {
             if(right) facingRight = true;
-            if(left) facingRight = false;
+            if(left) {
+                facingRight = false;
+            }
         }
+        if(firing)
+        {
+            scratchAttack=false;
+            fireAttack=true;
+        }
+        else if(scratching)
+        {
+            scratchAttack=true;
+            fireAttack=false;
+        }
+        else
+        {
+            scratchAttack=false;
+            fireAttack=false;
+        }
+        animation.update();
+
 
 
 
@@ -273,25 +335,7 @@ public class Player extends MapObject {
             }
         }
 
-        if(facingRight) {
-            g.drawImage(
-                    animation.getImage(),
-                    (int)(x + xmap - width / 2),
-                    (int)(y + ymap - height / 2),
-                    null
-            );
-        }
-        else {
-            g.drawImage(
-                    animation.getImage(),
-                    (int)(x + xmap - width / 2 + width),
-                    (int)(y + ymap - height / 2),
-                    -width,
-                    height,
-                    null
-            );
-
-        }
+        super.draw(g);
 
     }
 
