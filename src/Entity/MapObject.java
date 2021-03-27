@@ -53,8 +53,8 @@ public abstract class MapObject {
     protected boolean down;
     protected boolean jumping;
     protected boolean falling;
-    protected boolean scratchAttack;
-    protected boolean fireAttack;
+    protected boolean LongAttack;
+    protected boolean SmallAttack;
 
     // movement attributes
     protected double moveSpeed;
@@ -209,7 +209,7 @@ public abstract class MapObject {
                     (int) (y + ymap - height / 2),
                     null
             );
-        } else if(fireAttack) {
+        } else if(SmallAttack) {
 
             g.drawImage(
                     animation.getImage(),
@@ -221,7 +221,7 @@ public abstract class MapObject {
             );
 
         }
-        else if(scratchAttack)
+        else if(LongAttack)
         {
             g.drawImage(
                     animation.getImage(),

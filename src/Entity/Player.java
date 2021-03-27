@@ -9,28 +9,25 @@ import java.awt.image.BufferedImage;
 
 public class Player extends MapObject {
 
-    // player stuff
+    // player's info
     private int health;
     private int maxHealth;
-    private int fire;
-    private int maxFire;
+    private int energy;
+    private int maxEnergy;
     private boolean dead;
     private boolean flinching;
     private long flinchTimer;
 
-    // fireball
-    private boolean firing;
-    private int fireCost;
-    private int fireBallDamage;
-    //private ArrayList<FireBall> fireBalls;
+    // long Attack
+    private boolean longAttacking;
+    private int energyCost;
+    private int longAttackDamage;
+    private int longAttackRange;
+    //small Attack
+    private boolean smallAttacking;
+    private int smallAttackDamage;
+   // private int smallAttackRange;
 
-    // scratch
-    private boolean scratching;
-    private int scratchDamage;
-    private int scratchRange;
-
-    // gliding
-    private boolean gliding;
 
     // animations
     private ArrayList<BufferedImage[]> sprites;
@@ -39,8 +36,8 @@ public class Player extends MapObject {
     };
 
     // animation actions
-    private static final int ATTACK1 = 0;
-    private static final int ATTACK2=1;
+    private static final int LONGATTACK = 0;
+    private static final int SMALLATTACK=1;
     private static final int DEATH = 2;
     private static final int FALLING = 3;
     private static final int IDLE=4;
@@ -68,14 +65,14 @@ public class Player extends MapObject {
         facingRight = true;
 
         health = maxHealth = 5;
-        fire = maxFire = 2500;
+        energy = maxEnergy = 2500;
 
-        fireCost = 200;
-        fireBallDamage = 5;
-        //fireBalls = new ArrayList<FireBall>();
+        energyCost = 500;
+        smallAttackDamage = 5;
 
-        scratchDamage = 8;
-        scratchRange = 40;
+
+        longAttackDamage = 8;
+        longAttackRange = 40;
 
         // load sprites
         try {
@@ -119,16 +116,36 @@ public class Player extends MapObject {
 
     public int getHealth() { return health; }
     public int getMaxHealth() { return maxHealth; }
-    public int getFire() { return fire; }
-    public int getMaxFire() { return maxFire; }
+    public int getEnergy() { return energy; }
+    public int getMaxEnergy() { return maxEnergy; }
 
-    public void setFiring(boolean b) {
-        firing = b;
+    public void setSmallAttacking(boolean b) {
+        smallAttacking = b;
     }
-    public void setScratching(boolean b) {
-        scratching =b;
+    public void setLongAttacking(boolean b) {
+        longAttacking=b;
     }
+    public void EnergyActions()
+    {
+        if(longAttacking) {
 
+            if (energy+energyCost  < energyCost) {
+                longAttacking = false;
+                energy=energyCost+energy;
+            }
+
+
+            if (energy < 0) {
+                energy = 0;
+            }
+            if (energy > maxEnergy) {
+                energy = maxEnergy;
+            }
+
+        }
+        energy++;
+
+    }
 
     private void getNextPosition() {
 
@@ -162,7 +179,7 @@ public class Player extends MapObject {
 
         // cannot move while attacking, except in air
         if(
-                (currentAction == ATTACK1 || currentAction == ATTACK2) &&
+                (currentAction == SMALLATTACK|| currentAction == LONGATTACK) &&
                         !(jumping || falling)) {
             dx = 0;
         }
@@ -196,49 +213,47 @@ public class Player extends MapObject {
         checkTileMapCollision();
         setPosition(xtemp, ytemp);
 
+        EnergyActions();
 
 
 
-
-        if(currentAction==ATTACK1)
+        if(currentAction==LONGATTACK)
         {
             if(animation.hasPlayedOnce())
             {
-                scratching=false;
+                longAttacking=false;
 
             }
         }
-        if(currentAction==ATTACK2)
+        if(currentAction==SMALLATTACK)
         {
             if(animation.hasPlayedOnce())
             {
-                firing=false;
+                smallAttacking=false;
 
+            }
         }
-        }
+
         // set animation
 
-        if(scratching) {
+        if(longAttacking) {
 
-            if(currentAction != ATTACK1) {
-                currentAction = ATTACK1;
-                animation.setFrames(sprites.get(ATTACK1));
+            if(currentAction != LONGATTACK) {
+                currentAction = LONGATTACK;
+                animation.setFrames(sprites.get(LONGATTACK));
                 animation.setDelay(90);
                 width =200;
                 height=185;
-
-
-                //60;
-
+                energy=energy-energyCost;
             }
 
 
         }
-        else if(firing) {
+        else if(smallAttacking) {
 
-            if(currentAction != ATTACK2) {
-                currentAction = ATTACK2;
-                animation.setFrames(sprites.get(ATTACK2));
+            if(currentAction != SMALLATTACK) {
+                currentAction = SMALLATTACK;
+                animation.setFrames(sprites.get(SMALLATTACK));
                 animation.setDelay(30);
                 width =200; //30;
                 height=190;
@@ -294,29 +309,28 @@ public class Player extends MapObject {
 
 
         // set direction
-        if(currentAction !=ATTACK1 && currentAction !=ATTACK2) {
+        if(currentAction !=LONGATTACK && currentAction !=SMALLATTACK) {
             if(right) facingRight = true;
             if(left) {
                 facingRight = false;
             }
         }
-        if(firing)
+        if(smallAttacking)
         {
-            scratchAttack=false;
-            fireAttack=true;
+            LongAttack=false;
+            SmallAttack=true;
         }
-        else if(scratching)
+        else if(longAttacking)
         {
-            scratchAttack=true;
-            fireAttack=false;
+            LongAttack=true;
+            SmallAttack=false;
         }
         else
         {
-            scratchAttack=false;
-            fireAttack=false;
+            LongAttack=false;
+            SmallAttack=false;
         }
         animation.update();
-
 
 
 

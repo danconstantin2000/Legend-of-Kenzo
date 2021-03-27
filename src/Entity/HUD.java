@@ -34,7 +34,7 @@ public class HUD {
                 35
         );
         g.drawString(
-                player.getFire() / 100 + "/" + player.getMaxFire() / 100,
+                player.getEnergy() / 100 + "/" + player.getMaxEnergy() / 100,
                 80,
                 35
         );
