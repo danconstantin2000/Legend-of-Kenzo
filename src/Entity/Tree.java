@@ -1,37 +1,35 @@
 package Entity;
 
 
-import Main.GamePanel;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 
-public class Tree  {
+public class Tree extends ForestThings {
 
-    private BufferedImage image;
-    private int height;
-    private int weight;
-    private double x;
-    private double y;
-    private double dx;
-    private double dy;
 
-    public Tree() {
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream("/MapObjects/tree.png"));
-        } catch (Exception e) {
+    public Tree(int x,int y)
+    {
+
+        this.x=x;
+        this.y=y;
+        height=112;
+        width=112;
+        try
+        {
+            image= ImageIO.read(getClass().getResourceAsStream("/MapObjects/tree.png"));
+        }
+        catch(Exception e)
+        {
             e.printStackTrace();
         }
-    }
-    public void setPosition(double x,double y)
-    {
-        this.x=x;
-        this.y=x;
-    }
-    public void draw(Graphics2D g) {
 
-        g.drawImage(image, (int) x, (int) y, null);
+    }
+    public void draw(Graphics2D g)
+    {
+        super.draw(g);
+
     }
 
 

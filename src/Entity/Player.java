@@ -116,9 +116,12 @@ public class Player extends MapObject {
         animation.setFrames(sprites.get(IDLE));
         animation.setDelay(400);
         sfx=new HashMap<String,AudioPlayer>();
-        sfx.put("jump",new AudioPlayer("/SFX/jump.mp3"));
+        sfx.put("jump",new AudioPlayer("/SFX/jump2-1.mp3"));
         sfx.put("longattack",new AudioPlayer("/SFX/scratch.mp3"));
         sfx.put("smallattack",new AudioPlayer("/SFX/Sword2.mp3"));
+        sfx.put("herodeath",new AudioPlayer("/SFX/Hero_Dies.mp3"));
+        sfx.put("enemy_take_dmg",new AudioPlayer("/SFX/Enemy_Damage.mp3"));
+        sfx.put("hero_take_dmg",new AudioPlayer("/SFX/Hero_TakesDMG.wav"));
 
     }
 
@@ -142,22 +145,30 @@ public class Player extends MapObject {
                 if (facingRight) {
                     if (e.getx() > x && e.getx() < x + longAttackRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
                         e.hit(longAttackDamage);
+                        sfx.get("enemy_take_dmg").play();
+
                     }
                 } else {
                     if (e.getx() < x && e.getx() > x - longAttackRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
 
                         e.hit(longAttackDamage);
+                        sfx.get("enemy_take_dmg").play();
+
                     }
                 }
             } else if (smallAttacking) {
                 if (facingRight) {
                     if (e.getx() > x && e.getx() < x + smallAttackRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
                         e.hit(smallAttackDamage);
+                        sfx.get("enemy_take_dmg").play();
+
                     }
                 } else {
                     if (e.getx() < x && e.getx() > x - smallAttackRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
 
                         e.hit(smallAttackDamage);
+                        sfx.get("enemy_take_dmg").play();
+
                     }
                 }
                 //check enemy collision
@@ -165,7 +176,9 @@ public class Player extends MapObject {
             }
             if(intersects(e))
             {
+
                 hit(e.getDamage());
+
             }
 
         }
@@ -245,7 +258,6 @@ public class Player extends MapObject {
 
         // jumping
         if(jumping && !falling) {
-            sfx.get("jump").play();
             dy = jumpStart;
             falling = true;
         }
@@ -274,6 +286,7 @@ public class Player extends MapObject {
         setPosition(xtemp, ytemp);
 
         EnergyActions();
+
 
         if(currentAction==DEATH)
         {
@@ -333,7 +346,7 @@ public class Player extends MapObject {
         else if(smallAttacking) {
 
             if(currentAction != SMALLATTACK) {
-                sfx.get("smallattack").play();
+               sfx.get("smallattack").play();
                 currentAction = SMALLATTACK;
                 animation.setFrames(sprites.get(SMALLATTACK));
                 animation.setDelay(30);
@@ -357,6 +370,7 @@ public class Player extends MapObject {
         else if(dy < 0) {
 
                 if(currentAction != JUMPING) {
+                    sfx.get("jump").play();
                 currentAction = JUMPING;
                 animation.setFrames(sprites.get(JUMPING));
                 animation.setDelay(-1);
@@ -381,6 +395,7 @@ public class Player extends MapObject {
 
             if(currentAction!=DEATH)
             {
+                sfx.get("herodeath").play();
                 currentAction=DEATH;
                 animation.setFrames(sprites.get(DEATH));
                 animation.setDelay(350);
@@ -455,6 +470,7 @@ public class Player extends MapObject {
         super.draw(g);
 
     }
+
 
 }
 

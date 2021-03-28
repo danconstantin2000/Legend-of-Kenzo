@@ -1,5 +1,6 @@
 package Entity.Enemies;
 
+import Audio.AudioPlayer;
 import Entity.Animation;
 import Entity.Enemy;
 import TileMap.TileMap;
@@ -10,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.nio.Buffer;
 
 public class Mushroom extends Enemy {
+    private AudioPlayer sfx;
 
     private BufferedImage[]sprites;
     public Mushroom(TileMap tm)
@@ -44,6 +46,8 @@ public class Mushroom extends Enemy {
         animation.setDelay(100);
         left=false;
         right=false;
+        sfx=new AudioPlayer("/SFX/Bomb-Explosion.mp3");
+
 
     }
     private void getNextPosition()
@@ -82,6 +86,7 @@ public class Mushroom extends Enemy {
 
         if(flinching)
         {
+
             long elapsed=(System.nanoTime()-flinchTimer)/1000000;
             if(elapsed>400)
             {
@@ -101,11 +106,22 @@ public class Mushroom extends Enemy {
                 left=false;
                 facingRight=true;
             }
+            if(dead)
+            {
+                sfx.play();
+            }
             animation.update();
     }
     public void draw(Graphics2D g)
     {
-        //if(notOnScreen()){return;}
+       // if(notOnScreen()){return;}
+        if(flinching) {
+            long elapsed =
+                    (System.nanoTime() - flinchTimer) / 1000000;
+            if(elapsed / 100 % 2 == 0) {
+                return;
+            }
+        }
         setMapPosition();
         super.draw(g);
     }

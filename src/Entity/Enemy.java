@@ -1,4 +1,5 @@
 package Entity;
+import Audio.AudioPlayer;
 import TileMap.TileMap;
 import TileMap.TileMap;
 
@@ -8,18 +9,19 @@ public  class Enemy extends MapObject{
     protected int maxHealth;
     protected boolean dead;
     protected int damage;
-
     protected boolean flinching;
     protected long flinchTimer;
     public Enemy(TileMap tm)
     {
         super(tm);
+
     }
     public boolean isDead(){return dead;}
     public int getDamage(){return damage;}
     public void hit(int damage)
     {
-        if (dead||flinching)
+
+        if (flinching||dead)
         {
             return;
         }
@@ -30,7 +32,9 @@ public  class Enemy extends MapObject{
         flinchTimer=System.nanoTime();
 
     }
-    public void update(){}
+    public void update(){
+
+    }
 
 
 }

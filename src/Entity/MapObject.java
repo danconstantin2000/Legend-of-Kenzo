@@ -201,6 +201,7 @@ public abstract class MapObject {
                 y + ymap + height < 0 ||
                 y + ymap - height > GamePanel.HEIGHT;
     }
+
     public void draw(Graphics2D g) {
 
         if (facingRight) {

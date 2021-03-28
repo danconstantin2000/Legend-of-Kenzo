@@ -20,8 +20,10 @@ public class Level1State extends GameState{
     private ArrayList<Enemy> enemies;
     private ArrayList<Explosion>explosions;
     private HUD hud;
-    private Tree tree;
     private AudioPlayer bgMusic;
+
+    private ArrayList<ForestThings>forest;
+
     public Level1State(GameStateManager gsm)
     {
         this.gsm=gsm;
@@ -32,13 +34,14 @@ public class Level1State extends GameState{
 
     public void init() {
         tileMap=new TileMap(16);
-        tileMap.loadTiles("/Tilesets/Tileset3.png");
+        tileMap.loadTiles("/Tilesets/tileset4.png");
         tileMap.loadMap("/Maps/Level1.map");////switch
         tileMap.setPosition(0,0);
         tileMap.setTween(1);
-       this.bg=new Background("/Backgrounds/BG5.png",0.1);
+       this.bg=new Background("/Backgrounds/BG9.png",0.1);
        player=new Player(tileMap);
-       player.setPosition(100,30);
+       player.setPosition(100,100);
+        populatetrees();
         populateEnemies();
        hud=new HUD(player);
        explosions=new ArrayList<Explosion>();
@@ -49,13 +52,90 @@ public class Level1State extends GameState{
 
 
 
+
+
+
     }
 
+    private void populatetrees()
+    {
+        forest=new ArrayList<ForestThings>();
+        Point[] myPointArrayTrees=new Point[]{
+                new Point(100,100),
+                new Point(30,100),
+                new Point(170,100),
+                new Point(430,68),
+               // new Point(100,100),
+                //new Point(100,100),
+                new Point(530, 51),
+                new Point(600, 51),
+                new Point(670, 51),
+                new Point(740, 51),
+                new Point(810, 51),
+                new Point(950, 67),
+                new Point(1020, 67),
+                new Point(1090, 67),
+                new Point(1160, 67),
+                new Point(1300, 67),
+                new Point(1450, 52),
+                new Point(1560, 67),
+                new Point(1670, 51),
+                new Point(1740, 51),
+                new Point(1810, 51),
+                new Point(1880, 51),
+                new Point(1950, 51),
+                new Point(2020, 51),
+                new Point(2150, 35),
+                new Point(2220, 35),
+                new Point(2290, 35),
+                new Point(2360, 35),
+                new Point(2430, 35),
+                new Point(2520,67),
+                new Point(2590, 67),
+                new Point(2660, 67),
+                new Point(2730, 67),
+                new Point(2800, 67),
+                new Point(2870, 67),
+                new Point(2940, 67),
+
+
+
+
+
+        };
+        for(int i=0;i<myPointArrayTrees.length;i++)
+        {
+            Tree t=new Tree(myPointArrayTrees[i].x,myPointArrayTrees[i].y);
+            forest.add(t);
+        }
+        Point[] myPointArrayBush=new Point[]
+        {
+            new Point(275,42),
+                new Point(310,42),
+                new Point(630,10),
+                new Point(770,10),
+                new Point(925,27),
+                new Point(1050,27),
+                new Point(1185,27),
+                new Point(1410,10),
+                new Point(1700,10),
+                new Point(1920,10),
+                new Point(2625,27),
+                new Point(2825,27),
+
+        };
+        for(int i=0;i<myPointArrayBush.length;i++)
+        {
+            Bush b=new Bush(myPointArrayBush[i].x,myPointArrayBush[i].y);
+            forest.add(b);
+        }
+
+    }
     private void populateEnemies()
     {
         enemies=new ArrayList<Enemy>();
         Point[] myPointArray=new Point[]{
-                new Point(300,10),
+                new Point(400,100),
                 new Point(840, 10),
                 new Point(1560, 10),
                 new Point(1670, 10),
@@ -98,15 +178,25 @@ public class Level1State extends GameState{
                 i--;
             }
         }
-
+        if(bgMusic.hasStopped())
+        {
+            bgMusic.play();
+        }
 
     }
 
 
     public void draw(Graphics2D g) {
         //clear screen;
+
         bg.draw(g);
         tileMap.draw(g);
+        for(int i=0;i<forest.size();i++)
+        {
+            forest.get(i).setMapPosition((int)tileMap.getx(),(int)tileMap.gety());
+            forest.get(i).draw(g);
+
+        }
 
         player.draw(g);
         //draw enemies;
@@ -122,6 +212,7 @@ public class Level1State extends GameState{
             explosions.get(i).draw(g);
         }
         hud.draw(g);
+
 
     }
 
@@ -144,4 +235,5 @@ public class Level1State extends GameState{
         if(k == KeyEvent.VK_W) player.setJumping(false);
 
     }
+
 }

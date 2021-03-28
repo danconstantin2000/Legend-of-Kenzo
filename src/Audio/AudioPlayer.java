@@ -46,4 +46,12 @@ public class AudioPlayer {
         stop();
         clip.close();
     }
+    public boolean hasStopped()
+    {
+        if(!clip.isRunning())
+        {
+            return true;
+        }
+        return false;
+    }
 }

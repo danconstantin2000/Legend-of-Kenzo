@@ -1,5 +1,7 @@
 package Entity;
 
+import Audio.AudioPlayer;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,6 +20,7 @@ public class Explosion {
     private BufferedImage[] sprites;
 
     private boolean remove;
+
 
     public Explosion(int x,int y)
     {
@@ -41,14 +44,19 @@ public class Explosion {
         }
         animation=new Animation();
         animation.setFrames(sprites);
-        animation.setDelay(70);
+        animation.setDelay(100);
+
     }
     public void update()
     {
+
         animation.update();
         if(animation.hasPlayedOnce())
         {
+
             remove=true;
+
+
         }
     }
     public boolean shouldRemove()
