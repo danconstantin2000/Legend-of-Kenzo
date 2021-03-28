@@ -1,11 +1,13 @@
 package Entity;
 
+import Audio.AudioPlayer;
 import TileMap.*;
 
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 public class Player extends MapObject {
 
@@ -44,6 +46,9 @@ public class Player extends MapObject {
     private static final int JUMPING=5;
     private static final int RUNNING=6;
     private static final int TAKEHIT=7;
+
+    private HashMap<String, AudioPlayer> sfx;
+
 
     public Player(TileMap tm) {
 
@@ -110,6 +115,10 @@ public class Player extends MapObject {
         currentAction = IDLE;
         animation.setFrames(sprites.get(IDLE));
         animation.setDelay(400);
+        sfx=new HashMap<String,AudioPlayer>();
+        sfx.put("jump",new AudioPlayer("/SFX/jump.mp3"));
+        sfx.put("longattack",new AudioPlayer("/SFX/scratch.mp3"));
+        sfx.put("smallattack",new AudioPlayer("/SFX/Sword2.mp3"));
 
     }
 
@@ -236,6 +245,7 @@ public class Player extends MapObject {
 
         // jumping
         if(jumping && !falling) {
+            sfx.get("jump").play();
             dy = jumpStart;
             falling = true;
         }
@@ -279,7 +289,9 @@ public class Player extends MapObject {
         {
             if(animation.hasPlayedOnce())
             {
+                energy=energy-energyCost;
                 longAttacking=false;
+                sfx.get("longattack").stop();
 
             }
         }
@@ -288,6 +300,7 @@ public class Player extends MapObject {
             if(animation.hasPlayedOnce())
             {
                 smallAttacking=false;
+                sfx.get("smallattack").stop();
 
             }
         }
@@ -304,20 +317,23 @@ public class Player extends MapObject {
 
         if(longAttacking) {
 
+
             if(currentAction != LONGATTACK) {
+                sfx.get("longattack").play();
                 currentAction = LONGATTACK;
                 animation.setFrames(sprites.get(LONGATTACK));
-                animation.setDelay(60);
+                animation.setDelay(50);
                 width =200;
                 height=185;
-                energy=energy-energyCost;
-            }
 
+
+            }
 
         }
         else if(smallAttacking) {
 
             if(currentAction != SMALLATTACK) {
+                sfx.get("smallattack").play();
                 currentAction = SMALLATTACK;
                 animation.setFrames(sprites.get(SMALLATTACK));
                 animation.setDelay(30);
@@ -417,8 +433,8 @@ public class Player extends MapObject {
             LongAttack=false;
             SmallAttack=false;
         }
-        animation.update();
 
+        animation.update();
 
 
     }

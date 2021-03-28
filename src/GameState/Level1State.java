@@ -1,5 +1,6 @@
 package GameState;
 
+import Audio.AudioPlayer;
 import Entity.*;
 import Entity.Enemies.Mushroom;
 import Main.GamePanel;
@@ -8,6 +9,7 @@ import TileMap.TileMap;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import Audio.AudioPlayer.*;
 
 import TileMap.Background;
 public class Level1State extends GameState{
@@ -19,7 +21,7 @@ public class Level1State extends GameState{
     private ArrayList<Explosion>explosions;
     private HUD hud;
     private Tree tree;
-
+    private AudioPlayer bgMusic;
     public Level1State(GameStateManager gsm)
     {
         this.gsm=gsm;
@@ -39,8 +41,9 @@ public class Level1State extends GameState{
        player.setPosition(100,30);
         populateEnemies();
        hud=new HUD(player);
-        explosions=new ArrayList<Explosion>();
-
+       explosions=new ArrayList<Explosion>();
+        bgMusic=new AudioPlayer("/Music/08-China-Great-Wall.mp3");
+        bgMusic.play();
 
 
 
@@ -53,9 +56,9 @@ public class Level1State extends GameState{
         enemies=new ArrayList<Enemy>();
         Point[] myPointArray=new Point[]{
                 new Point(300,10),
-                new Point(860, 10),
-                new Point(1515, 10),
-                new Point(1690, 10),
+                new Point(840, 10),
+                new Point(1560, 10),
+                new Point(1670, 10),
                 new Point(1800, 10)
 
         };
