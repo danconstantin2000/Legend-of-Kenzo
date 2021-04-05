@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Kenzo">
+    <output-path>$PROJECT_DIR$/out/artifacts/Kenzo</output-path>
+    <root id="archive" name="Kenzo.jar" />
+  </artifact>
+</component>

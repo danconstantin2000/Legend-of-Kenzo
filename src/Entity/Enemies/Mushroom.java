@@ -16,6 +16,7 @@ public class Mushroom extends Enemy {
     private BufferedImage[]sprites;
     public Mushroom(TileMap tm)
     {
+
         super(tm);
 
         moveSpeed=0.3;

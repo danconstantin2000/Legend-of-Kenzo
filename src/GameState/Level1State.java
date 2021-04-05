@@ -21,7 +21,7 @@ public class Level1State extends GameState{
     private ArrayList<Explosion>explosions;
     private HUD hud;
     private AudioPlayer bgMusic;
-
+    private AudioPlayer bossMusic;
     private ArrayList<ForestThings>forest;
 
     public Level1State(GameStateManager gsm)
@@ -46,6 +46,7 @@ public class Level1State extends GameState{
        hud=new HUD(player);
        explosions=new ArrayList<Explosion>();
         bgMusic=new AudioPlayer("/Music/08-China-Great-Wall.mp3");
+        bossMusic=new AudioPlayer("/Music/Boss.mp3");
         bgMusic.play();
 
 
@@ -60,6 +61,7 @@ public class Level1State extends GameState{
     private void populatetrees()
     {
         forest=new ArrayList<ForestThings>();
+
         Point[] myPointArrayTrees=new Point[]{
                 new Point(100,100),
                 new Point(30,100),
@@ -129,6 +131,17 @@ public class Level1State extends GameState{
             Bush b=new Bush(myPointArrayBush[i].x,myPointArrayBush[i].y);
             forest.add(b);
         }
+        Point[] myPointArrayRuin=new Point[]{
+                        new Point(985,27),
+                        new Point(1830,10),
+                        new Point(2550,27)
+        };
+        for(int i=0;i<myPointArrayRuin.length;i++)
+        {
+            Ruin r=new Ruin(myPointArrayRuin[i].x,myPointArrayRuin[i].y);
+            forest.add(r);
+        }
+
 
     }
     private void populateEnemies()
@@ -164,6 +177,7 @@ public class Level1State extends GameState{
             e.update();
             if(e.isDead())
             {
+                player.score=player.score+500;
                 enemies.remove(i);
                 i--;
                 explosions.add(new Explosion(e.getx(),e.gety()));
@@ -178,11 +192,30 @@ public class Level1State extends GameState{
                 i--;
             }
         }
-        if(bgMusic.hasStopped())
-        {
-            bgMusic.play();
-        }
 
+        if(player.getx()==2700) {
+            bgMusic.stop();
+            if (!bossMusic.hasStopped()) {
+                //bgMusic.stop();
+
+            }
+            else
+            {
+                //bossMusic.play();
+            }
+
+        }
+        if(player.getx()>2700 && bossMusic.hasStopped())
+        {
+            bgMusic.stop();
+            bossMusic.play();
+        }
+        if(player.getHealth()==0 )
+        {
+            bgMusic.stop();
+            if(player.switchState ||player.Gol)
+                gsm.setState(GameStateManager.GAMEOVERSTATE);
+        }
     }
 
 
@@ -211,20 +244,23 @@ public class Level1State extends GameState{
                     (int)tileMap.getx(), (int)tileMap.gety());
             explosions.get(i).draw(g);
         }
-        hud.draw(g);
 
+        hud.draw(g);
+        g.drawString(player.getx()+"/"+player.gety()+"/"+ player.score,200,12);
 
     }
 
 
     public void keyPressed(int k) {
-        if(k == KeyEvent.VK_LEFT) player.setLeft(true);
-        if(k == KeyEvent.VK_RIGHT) player.setRight(true);
-        if(k == KeyEvent.VK_UP) player.setUp(true);
-        if(k == KeyEvent.VK_DOWN) player.setDown(true);
-        if(k == KeyEvent.VK_W) player.setJumping(true);
-        if(k == KeyEvent.VK_R) player.setLongAttacking(true);
-        if(k == KeyEvent.VK_F) player.setSmallAttacking(true);
+        if(player.getHealth()!=0) {
+            if (k == KeyEvent.VK_LEFT) player.setLeft(true);
+            if (k == KeyEvent.VK_RIGHT) player.setRight(true);
+            if (k == KeyEvent.VK_UP) player.setUp(true);
+            if (k == KeyEvent.VK_DOWN) player.setDown(true);
+            if (k == KeyEvent.VK_W) player.setJumping(true);
+            if (k == KeyEvent.VK_R) player.setLongAttacking(true);
+            if (k == KeyEvent.VK_F) player.setSmallAttacking(true);
+        }
     }
 
     public void keyReleased(int k) {

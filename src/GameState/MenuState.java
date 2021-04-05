@@ -16,7 +16,7 @@ public class MenuState extends GameState{
     {
         this.gsm=gsm;
        try{
-           bg=new Background("/Backgrounds/BG4.png",1);
+           bg=new Background("/Backgrounds/MENUBG.png",1);
            bg.setVector(-0.1,0);
            titleColor=new Color(0,0,0);
            titleFont=new Font("Courier New",Font.BOLD,18);
@@ -61,7 +61,7 @@ public class MenuState extends GameState{
     {
         if(currentChoice==0)
         {
-            gsm.setState(GameStateManager.LEVEL1STATE);
+            gsm.setState(GameStateManager.LOADINGSTATE);
         }
         if(currentChoice==1)
         {

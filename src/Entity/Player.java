@@ -1,6 +1,7 @@
 package Entity;
 
 import Audio.AudioPlayer;
+import Main.GamePanel;
 import TileMap.*;
 
 import java.util.ArrayList;
@@ -29,7 +30,9 @@ public class Player extends MapObject {
     private boolean smallAttacking;
     private int smallAttackDamage;
     private int smallAttackRange;
-
+    public int score;
+    public boolean switchState;
+    public boolean Gol;
 
     // animations
     private ArrayList<BufferedImage[]> sprites;
@@ -77,7 +80,7 @@ public class Player extends MapObject {
         smallAttackRange=100;
         longAttackDamage = 8;
         longAttackRange = 100;
-
+        score=0;
         // load sprites
         try {
 
@@ -189,7 +192,9 @@ public class Player extends MapObject {
     {
         if(flinching)return;
         health-=damage;
+        if(health==0)flinching=false;
         if(health<0)health=0;
+
         if(health==0){dead=true;}
         flinching=true;
         flinchTimer=System.nanoTime();
@@ -292,8 +297,7 @@ public class Player extends MapObject {
         {
             if(animation.hasPlayedOnce())
             {
-                health=5;
-                dead=false;
+                switchState=true;
             }
 
         }
@@ -320,6 +324,7 @@ public class Player extends MapObject {
 
         if(flinching)
         {
+
             long elapsed=(System.nanoTime()-flinchTimer)/1000000;
             if(elapsed>1000)
             {
@@ -395,10 +400,11 @@ public class Player extends MapObject {
 
             if(currentAction!=DEATH)
             {
+
                 sfx.get("herodeath").play();
                 currentAction=DEATH;
                 animation.setFrames(sprites.get(DEATH));
-                animation.setDelay(350);
+                animation.setDelay(400);
                 width=200;
                 height=190;
 
@@ -450,7 +456,12 @@ public class Player extends MapObject {
         }
 
         animation.update();
+       if( y > 224)
+       {
+           health=0;
+           Gol=true;
 
+       }
 
     }
 
