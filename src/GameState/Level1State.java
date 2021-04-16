@@ -34,11 +34,11 @@ public class Level1State extends GameState{
 
     public void init() {
         tileMap=new TileMap(16);
-        tileMap.loadTiles("/Tilesets/tileset4.png");
-        tileMap.loadMap("/Maps/Level1.map");////switch
+        tileMap.loadTiles("/Tilesets/tileset.png");
+        tileMap.loadMap("/Maps/Level1.map");
         tileMap.setPosition(0,0);
-        tileMap.setTween(1);
-       this.bg=new Background("/Backgrounds/BG9.png",0.1);
+
+       this.bg=new Background("/Backgrounds/BG9.png");
        player=new Player(tileMap);
        player.setPosition(100,100);
         populatetrees();
@@ -47,7 +47,7 @@ public class Level1State extends GameState{
        explosions=new ArrayList<Explosion>();
         bgMusic=new AudioPlayer("/Music/08-China-Great-Wall.mp3");
         bossMusic=new AudioPlayer("/Music/Boss.mp3");
-        bgMusic.play();
+      //  bgMusic.play();
 
 
 

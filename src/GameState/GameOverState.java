@@ -1,11 +1,11 @@
 package GameState;
 
-import Audio.AudioPlayer;
+
 import TileMap.Background;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-
+//Similar menuState
 public class GameOverState extends GameState{
 
     private Background bg;
@@ -18,22 +18,20 @@ public class GameOverState extends GameState{
     {
         this.gsm=gsm;
         try{
-            bg=new Background("/Backgrounds/GOBG.png",1);
-            bg.setVector(-0.1,0);
-            titleColor=new Color(0,0,0);
-            titleFont=new Font("Courier New",Font.BOLD,18);
-            font=new Font("Courier New",Font.PLAIN,12);
-
+            init();
         }
         catch(Exception e)
         {
             e.printStackTrace();
         }
-
     }
 
-
-    public void init(){}
+    public void init(){
+        bg=new Background("/Backgrounds/GOBG.png");
+        titleColor=new Color(0,0,0);
+        titleFont=new Font("Courier New",Font.BOLD,18);
+        font=new Font("Courier New",Font.PLAIN,12);
+    }
     public void update(){
         bg.update();
     }
@@ -45,7 +43,6 @@ public class GameOverState extends GameState{
         g.setFont(titleFont);
         g.drawString("GAME OVER",110,70);
         g.drawString("TRY AGAIN?",110,90);
-
 
         //draw menu options
         g.setFont(font);
@@ -59,13 +56,14 @@ public class GameOverState extends GameState{
             {
                 g.setColor(Color.BLACK);
             }
+
             if(i==1)
             {
-                g.drawString(options[i],147,140+i*15);
+                g.drawString(options[i],152,140+i*15);
 
             }
             else {
-                g.drawString(options[i], 145, 140 + i * 15);
+                g.drawString(options[i], 150, 140 + i * 15);
             }
 
         }
@@ -103,8 +101,5 @@ public class GameOverState extends GameState{
 
         }
     }
-
     public void keyReleased(int k) { }
-
-
 }

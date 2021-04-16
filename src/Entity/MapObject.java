@@ -80,9 +80,11 @@ public abstract class MapObject {
     }
 
     public Rectangle getRectangle() {
+
         return new Rectangle(
-                (int)x - cwidth,
-                (int)y - cheight,
+
+                (int)x - cwidth/2,
+                (int)y - cheight/2,
                 cwidth,
                 cheight
         );
@@ -100,6 +102,12 @@ public abstract class MapObject {
         int bl = tileMap.getType(bottomTile, leftTile);
         int br = tileMap.getType(bottomTile, rightTile);
 
+        if(topTile < 0 || bottomTile >= tileMap.getNumRows() ||
+                leftTile < 0 || rightTile >= tileMap.getNumCols()) {
+            topLeft = topRight = bottomLeft = bottomRight = false;
+            return;
+        }
+
         topLeft = tl == Tile.BLOCKED;
         topRight = tr == Tile.BLOCKED;
         bottomLeft = bl == Tile.BLOCKED;
@@ -108,6 +116,7 @@ public abstract class MapObject {
     }
 
     public void checkTileMapCollision() {
+
 
         currCol = (int)x / tileSize;
         currRow = (int)y / tileSize;
@@ -188,6 +197,7 @@ public abstract class MapObject {
     public void setMapPosition() {
         xmap = tileMap.getx();
         ymap = tileMap.gety();
+
     }
 
     public void setLeft(boolean b) { left = b; }

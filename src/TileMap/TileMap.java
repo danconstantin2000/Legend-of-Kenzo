@@ -17,7 +17,7 @@ public class TileMap {
     private int xmax;
     private int ymax;
 
-    private double tween;
+
 
     //map
 
@@ -38,12 +38,20 @@ public class TileMap {
     private int numRowsToDraw;
     private int numColsToDraw;
 
+    //Constructor
     public TileMap(int tileSize)
     {
         this.tileSize=tileSize;
-        numRowsToDraw= GamePanel.HEIGHT/tileSize+2;
-        numColsToDraw=GamePanel.WIDTH/tileSize+2;
-        tween=0.07;
+        /*Cate linii trebuie sa desenam pe ecran
+          Ex:tileSize=16,HEIGHT=240-->15 linii
+        * */
+        numRowsToDraw= GamePanel.HEIGHT/tileSize;
+        /*
+          Cate coloane trebuie sa desenam pe ecran
+          Ex:tileSize=16,WIDTH=320-->20 coloane;
+        * */
+        numColsToDraw=GamePanel.WIDTH/tileSize+1;//+ Actualizare
+
 
 
     }
@@ -51,6 +59,11 @@ public class TileMap {
     {
         try
         {
+            /*
+            Matrice de tiles citita din tilset.png
+            BLOCKED-->Tile cu coliziune
+            NORMAL-->Tile fara coliziune
+            * */
             tileset=ImageIO.read(getClass().getResourceAsStream(s));
             numTilesAcross=tileset.getWidth()/tileSize;
             tiles=new Tile[3][numTilesAcross];
@@ -58,20 +71,21 @@ public class TileMap {
 
             for(int col=0;col<numTilesAcross;col++)
             {
+                if(col==0)
+                {
+                    tiles[0][0]=new Tile(null,Tile.NORMAL);
+                }
+                else
+                {
+                    subimage=tileset.getSubimage(col*tileSize,0,tileSize,tileSize);
+                    tiles[0][col]=new Tile(subimage,Tile.BLOCKED);
+                }
 
-
-                tiles[0][0]=new Tile(null,Tile.NORMAL);
-                subimage=tileset.getSubimage(col*tileSize,0,tileSize,tileSize);
-                tiles[0][col]=new Tile(subimage,Tile.BLOCKED);
                 subimage=tileset.getSubimage(col*tileSize,tileSize,tileSize,tileSize);
                 tiles[1][col]=new Tile(subimage,Tile.BLOCKED);
                 subimage=tileset.getSubimage(col*tileSize,tileSize*2,tileSize,tileSize);
                 tiles[2][col]=new Tile(subimage,Tile.NORMAL);
-
-
             }
-
-
         }
         catch(Exception e)
         {
@@ -80,22 +94,25 @@ public class TileMap {
 
 
     }
+    //Citire matrice din fisier
     public void loadMap(String s)
     {
         try{
             InputStream in=getClass().getResourceAsStream(s);
             BufferedReader br=new BufferedReader(new InputStreamReader(in));
-            numCols=Integer.parseInt(br.readLine());
-            numRows=Integer.parseInt(br.readLine());
-            map=new int[numRows][numCols];
-            width=numCols*tileSize;
-            height=numRows*tileSize;
+            numCols=Integer.parseInt(br.readLine());//Prima linie din fisier(Level1.map)
+            numRows=Integer.parseInt(br.readLine());//A doua linie din fisier(Level2.map);
+            map=new int[numRows][numCols];//Initializare matrice
+            width=numCols*tileSize;//latimea hartii  in pixeli
+            height=numRows*tileSize;//inaltimea hartii in pixeli
+
             xmin=GamePanel.WIDTH-width;
             xmax=0;
             ymin=GamePanel.HEIGHT-height;
             ymax=0;
 
-            String delims="\\s+";
+            String delims="\\s+";//Spatiu alb
+            //Citire matrice din fisier
             for(int row=0;row<numRows;row++)
             {
                 String line=br.readLine();
@@ -105,43 +122,38 @@ public class TileMap {
                     map[row][col]=Integer.parseInt(tockens[col]);
                 }
             }
-
         }
         catch(Exception e){
             e.printStackTrace();
         }
 
-
     }
-
+    //Setters si getters
     public int getTileSize(){return tileSize;}
     public double getx(){return x;}
     public double gety(){return y;}
     public int getWidth(){return width;}
     public int getHeight(){return height;}
-    public void setTween(double tween)
-    {
-        this.tween=tween;
-    }
+    public int getNumRows(){return numRows;}
+    public int getNumCols(){return numCols;}
+
 
 
     public int getType(int row,int col)
     {
         int rc=map[row][col];
-        int r=rc/numTilesAcross;
-        int c=rc%numTilesAcross;
-        /*
-        if(c==-1)
-        {
-            c=rc%numTilesAcross+1;
-        }*/
+        int r=rc/numTilesAcross;//Linia specifica fiecarui tile din tileset
+        int c=rc%numTilesAcross;//Coloana specifica fiecarui tile din tileset
         return tiles[r][c].getType();
     }
     public void setPosition(double x,double y)
     {
-        this.x+=(x-this.x)*tween;
-        this.y+=(y-this.y)*tween;
+
+        this.x=x;
+        this.y=y;
+        //fixeaza limitele
         fixBounds();
+        //Ce linie/coloana trebuie sa desenam
         colOffset=(int)-this.x/tileSize;
         rowOffset=(int)-this.y/tileSize;
 
@@ -160,14 +172,16 @@ public class TileMap {
 
         for(int row=rowOffset;row<rowOffset+numRowsToDraw;row++)
         {
-            if(row>=numRows)break;
+            if(row>=numRows)break;//Nu mai avem ce desena
             for(int col=colOffset;col<colOffset+numColsToDraw;col++)
             {
-                if(col>=numCols)break;
-                if(map[row][col]==0){
+                if(col>=numCols)break;//Nu mai avem ce desena
+
+                //HEREE
+                if(map[row][col]==0 && map[row][col]==1)
+                {
                     continue;
                 }
-                //HEREE
                 int rc=map[row][col];
                 int r=rc/numTilesAcross;
                 int c=rc%numTilesAcross;

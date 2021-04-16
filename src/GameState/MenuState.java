@@ -1,26 +1,39 @@
 package GameState;
-
 import TileMap.Background;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
+/*
+    -Background bg;
+    -int currentChoice=0;
+    -String[] options;
+    -Color titleColor;
+    -Font titleFont;
+    -Font font;
+
+    +MenuState(gsm)
+    +void init()
+    +void update()
+    +void draw(Graphic2D g)
+    -void select()
+    +void keyPressed(int k)
+    +void keyReleased(int k)
+
+ */
+
 
 public class MenuState extends GameState{
-    private Background bg;
-    private int currentChoice=0;
-    private String[] options={"Start","Help","Save","Load","Settings","Quit"};
-    private Color titleColor;
-    private Font titleFont;
-    private Font font;
+    private Background bg;//Imagine de Background a meniului.
+    private int currentChoice=0;//Alegere curenta
+    private String[] options={"Start","Help","Save","Load","Settings","Quit"};//Vector de optiuni
+    private Color titleColor;//Culoare titlu
+    private Font titleFont;//Font titlu
+    private Font font;//Font optiuni
     public MenuState(GameStateManager gsm)
     {
         this.gsm=gsm;
        try{
-           bg=new Background("/Backgrounds/MENUBG.png",1);
-           bg.setVector(-0.1,0);
-           titleColor=new Color(0,0,0);
-           titleFont=new Font("Courier New",Font.BOLD,18);
-           font=new Font("Courier New",Font.PLAIN,12);
+           //Initializari
+           init();
        }
        catch(Exception e)
        {
@@ -29,7 +42,12 @@ public class MenuState extends GameState{
 
     }
 
-    public void init(){}
+    public void init(){
+        bg=new Background("/Backgrounds/MENUBG.png");
+        titleColor=new Color(0,0,0);
+        titleFont=new Font("Courier New",Font.BOLD,18);
+        font=new Font("Courier New",Font.PLAIN,12);
+    }
     public void update(){
         bg.update();
     }
@@ -42,7 +60,9 @@ public class MenuState extends GameState{
         g.drawString("The legend of Kenzo",70,70);
 
 
-        //draw menu options
+        //optiune selectata-->albastra
+        //optiune neselectata-->neagra
+
         g.setFont(font);
         for(int i=0;i<options.length;i++)
         {
@@ -54,11 +74,13 @@ public class MenuState extends GameState{
             {
                 g.setColor(Color.BLACK);
             }
+            //Draw options
             g.drawString(options[i],145,140+i*15);
         }
     }
     private void select()
     {
+        //In functie de optiune,putem face trecerea la un nou state etc;
         if(currentChoice==0)
         {
             gsm.setState(GameStateManager.LOADINGSTATE);
