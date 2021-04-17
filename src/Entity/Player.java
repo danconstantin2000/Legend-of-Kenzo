@@ -1,6 +1,7 @@
 package Entity;
 
 import Audio.AudioPlayer;
+import Entity.Enemies.MushroomProjectile;
 import Main.GamePanel;
 import TileMap.*;
 
@@ -31,8 +32,9 @@ public class Player extends MapObject {
     private int smallAttackDamage;
     private int smallAttackRange;
     public int score;
-    public boolean switchState;
-    public boolean Gol;
+    private  boolean switchState;
+    private boolean Void;
+
 
     // animations
     private ArrayList<BufferedImage[]> sprites;
@@ -127,18 +129,80 @@ public class Player extends MapObject {
         sfx.put("hero_take_dmg",new AudioPlayer("/SFX/Hero_TakesDMG.wav"));
 
     }
+    public boolean isSmallAttacking()
+    {
+        return smallAttacking;
+    }
+    public boolean isLongAttacking()
+    {
+        return longAttacking;
+    }
 
+    public boolean isFacingRight()
+    {
+        return facingRight;
+    }
+    public int getLongAttackRange()
+    {
+        return longAttackRange;
+    }
+
+
+    public boolean getVoid(){return Void;}
+    public boolean getSwitchState(){return switchState;}
+    public boolean isDead(){return dead;}
     public int getHealth() { return health; }
     public int getMaxHealth() { return maxHealth; }
     public int getEnergy() { return energy; }
     public int getMaxEnergy() { return maxEnergy; }
-
     public void setSmallAttacking(boolean b) {
         smallAttacking = b;
     }
     public void setLongAttacking(boolean b) {
         longAttacking=b;
     }
+    public void checkAttack2(ArrayList<MushroomProjectile> projectiles)
+    {
+        for(int i=0;i<projectiles.size();i++) {
+            MushroomProjectile mp = projectiles.get(i);
+            //long attack
+            if (longAttacking) {
+                if (facingRight) {
+                    if (mp.getx() > x && mp.getx() < x + longAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
+                        mp.hit(longAttackDamage);
+                        sfx.get("enemy_take_dmg").play();
+
+                    }
+                } else {
+                    if (mp.getx() < x && mp.getx() > x - longAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
+
+                        mp.hit(longAttackDamage);
+                        sfx.get("enemy_take_dmg").play();
+
+                    }
+                }
+            } else if (smallAttacking) {
+                if (facingRight) {
+                    if (mp.getx() > x && mp.getx() < x + smallAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
+                        mp.hit(smallAttackDamage);
+                        sfx.get("enemy_take_dmg").play();
+
+                    }
+                } else {
+                    if (mp.getx() < x && mp.getx() > x - smallAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
+
+                        mp.hit(smallAttackDamage);
+                        sfx.get("enemy_take_dmg").play();
+
+                    }
+                }
+                //check enemy collision
+
+            }
+
+        }
+    }
+
     public void checkAttack(ArrayList<Enemy> enemies)
     {
         for(int i=0;i<enemies.size();i++) {
@@ -199,7 +263,6 @@ public class Player extends MapObject {
         flinching=true;
         flinchTimer=System.nanoTime();
     }
-
 
     public void EnergyActions()
     {
@@ -283,25 +346,18 @@ public class Player extends MapObject {
 
     }
 
-    public void update() {
-
-        // update position
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(xtemp, ytemp);
-
-        EnergyActions();
-
-
+    private void shouldSwitchState()
+    {
         if(currentAction==DEATH)
         {
             if(animation.hasPlayedOnce())
             {
                 switchState=true;
             }
-
         }
-
+    }
+    private void turnOffAttacks()
+    {
         if(currentAction==LONGATTACK)
         {
             if(animation.hasPlayedOnce())
@@ -321,7 +377,9 @@ public class Player extends MapObject {
 
             }
         }
-
+    }
+    private void turnOffFlinching()
+    {
         if(flinching)
         {
 
@@ -331,6 +389,9 @@ public class Player extends MapObject {
                 flinching=false;
             }
         }
+    }
+    private void setAnimations()
+    {
         // set animation
 
         if(longAttacking) {
@@ -351,7 +412,7 @@ public class Player extends MapObject {
         else if(smallAttacking) {
 
             if(currentAction != SMALLATTACK) {
-               sfx.get("smallattack").play();
+                sfx.get("smallattack").play();
                 currentAction = SMALLATTACK;
                 animation.setFrames(sprites.get(SMALLATTACK));
                 animation.setDelay(30);
@@ -363,19 +424,19 @@ public class Player extends MapObject {
         }
         else if(dy > 0)
         {
-             if(currentAction != FALLING) {
+            if(currentAction != FALLING) {
                 currentAction = FALLING;
                 animation.setFrames(sprites.get(FALLING));
                 animation.setDelay(100);
                 width = 200;
                 height=200;
 
-             }
+            }
         }
         else if(dy < 0) {
 
-                if(currentAction != JUMPING) {
-                    sfx.get("jump").play();
+            if(currentAction != JUMPING) {
+                sfx.get("jump").play();
                 currentAction = JUMPING;
                 animation.setFrames(sprites.get(JUMPING));
                 animation.setDelay(-1);
@@ -412,7 +473,7 @@ public class Player extends MapObject {
             }
 
         }else
-            {
+        {
 
             if(currentAction != IDLE) {
                 currentAction = IDLE;
@@ -426,7 +487,9 @@ public class Player extends MapObject {
 
 
 
-
+    }
+    private void setDirection()
+    {
         // set direction
         if(currentAction !=LONGATTACK && currentAction !=SMALLATTACK) {
             if(right) facingRight = true;
@@ -434,8 +497,9 @@ public class Player extends MapObject {
                 facingRight = false;
             }
         }
-
-
+    }
+    private void drawCorectly()
+    {
         if(smallAttacking)
         {
             LongAttack=false;
@@ -455,13 +519,34 @@ public class Player extends MapObject {
             SmallAttack=false;
         }
 
-        animation.update();
-       if( y > 224)
-       {
-           health=0;
-           Gol=true;
+    }
+    private void voidFall()
+    {
+        if( y > GamePanel.HEIGHT-cheight)
+        {
+            dead=true;
+            Void=true;
 
-       }
+        }
+    }
+
+
+    public void update() {
+
+        // update position
+        getNextPosition();
+        checkTileMapCollision();
+        setPosition(xtemp, ytemp);
+        EnergyActions();
+        shouldSwitchState();
+        turnOffAttacks();
+        turnOffFlinching();
+        setAnimations();
+        setDirection();
+        drawCorectly();
+        animation.update();
+        voidFall();
+
 
     }
 

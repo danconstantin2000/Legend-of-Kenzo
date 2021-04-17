@@ -3,13 +3,16 @@ package GameState;
 import Audio.AudioPlayer;
 import Entity.*;
 import Entity.Enemies.Mushroom;
+import Forest.Bush;
+import Forest.ForestThings;
+import Forest.Ruin;
+import Forest.Tree;
 import Main.GamePanel;
 import TileMap.TileMap;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import Audio.AudioPlayer.*;
 
 import TileMap.Background;
 public class Level1State extends GameState{
@@ -38,22 +41,16 @@ public class Level1State extends GameState{
         tileMap.loadMap("/Maps/Level1.map");
         tileMap.setPosition(0,0);
 
-       this.bg=new Background("/Backgrounds/BG9.png");
-       player=new Player(tileMap);
-       player.setPosition(100,100);
+        this.bg=new Background("/Backgrounds/BG9.png");
+        player=new Player(tileMap);
+        player.setPosition(100,100);
         populatetrees();
         populateEnemies();
-       hud=new HUD(player);
-       explosions=new ArrayList<Explosion>();
+        hud=new HUD(player);
+        explosions=new ArrayList<Explosion>();
         bgMusic=new AudioPlayer("/Music/08-China-Great-Wall.mp3");
         bossMusic=new AudioPlayer("/Music/Boss.mp3");
-      //  bgMusic.play();
-
-
-
-
-
-
+        bgMusic.play();
 
 
     }
@@ -149,15 +146,12 @@ public class Level1State extends GameState{
         enemies=new ArrayList<Enemy>();
         Point[] myPointArray=new Point[]{
                 new Point(400,100),
-                new Point(840, 10),
-                new Point(1560, 10),
-                new Point(1670, 10),
-                new Point(1800, 10)
+
 
         };
         for(int i=0;i<myPointArray.length;i++)
         {
-            Mushroom m=new Mushroom(tileMap);
+            Mushroom m=new Mushroom(tileMap,player);
             m.setPosition(myPointArray[i].x,myPointArray[i].y);
             enemies.add(m);
         }
@@ -170,6 +164,7 @@ public class Level1State extends GameState{
        tileMap.setPosition(GamePanel.WIDTH/2-player.getx(),GamePanel.HEIGHT/2-player.gety());
 
        player.checkAttack(enemies);
+       player.checkAttack2(Mushroom.projectiles);
        //update all enemies;
         for(int i=0;i<enemies.size();i++)
         {
@@ -196,12 +191,12 @@ public class Level1State extends GameState{
         if(player.getx()==2700) {
             bgMusic.stop();
             if (!bossMusic.hasStopped()) {
-                //bgMusic.stop();
+                bgMusic.stop();
 
             }
             else
             {
-                //bossMusic.play();
+                bossMusic.play();
             }
 
         }
@@ -210,10 +205,10 @@ public class Level1State extends GameState{
             bgMusic.stop();
             bossMusic.play();
         }
-        if(player.getHealth()==0 )
+        if(player.isDead())
         {
             bgMusic.stop();
-            if(player.switchState ||player.Gol)
+            if(player.getSwitchState() ||player.getVoid())
                 gsm.setState(GameStateManager.GAMEOVERSTATE);
         }
     }
@@ -240,8 +235,7 @@ public class Level1State extends GameState{
         //draw explotions
         for(int i=0;i<explosions.size();i++)
         {
-            explosions.get(i).setMapPosition(
-                    (int)tileMap.getx(), (int)tileMap.gety());
+            explosions.get(i).setMapPosition((int)tileMap.getx(), (int)tileMap.gety());
             explosions.get(i).draw(g);
         }
 

@@ -1,4 +1,4 @@
-package Entity;
+package Forest;
 
 import Main.GamePanel;
 

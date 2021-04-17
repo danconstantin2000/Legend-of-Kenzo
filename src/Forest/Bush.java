@@ -1,10 +1,10 @@
-package Entity;
+package Forest;
 
+
+import Forest.ForestThings;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 
 public class Bush extends ForestThings {
 

@@ -1,5 +1,4 @@
 package TileMap;
-import Entity.Tree;
 import Main.GamePanel;
 
 import java.awt.*;
