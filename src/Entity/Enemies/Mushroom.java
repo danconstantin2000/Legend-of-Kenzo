@@ -12,13 +12,14 @@ import java.awt.image.BufferedImage;
 import java.nio.Buffer;
 import java.util.ArrayList;
 
+import static java.lang.Math.abs;
+
 public class Mushroom extends Enemy {
     private AudioPlayer sfx;
-    public static ArrayList<MushroomProjectile> projectiles;
     private BufferedImage[]sprites;
-
     private Player myPlayer;
-    public Mushroom(TileMap tm, Player p)
+
+    public Mushroom(TileMap tm,Player p)
     {
 
         super(tm);
@@ -32,7 +33,8 @@ public class Mushroom extends Enemy {
         cwidth=20;
         cheight=15;
         myPlayer=p;
-        health=maxHealth=2;
+
+        health=maxHealth=5;
         damage=1;
         try{
             BufferedImage spritesheet= ImageIO.read(getClass().getResourceAsStream("/Sprites/Enemies/Mushroom.png"));
@@ -49,11 +51,11 @@ public class Mushroom extends Enemy {
         }
         animation=new Animation();
         animation.setFrames(sprites);
-        animation.setDelay(150);
+        animation.setDelay(100);
         left=false;
         right=false;
         sfx=new AudioPlayer("/SFX/Bomb-Explosion.mp3");
-        projectiles=new ArrayList<MushroomProjectile>();
+
 
 
     }
@@ -75,36 +77,32 @@ public class Mushroom extends Enemy {
         checkTileMapCollision();
         setPosition(xtemp,ytemp);
         //check flinching
+        if(myPlayer.getx()>this.x)
+        {
+            facingRight=true;
+        }
+
         if(animation.hasPlayedOnce())
         {
-            if(this.x-myPlayer.getx()<200) {
+            MushroomProjectile mp;
+            if(abs(this.x-myPlayer.getx())<150) {
 
-                MushroomProjectile mp = new MushroomProjectile(tileMap, false, myPlayer);
+                if(facingRight) {
+                  mp = new MushroomProjectile(tileMap, true,myPlayer);
+
+                }
+                else
+                {
+                  mp = new MushroomProjectile(tileMap, false,myPlayer);
+
+                }
+
                 mp.setPosition(x, y);
-                projectiles.add(mp);
+                Projectile.projectiles.add(mp);
                 animation.setPlayedOnce(false);
             }
 
         }
-
-        for(int i=0;i<projectiles.size();i++)
-        {
-            projectiles.get(i).update();
-            if(projectiles.get(i).shouldRemove())
-            {
-                projectiles.remove(i);
-            }
-        }
-        for(int i=0;i<projectiles.size();i++)
-        {
-            if(projectiles.get(i).intersects(myPlayer))
-            {
-                projectiles.get(i).setHit();
-                myPlayer.hit(damage);
-            }
-        }
-
-
 
         if(flinching)
         {
@@ -132,10 +130,7 @@ public class Mushroom extends Enemy {
                 return;
             }
         }
-        for(int i=0;i<projectiles.size();i++)
-        {
-            projectiles.get(i).draw(g);
-        }
+
         setMapPosition();
         super.draw(g);
     }

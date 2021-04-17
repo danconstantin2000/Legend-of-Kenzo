@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.Buffer;
 
-public class MushroomProjectile extends MapObject {
+public class MushroomProjectile  extends Projectile{
 
     private boolean hit;
     private boolean remove;
@@ -19,11 +19,11 @@ public class MushroomProjectile extends MapObject {
     private Player myPlayer;
     private int damage;
     private int health;
-    public MushroomProjectile(TileMap tm, boolean right, Player p)
+    public MushroomProjectile(TileMap tm, boolean right,Player p)
     {
 
         super(tm);
-        moveSpeed=1;
+        moveSpeed=2.25;
         facingRight=right;
         if(right)
         {
@@ -37,10 +37,11 @@ public class MushroomProjectile extends MapObject {
         width=50;
         height=50;
         cwidth=14;
-        cheight=14;
-        myPlayer=p;
-        health=1;
+        cheight=15;
 
+        health=1;
+        damage=1;
+        myPlayer=p;
         try
         {
             BufferedImage spritesheet= ImageIO.read(getClass().getResourceAsStream("/Sprites/Enemies/MushroomProj.png"));
@@ -65,6 +66,11 @@ public class MushroomProjectile extends MapObject {
         }
 
     }
+    public int getDamage()
+    {
+        return damage;
+    }
+
     public void hit(int damage)
     {
         health-=damage;
@@ -98,6 +104,10 @@ public class MushroomProjectile extends MapObject {
         if(x<0)
         {
             x=0;
+            setHit();
+        }
+        if(x-myPlayer.getx()>300 || myPlayer.getx()-x>300)
+        {
             setHit();
         }
         animation.update();

@@ -2,6 +2,7 @@ package Entity;
 
 import Audio.AudioPlayer;
 import Entity.Enemies.MushroomProjectile;
+import Entity.Enemies.Projectile;
 import Main.GamePanel;
 import TileMap.*;
 
@@ -62,7 +63,7 @@ public class Player extends MapObject {
         width = 200;
         height = 200 ;
         cwidth =20;
-        cheight =27;
+        cheight =29;
 
         moveSpeed = 0.3;
         maxSpeed = 1.6;
@@ -80,7 +81,7 @@ public class Player extends MapObject {
         energyCost = 500;
         smallAttackDamage = 1;
         smallAttackRange=100;
-        longAttackDamage = 8;
+        longAttackDamage = 4;
         longAttackRange = 100;
         score=0;
         // load sprites
@@ -161,10 +162,10 @@ public class Player extends MapObject {
     public void setLongAttacking(boolean b) {
         longAttacking=b;
     }
-    public void checkAttack2(ArrayList<MushroomProjectile> projectiles)
+    public void checkAttack2(ArrayList<Projectile> projectiles)
     {
         for(int i=0;i<projectiles.size();i++) {
-            MushroomProjectile mp = projectiles.get(i);
+            Projectile mp = projectiles.get(i);
             //long attack
             if (longAttacking) {
                 if (facingRight) {
@@ -199,7 +200,11 @@ public class Player extends MapObject {
                 //check enemy collision
 
             }
-
+            if(intersects(mp))
+            {
+                Projectile.projectiles.get(i).setHit();
+                hit(mp.getDamage());
+            }
         }
     }
 
@@ -500,23 +505,32 @@ public class Player extends MapObject {
     }
     private void drawCorectly()
     {
+
         if(smallAttacking)
         {
             LongAttack=false;
             SmallAttack=true;
-
+            LeftDead=false;
         }
         else if(longAttacking)
         {
             LongAttack=true;
             SmallAttack=false;
+            LeftDead=false;
 
+        }
+        else if(dead)
+        {
+            LongAttack=false;
+            SmallAttack=false;
+            LeftDead=true;
         }
         else
         {
 
             LongAttack=false;
             SmallAttack=false;
+            LeftDead=false;
         }
 
     }
