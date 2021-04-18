@@ -33,7 +33,7 @@ public class GameOverState extends GameState{
         font=new Font("Courier New",Font.PLAIN,12);
     }
     public void update(){
-        bg.update();
+
     }
     public void draw(Graphics2D g){
         //draw bg

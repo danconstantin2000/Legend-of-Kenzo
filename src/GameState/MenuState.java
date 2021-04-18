@@ -49,7 +49,6 @@ public class MenuState extends GameState{
         font=new Font("Courier New",Font.PLAIN,12);
     }
     public void update(){
-        bg.update();
     }
     public void draw(Graphics2D g){
         //draw bg
@@ -58,7 +57,6 @@ public class MenuState extends GameState{
         g.setColor(titleColor);
         g.setFont(titleFont);
         g.drawString("The legend of Kenzo",70,70);
-
 
         //optiune selectata-->albastra
         //optiune neselectata-->neagra
@@ -83,11 +81,12 @@ public class MenuState extends GameState{
         //In functie de optiune,putem face trecerea la un nou state etc;
         if(currentChoice==0)
         {
+            //LoadingState-->lanseaza in executiel level1 state.
             gsm.setState(GameStateManager.LOADINGSTATE);
         }
         if(currentChoice==1)
         {
-            //
+
         }
         if(currentChoice==2)
         {

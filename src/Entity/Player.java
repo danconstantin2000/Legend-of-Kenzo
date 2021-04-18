@@ -5,16 +5,16 @@ import Entity.Enemies.MushroomProjectile;
 import Entity.Enemies.Projectile;
 import Main.GamePanel;
 import TileMap.*;
-
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
+//Clasa personajului principal(Kenzo)
 public class Player extends MapObject {
 
-    // player's info
+    //informatii player
     private int health;
     private int maxHealth;
     private int energy;
@@ -22,28 +22,29 @@ public class Player extends MapObject {
     private boolean dead;
     private boolean flinching;
     private long flinchTimer;
-
-    // long Attack
+    //longAttack
     private boolean longAttacking;
     private int energyCost;
     private int longAttackDamage;
     private int longAttackRange;
-    //small Attack
+    //smallAttack
     private boolean smallAttacking;
     private int smallAttackDamage;
     private int smallAttackRange;
-    public int score;
+
+    //Variabila pentru a verifica necesitatea de a trece la gameoverState
     private  boolean switchState;
+    //variabila pentru a verifica caderea in gol
     private boolean Void;
 
 
-    // animations
+    // spritesheet
     private ArrayList<BufferedImage[]> sprites;
     private final int[] numFrames = {
-            6, 6, 6, 2, 8, 2,8,4
+            6, 6, 6, 2, 8, 2,8
     };
 
-    // animation actions
+    //Animatii spritesheet
     private static final int LONGATTACK = 0;
     private static final int SMALLATTACK=1;
     private static final int DEATH = 2;
@@ -51,20 +52,17 @@ public class Player extends MapObject {
     private static final int IDLE=4;
     private static final int JUMPING=5;
     private static final int RUNNING=6;
-    private static final int TAKEHIT=7;
-
     private HashMap<String, AudioPlayer> sfx;
-
-
+    //constructor
     public Player(TileMap tm) {
-
         super(tm);
-
+        //inaltime si latime de citire din spritesheet
         width = 200;
-        height = 200 ;
+        height = 200;
+        //inatime si latime de coliziune
         cwidth =20;
         cheight =29;
-
+        //atributii
         moveSpeed = 0.3;
         maxSpeed = 1.6;
         stopSpeed = 0.4;
@@ -72,9 +70,7 @@ public class Player extends MapObject {
         maxFallSpeed = 4.0;
         jumpStart = -3;
         stopJumpSpeed = 0.3;
-
         facingRight = true;
-
         health = maxHealth = 5;
         energy = maxEnergy = 2500;
         dead=false;
@@ -83,8 +79,8 @@ public class Player extends MapObject {
         smallAttackRange=100;
         longAttackDamage = 4;
         longAttackRange = 100;
-        score=0;
-        // load sprites
+        Score=0;
+        // Incarca sprite-urile
         try {
 
             BufferedImage spritesheet = ImageIO.read(
@@ -94,7 +90,7 @@ public class Player extends MapObject {
             );
 
             sprites = new ArrayList<BufferedImage[]>();
-            for(int i = 0; i < 8; i++) {
+            for(int i = 0; i < 7; i++) {
 
                 BufferedImage[] bi =
                         new BufferedImage[numFrames[i]];
@@ -107,9 +103,7 @@ public class Player extends MapObject {
                                 width,
                                 height);
                     }
-
                 sprites.add(bi);
-
             }
 
         }
@@ -130,25 +124,8 @@ public class Player extends MapObject {
         sfx.put("hero_take_dmg",new AudioPlayer("/SFX/Hero_TakesDMG.wav"));
 
     }
-    public boolean isSmallAttacking()
-    {
-        return smallAttacking;
-    }
-    public boolean isLongAttacking()
-    {
-        return longAttacking;
-    }
 
-    public boolean isFacingRight()
-    {
-        return facingRight;
-    }
-    public int getLongAttackRange()
-    {
-        return longAttackRange;
-    }
-
-
+    //getters
     public boolean getVoid(){return Void;}
     public boolean getSwitchState(){return switchState;}
     public boolean isDead(){return dead;}
@@ -156,50 +133,52 @@ public class Player extends MapObject {
     public int getMaxHealth() { return maxHealth; }
     public int getEnergy() { return energy; }
     public int getMaxEnergy() { return maxEnergy; }
+    //setters
     public void setSmallAttacking(boolean b) {
         smallAttacking = b;
     }
     public void setLongAttacking(boolean b) {
         longAttacking=b;
     }
+    //Verifica atacul dintre player-proiectila ,proiectila-player
     public void checkAttack2(ArrayList<Projectile> projectiles)
     {
         for(int i=0;i<projectiles.size();i++) {
             Projectile mp = projectiles.get(i);
-            //long attack
+            //Cand ia proiectila damage.
+            //Daca playerul folosest longattack-ul:
             if (longAttacking) {
                 if (facingRight) {
+                    //Daca proiectila este la dreapta player-ului,dar este in range-ul atacului,inseamna ca acesta s-a produs.
                     if (mp.getx() > x && mp.getx() < x + longAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
                         mp.hit(longAttackDamage);
                         sfx.get("enemy_take_dmg").play();
-
                     }
                 } else {
-                    if (mp.getx() < x && mp.getx() > x - longAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
 
+                    if (mp.getx() < x && mp.getx() > x - longAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
                         mp.hit(longAttackDamage);
                         sfx.get("enemy_take_dmg").play();
-
                     }
                 }
+                //Daca Playerul foloseste smallattack-ul:
             } else if (smallAttacking) {
                 if (facingRight) {
+                    //Daca proiectila este la dreapta player-ului,dar este in range-ul atacului,inseamna ca acesta s-a produs.
                     if (mp.getx() > x && mp.getx() < x + smallAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
                         mp.hit(smallAttackDamage);
                         sfx.get("enemy_take_dmg").play();
-
                     }
                 } else {
+                    //Daca proiectila este la stanga playerului in timp ce el priveste spre stanga,dar este in range-ul atacului,inseamna ca acesta s-a produs.
                     if (mp.getx() < x && mp.getx() > x - smallAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
-
                         mp.hit(smallAttackDamage);
                         sfx.get("enemy_take_dmg").play();
-
                     }
                 }
-                //check enemy collision
-
             }
+            //Cand ia playerul damage:
+            //Daca playerul se intersecteaza cu proiectila,aceasta se distruge si ia din viata playerului.
             if(intersects(mp))
             {
                 Projectile.projectiles.get(i).setHit();
@@ -207,7 +186,7 @@ public class Player extends MapObject {
             }
         }
     }
-
+//Similar ca atacul cu proiectile dar este cu inamici
     public void checkAttack(ArrayList<Enemy> enemies)
     {
         for(int i=0;i<enemies.size();i++) {
@@ -243,12 +222,10 @@ public class Player extends MapObject {
 
                     }
                 }
-                //check enemy collision
 
             }
             if(intersects(e))
             {
-
                 hit(e.getDamage());
 
             }
@@ -257,6 +234,7 @@ public class Player extends MapObject {
 
 
     }
+    //Playerul a fost nimerit
     public void hit(int damage)
     {
         if(flinching)return;
@@ -268,46 +246,44 @@ public class Player extends MapObject {
         flinching=true;
         flinchTimer=System.nanoTime();
     }
-
+//La fiecare longAttack,se scade 500 din totalul de 2500 de energie.Aceasta se incarca inapoi treptat.
     public void EnergyActions()
     {
         if(longAttacking) {
 
             if (energy < energyCost) {
                 longAttacking = false;
-
             }
-
-
             if (energy < 0) {
                 energy = 0;
             }
-
         }
         if (energy > maxEnergy) {
             energy = maxEnergy;
         }
-
         energy++;
-
     }
 
     private void getNextPosition() {
 
-        // movement
+        //Daca se apasa sageata stanga playerul se misca inapoi pe harta.
         if(left) {
             dx -= moveSpeed;
+            //Se atinge viteza maxima treptat si aceasta nu mai poate fi depasita.
             if(dx < -maxSpeed) {
                 dx = -maxSpeed;
             }
         }
+        //Daca se apasa sageata dreapta ,playerul se misca in fata.
         else if(right) {
             dx += moveSpeed;
+            //Se atinge viteza maxima treptat si aceasta nu mai poate fi depasita.
             if(dx > maxSpeed) {
                 dx = maxSpeed;
             }
         }
         else {
+            //Daca tasta nu mai este apasata,playerul nu se mai poate misca si trebuie incetinit
             if(dx > 0) {
                 dx -= stopSpeed;
                 if(dx < 0) {
@@ -322,30 +298,25 @@ public class Player extends MapObject {
             }
         }
 
-        // cannot move while attacking, except in air
-        if(
-                (currentAction == SMALLATTACK|| currentAction == LONGATTACK) &&
-                        !(jumping || falling)) {
+        //In timp ce playerul ataca si nu se afla in aer,el nu se poate misca.
+        if((currentAction == SMALLATTACK|| currentAction == LONGATTACK) && !(jumping || falling)) {
             dx = 0;
         }
-
-        // jumping
+        //Daca playerul sare,trebuie setata si aterizarea.
         if(jumping && !falling) {
             dy = jumpStart;
             falling = true;
         }
 
-        // falling
+        // Playerul aterizeaza cu viteza fallSpeed.
         if(falling) {
-
             dy += fallSpeed ;
-
-
+            //Daca dy>0,acesta nu mai poate sari.
             if(dy > 0) jumping = false;
+            //Daca playerul se afla in aer ,el aterizeaza cu viteza stopJumpSpeed.
             if(dy < 0 && !jumping) dy += stopJumpSpeed;
-
+            //Cand atinge viteza maxFallSpeed,acesta nu o poate depasi.
             if(dy > maxFallSpeed) dy = maxFallSpeed;
-
         }
 
 
@@ -361,8 +332,10 @@ public class Player extends MapObject {
             }
         }
     }
+    //Daca animatia pentru atac s-a terminat,s-a terminat si atacul.
     private void turnOffAttacks()
     {
+
         if(currentAction==LONGATTACK)
         {
             if(animation.hasPlayedOnce())
@@ -370,7 +343,6 @@ public class Player extends MapObject {
                 energy=energy-energyCost;
                 longAttacking=false;
                 sfx.get("longattack").stop();
-
             }
         }
         if(currentAction==SMALLATTACK)
@@ -379,15 +351,14 @@ public class Player extends MapObject {
             {
                 smallAttacking=false;
                 sfx.get("smallattack").stop();
-
             }
         }
     }
+    //Calcul pentru incetarea Flinching-ului(Cand un obiect ia damage,acesta are flinching-ul activat)
     private void turnOffFlinching()
     {
         if(flinching)
         {
-
             long elapsed=(System.nanoTime()-flinchTimer)/1000000;
             if(elapsed>1000)
             {
@@ -395,155 +366,97 @@ public class Player extends MapObject {
             }
         }
     }
+    //Setaria animatiilor din spritesheet.In functie de setarea actiunii,sprite-ul corespuznator se va actualiza pe ecran.
     private void setAnimations()
     {
-        // set animation
-
-        if(longAttacking) {
-
-
-            if(currentAction != LONGATTACK) {
-                sfx.get("longattack").play();
-                currentAction = LONGATTACK;
-                animation.setFrames(sprites.get(LONGATTACK));
-                animation.setDelay(50);
-                width =200;
-                height=185;
+            if(longAttacking) {
+                if(currentAction != LONGATTACK) {
+                    sfx.get("longattack").play();
+                    currentAction = LONGATTACK;
+                    animation.setFrames(sprites.get(LONGATTACK));
+                    animation.setDelay(50);
 
 
+                }
             }
+            else if(smallAttacking) {
+                if(currentAction != SMALLATTACK) {
+                    sfx.get("smallattack").play();
+                    currentAction = SMALLATTACK;
+                    animation.setFrames(sprites.get(SMALLATTACK));
+                    animation.setDelay(30);
 
-        }
-        else if(smallAttacking) {
 
-            if(currentAction != SMALLATTACK) {
-                sfx.get("smallattack").play();
-                currentAction = SMALLATTACK;
-                animation.setFrames(sprites.get(SMALLATTACK));
-                animation.setDelay(30);
-                width =200; //30;
-                height=190;
-
+                }
             }
-
-        }
-        else if(dy > 0)
-        {
-            if(currentAction != FALLING) {
-                currentAction = FALLING;
-                animation.setFrames(sprites.get(FALLING));
-                animation.setDelay(100);
-                width = 200;
-                height=200;
-
-            }
-        }
-        else if(dy < 0) {
-
-            if(currentAction != JUMPING) {
-                sfx.get("jump").play();
-                currentAction = JUMPING;
-                animation.setFrames(sprites.get(JUMPING));
-                animation.setDelay(-1);
-                width = 200;//30;
-                height=200;
-
-            }
-        }
-        else if(left || right) {
-
-            if(currentAction != RUNNING) {
-                currentAction = RUNNING;
-                animation.setFrames(sprites.get(RUNNING));
-                animation.setDelay(40);
-                width = 200;//30
-                height=200;
-
-            }
-        }
-        else  if(dead)
-        {
-
-            if(currentAction!=DEATH)
+            else if(dy > 0)
             {
+                if(currentAction != FALLING) {
+                    currentAction = FALLING;
+                    animation.setFrames(sprites.get(FALLING));
+                    animation.setDelay(100);
 
-                sfx.get("herodeath").play();
-                currentAction=DEATH;
-                animation.setFrames(sprites.get(DEATH));
-                animation.setDelay(400);
-                width=200;
-                height=190;
-
-
+                }
             }
+            else if(dy < 0) {
+                if(currentAction != JUMPING) {
+                    sfx.get("jump").play();
+                    currentAction = JUMPING;
+                    animation.setFrames(sprites.get(JUMPING));
+                    animation.setDelay(-1);
 
-        }else
-        {
-
-            if(currentAction != IDLE) {
-                currentAction = IDLE;
-                animation.setFrames(sprites.get(IDLE));
-                animation.setDelay(150);
-                width = 200;//30;
-                height=200;
-
+                }
             }
-        }
+            else if(left || right) {
+                if(currentAction != RUNNING) {
+                    currentAction = RUNNING;
+                    animation.setFrames(sprites.get(RUNNING));
+                    animation.setDelay(40);
 
+                }
+            }
+            else  if(dead)
+            {
+                if(currentAction!=DEATH)
+                {
+                    sfx.get("herodeath").play();
+                    currentAction=DEATH;
+                    animation.setFrames(sprites.get(DEATH));
+                    animation.setDelay(400);
 
+                }
+            }else
+            {
+                if(currentAction != IDLE) {
+                    currentAction = IDLE;
+                    animation.setFrames(sprites.get(IDLE));
+                    animation.setDelay(150);
+
+                }
+            }
 
     }
+    //Setaria directiei dreapta-stanga.
     private void setDirection()
     {
-        // set direction
-        if(currentAction !=LONGATTACK && currentAction !=SMALLATTACK) {
+
             if(right) facingRight = true;
             if(left) {
                 facingRight = false;
             }
-        }
     }
-    private void drawCorectly()
-    {
 
-        if(smallAttacking)
-        {
-            LongAttack=false;
-            SmallAttack=true;
-            LeftDead=false;
-        }
-        else if(longAttacking)
-        {
-            LongAttack=true;
-            SmallAttack=false;
-            LeftDead=false;
 
-        }
-        else if(dead)
-        {
-            LongAttack=false;
-            SmallAttack=false;
-            LeftDead=true;
-        }
-        else
-        {
-
-            LongAttack=false;
-            SmallAttack=false;
-            LeftDead=false;
-        }
-
-    }
     private void voidFall()
     {
-        if( y > GamePanel.HEIGHT-cheight)
+        //Metoda pentru verificarea iesirii de pe ecran cand playerul cade in gol.
+        if(  y+ymap+cheight> GamePanel.HEIGHT)
         {
+
             dead=true;
             Void=true;
-
         }
     }
-
 
     public void update() {
 
@@ -557,7 +470,6 @@ public class Player extends MapObject {
         turnOffFlinching();
         setAnimations();
         setDirection();
-        drawCorectly();
         animation.update();
         voidFall();
 
@@ -577,7 +489,90 @@ public class Player extends MapObject {
             }
         }
 
-        super.draw(g);
+        if (facingRight) {
+            if(longAttacking)
+            {
+                g.drawImage(
+                        animation.getImage(),
+                        (int) (x + xmap - width / 2),
+                        (int) (y + ymap - height / 2 - 9),
+                        width
+                        , height,
+                        null
+                );
+            }
+            else if(smallAttacking)
+            {
+                g.drawImage(
+                        animation.getImage(),
+                        (int) (x + xmap - width / 2),
+                        (int) (y + ymap - height / 2 -11),
+                        width
+                        , height,
+                        null
+                );
+            }else if(dead)
+            {
+                g.drawImage(
+                        animation.getImage(),
+                        (int) (x + xmap - width / 2),
+                        (int) (y + ymap - height / 2 -11),
+                        width
+                        , height,
+                        null);
+            }else {
+                g.drawImage(
+                        animation.getImage(),
+                        (int) (x + xmap - width / 2),
+                        (int) (y + ymap - height / 2 - 17),
+                        width
+                        , height,
+                        null
+                );
+            }
+        }
+        else
+        {
+            if(longAttacking)
+            {
+                g.drawImage(
+                        animation.getImage(),
+                        (int) (x + xmap - width / 2+width),
+                        (int) (y + ymap - height / 2 - 9),
+                        -width
+                        , height,
+                        null
+                );
+            }
+            else if(smallAttacking) {
+                g.drawImage(
+                        animation.getImage(),
+                        (int) (x + xmap - width / 2+width),
+                        (int) (y + ymap - height / 2 - 11),
+                        -width
+                        , height,
+                        null
+                );
+            }else if(dead)
+            {
+                g.drawImage(
+                        animation.getImage(),
+                        (int) (x + xmap - width / 2+width),
+                        (int) (y + ymap - height / 2 -11),
+                        -width
+                        , height,
+                        null);
+            }
+           else g.drawImage(
+                    animation.getImage(),
+                    (int) (x + xmap - width / 2 + width),
+                    (int) (y + ymap - height / 2 -17 ),
+                    -width,
+                    height,
+                    null
+            );
+
+        }
 
     }
 

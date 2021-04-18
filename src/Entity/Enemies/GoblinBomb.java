@@ -27,7 +27,7 @@ public class GoblinBomb  extends Projectile{
     {
 
         super(tm);
-        moveSpeed=2.2;
+        moveSpeed=2.5;
         facingRight=right;
         if(right)
         {
@@ -92,7 +92,7 @@ public class GoblinBomb  extends Projectile{
         if(hit)return;
         hit=true;
         animation.setFrames(hitSprites);
-        animation.setDelay(120);
+        animation.setDelay(40);
         dx=0;
 
     }
@@ -127,6 +127,10 @@ public class GoblinBomb  extends Projectile{
                 dy+=fallSpeed;
             }
         }
+        if(abs(x-myPlayer.getx())>200)
+        {
+            setHit();
+        }
 
         animation.update();
 
@@ -138,7 +142,9 @@ public class GoblinBomb  extends Projectile{
             g.drawImage(
                     animation.getImage(),
                     (int) (x + xmap - width / 2),
-                    (int) (y + ymap - height / 2),
+                    (int) (y + ymap - height / 2-17),
+                    width
+                    ,height,
                     null
             );
         }
@@ -148,7 +154,7 @@ public class GoblinBomb  extends Projectile{
             g.drawImage(
                     animation.getImage(),
                     (int) (x + xmap - width / 2 + width),
-                    (int) (y + ymap - height / 2  ),
+                    (int) (y + ymap - height / 2 -17 ),
                     -width,
                     height,
                     null

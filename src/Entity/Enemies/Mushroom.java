@@ -33,7 +33,7 @@ public class Mushroom extends Enemy {
         cwidth=20;
         cheight=15;
         myPlayer=p;
-
+        Score=500;
         health=maxHealth=5;
         damage=1;
         try{
@@ -81,29 +81,29 @@ public class Mushroom extends Enemy {
         {
             facingRight=true;
         }
-
-        if(animation.hasPlayedOnce())
+        else
         {
-            MushroomProjectile mp;
-            if(abs(this.x-myPlayer.getx())<150) {
+            facingRight=false;
+        }
+        if(abs(this.x-myPlayer.getx())<200) {
+            animation.update();
+            if (animation.hasPlayedOnce()) {
+                MushroomProjectile mp;
 
-                if(facingRight) {
-                  mp = new MushroomProjectile(tileMap, true,myPlayer);
+                if (facingRight) {
+                    mp = new MushroomProjectile(tileMap, true, myPlayer);
 
-                }
-                else
-                {
-                  mp = new MushroomProjectile(tileMap, false,myPlayer);
+                } else {
+                    mp = new MushroomProjectile(tileMap, false, myPlayer);
 
                 }
 
                 mp.setPosition(x, y);
                 Projectile.projectiles.add(mp);
                 animation.setPlayedOnce(false);
+
             }
-
         }
-
         if(flinching)
         {
 
@@ -118,7 +118,7 @@ public class Mushroom extends Enemy {
             {
                 sfx.play();
             }
-            animation.update();
+
     }
     public void draw(Graphics2D g)
     {

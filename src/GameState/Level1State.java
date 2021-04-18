@@ -11,7 +11,6 @@ import Forest.Ruin;
 import Forest.Tree;
 import Main.GamePanel;
 import TileMap.TileMap;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -33,16 +32,12 @@ public class Level1State extends GameState{
     {
         this.gsm=gsm;
         init();
-
     }
-
-
     public void init() {
         tileMap=new TileMap(16);
         tileMap.loadTiles("/Tilesets/tileset.png");
         tileMap.loadMap("/Maps/Level1.map");
         tileMap.setPosition(0,0);
-
         this.bg=new Background("/Backgrounds/BG9.png");
         player=new Player(tileMap);
         player.setPosition(100,100);
@@ -54,13 +49,12 @@ public class Level1State extends GameState{
         bossMusic=new AudioPlayer("/Music/Boss.mp3");
         bgMusic.play();
         Projectile.projectiles=new ArrayList<Projectile>();
-
     }
 
+    //Metoda ce populeaza harta cu ruine,copaci,tufisuri..
     private void populatetrees()
     {
         forest=new ArrayList<ForestThings>();
-
         Point[] myPointArrayTrees=new Point[]{
                 new Point(100,100),
                 new Point(30,100),
@@ -98,10 +92,6 @@ public class Level1State extends GameState{
                 new Point(2800, 67),
                 new Point(2870, 67),
                 new Point(2940, 67),
-
-
-
-
 
         };
         for(int i=0;i<myPointArrayTrees.length;i++)
@@ -143,6 +133,7 @@ public class Level1State extends GameState{
 
 
     }
+    //Metoda ce populeaza harta cu inamici precum ciuperca,gobin etc
     private void populateEnemies()
     {
         enemies=new ArrayList<Enemy>();
@@ -151,15 +142,13 @@ public class Level1State extends GameState{
                 new Point(840, 10),
                 new Point(1200, 10),
                 new Point(1430, 10),
-
                 new Point(1560, 10),
                 new Point(2200,10),
                 new Point(2400,10)
-
         };
         Point[] myPointArray2=new Point[]{
                 new Point(600,30),
-                new Point(1100,30),
+                new Point(1050,30),
                 new Point(1750, 10),
                 new Point(1900,10),
                 new Point(2640,10),
@@ -179,42 +168,13 @@ public class Level1State extends GameState{
         }
     }
 
-
-    public void update() {
-    //update palyer
-        player.update();
-       tileMap.setPosition(GamePanel.WIDTH/2-player.getx(),GamePanel.HEIGHT/2-player.gety());
-
-       player.checkAttack(enemies);
-       player.checkAttack2(Projectile.projectiles);
-       //update all enemies;
-        for(int i=0;i<enemies.size();i++)
-        {
-            Enemy e=enemies.get(i);
-            e.update();
-            if(e.isDead())
-            {
-                player.score=player.score+500;
-                enemies.remove(i);
-                i--;
-                explosions.add(new Explosion(e.getx(),e.gety()));
-            }
-        }
-        for(int i=0;i<explosions.size();i++)
-        {
-            explosions.get(i).update();
-            if(explosions.get(i).shouldRemove())
-            {
-                explosions.remove(i);
-                i--;
-            }
-        }
-
+    //Metode de update
+    private void musicThings()
+    {
         if(player.getx()==2700) {
             bgMusic.stop();
             if (!bossMusic.hasStopped()) {
                 bgMusic.stop();
-
             }
             else
             {
@@ -231,12 +191,42 @@ public class Level1State extends GameState{
             bgMusic.stop();
             bossMusic.play();
         }
+    }
+    private void updateAllEnemies()
+    {
+        for(int i=0;i<enemies.size();i++)
+        {
+            Enemy e=enemies.get(i);
+            e.update();
+            if(e.isDead())
+            {
+                player.Score=player.Score+e.getScore();
+                enemies.remove(i);
+                i--;
+                explosions.add(new Explosion(e.getx(),e.gety()));
+            }
+        }
+        for(int i=0;i<explosions.size();i++)
+        {
+            explosions.get(i).update();
+            if(explosions.get(i).shouldRemove())
+            {
+                explosions.remove(i);
+                i--;
+            }
+        }
+    }
+    private void GameOver()
+    {
         if(player.isDead())
         {
             bgMusic.stop();
+            bossMusic.stop();
             if(player.getSwitchState() ||player.getVoid())
                 gsm.setState(GameStateManager.GAMEOVERSTATE);
         }
+    }
+    private void updateAllProjectiles(){
         for(int i=0;i<Projectile.projectiles.size();i++)
         {
             Projectile.projectiles.get(i).update();
@@ -245,24 +235,41 @@ public class Level1State extends GameState{
                 Projectile.projectiles.remove(i);
             }
         }
+    }
+    /*Metoda de update care:
+        -actualizeaza starea player-ului
+        -actualizeaza harta
+        -verifica atacurile dintre player-inamic,player-proiectila
+        -actualizeaza inamicii
+        -actualizeaza proiectilele
+        -actualizeaza sunetele
+
+     */
+    public void update() {
+
+        player.update();
+        tileMap.setPosition(GamePanel.WIDTH/2-player.getx(),GamePanel.HEIGHT/2-player.gety());
+        player.checkAttack(enemies);
+        player.checkAttack2(Projectile.projectiles);
+        updateAllEnemies();
+        musicThings();
+        GameOver();
+        updateAllProjectiles();
 
     }
 
 
-    public void draw(Graphics2D g) {
-        //clear screen;
-
-        bg.draw(g);
-        tileMap.draw(g);
+    //Metode de draw
+    private void drawForest(Graphics2D g)
+    {
         for(int i=0;i<forest.size();i++)
         {
             forest.get(i).setMapPosition((int)tileMap.getx(),(int)tileMap.gety());
             forest.get(i).draw(g);
-
         }
-
-        player.draw(g);
-        //draw enemies;
+    }
+    private void drawEnemies(Graphics2D g)
+    {
         for(int i=0;i<enemies.size();i++)
         {
             enemies.get(i).draw(g);
@@ -273,14 +280,25 @@ public class Level1State extends GameState{
             explosions.get(i).setMapPosition((int)tileMap.getx(), (int)tileMap.gety());
             explosions.get(i).draw(g);
         }
-
-        hud.draw(g);
-        g.drawString(player.getx()+"/"+player.gety()+"/"+ player.score,200,12);
+    }
+    private void drawProjectiles(Graphics2D g)
+    {
         for(int i=0;i<Projectile.projectiles.size();i++)
         {
             Projectile.projectiles.get(i).draw(g);
         }
 
+    }
+    public void draw(Graphics2D g) {
+
+        bg.draw(g);
+        tileMap.draw(g);
+        drawForest(g);
+        player.draw(g);
+        drawEnemies(g);
+        hud.draw(g);
+        g.drawString("Score:"+ player.Score,230,12);
+        drawProjectiles(g);
     }
 
 

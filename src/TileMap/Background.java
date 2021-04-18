@@ -1,10 +1,10 @@
 package TileMap;
-import Main.Game;
-import Main.GamePanel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
+
+//Backgroun class-->Background pentru state-uri
 public class Background {
     private BufferedImage image;
     private double x;

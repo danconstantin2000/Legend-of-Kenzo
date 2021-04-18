@@ -33,7 +33,7 @@ public class Goblin extends Enemy {
         cwidth=20;
         cheight=15;
         myPlayer=p;
-
+        Score=750;
         health=maxHealth=8;
         damage=1;
         try{
@@ -51,7 +51,7 @@ public class Goblin extends Enemy {
         }
         animation=new Animation();
         animation.setFrames(sprites);
-        animation.setDelay(100);
+        animation.setDelay(150);
         left=false;
         right=false;
         sfx=new AudioPlayer("/SFX/Bomb-Explosion.mp3");
@@ -72,7 +72,6 @@ public class Goblin extends Enemy {
     }
     public void update()
     {
-
         getNextPosition();
         checkTileMapCollision();
         setPosition(xtemp,ytemp);
@@ -80,20 +79,25 @@ public class Goblin extends Enemy {
         {
             facingRight=true;
         }
+        else
+        {
+            facingRight=false;
+        }
         if(abs(this.x-myPlayer.getx())<200) {
             animation.update();
+
             GoblinBomb gb;
 
             if (animation.hasPlayedOnce()) {
 
                     if(facingRight)
                     {
-                         gb = new GoblinBomb(tileMap, true, myPlayer, this.x);
+                       gb = new GoblinBomb(tileMap, true, myPlayer, this.x);
 
                     }
                     else
                     {
-                        gb = new GoblinBomb(tileMap, false, myPlayer, this.x);
+                       gb = new GoblinBomb(tileMap, false, myPlayer, this.x);
                     }
                     gb.setPosition(x, y);
                     Projectile.projectiles.add(gb);

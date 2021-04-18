@@ -10,6 +10,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.Buffer;
 
+import static java.lang.Math.abs;
+
 public class MushroomProjectile  extends Projectile{
 
     private boolean hit;
@@ -106,7 +108,7 @@ public class MushroomProjectile  extends Projectile{
             x=0;
             setHit();
         }
-        if(x-myPlayer.getx()>300 || myPlayer.getx()-x>300)
+        if(abs(x-myPlayer.getx())>200)
         {
             setHit();
         }
@@ -120,7 +122,9 @@ public class MushroomProjectile  extends Projectile{
             g.drawImage(
                     animation.getImage(),
                     (int) (x + xmap - width / 2),
-                    (int) (y + ymap - height / 2),
+                    (int) (y + ymap - height / 2-17),
+                    width
+                    ,height,
                     null
             );
         }
@@ -130,7 +134,7 @@ public class MushroomProjectile  extends Projectile{
             g.drawImage(
                     animation.getImage(),
                     (int) (x + xmap - width / 2 + width),
-                    (int) (y + ymap - height / 2  ),
+                    (int) (y + ymap - height / 2 -17 ),
                     -width,
                     height,
                     null

@@ -65,7 +65,7 @@ public abstract class MapObject {
     protected double maxFallSpeed;
     protected double jumpStart;
     protected double stopJumpSpeed;
-
+    public int Score;
     // constructor
     public MapObject(TileMap tm) {
         tileMap = tm;
@@ -219,40 +219,9 @@ public abstract class MapObject {
             g.drawImage(
                     animation.getImage(),
                     (int) (x + xmap - width / 2),
-                    (int) (y + ymap - height / 2),
-                    null
-            );
-        } else if(SmallAttack) {
-
-            g.drawImage(
-                    animation.getImage(),
-                    (int) (x + xmap - width / 2 + width),
-                    (int) (y + ymap - height / 2  +7),
-                    -width,
-                    height,
-                    null
-            );
-
-        }
-        else if(LongAttack)
-        {
-            g.drawImage(
-                    animation.getImage(),
-                    (int) (x + xmap - width / 2 + width),
-                    (int) (y + ymap - height / 2  +9),
-                    -width,
-                    height,
-                    null
-            );
-        }
-        else if(LeftDead)
-        {
-            g.drawImage(
-                    animation.getImage(),
-                    (int) (x + xmap - width / 2 + width),
-                    (int) (y + ymap - height / 2  +5),
-                    -width,
-                    height,
+                    (int) (y + ymap - height / 2-17),
+                    width
+                    ,height,
                     null
             );
         }
@@ -262,7 +231,7 @@ public abstract class MapObject {
             g.drawImage(
                     animation.getImage(),
                     (int) (x + xmap - width / 2 + width),
-                    (int) (y + ymap - height / 2  ),
+                    (int) (y + ymap - height / 2 -17 ),
                     -width,
                     height,
                     null

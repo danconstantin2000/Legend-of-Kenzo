@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+//Clasa abstracta pentru obiecte de decor a padurii(copaci,ruine,tufisuri)
 public abstract class ForestThings {
 
     protected BufferedImage image;
@@ -13,11 +14,8 @@ public abstract class ForestThings {
     protected int y;
     protected int xmap;
     protected int ymap;
-
     protected int width;
     protected int height;
-
-
     public void setMapPosition(int x,int y)
     {
         xmap=x;

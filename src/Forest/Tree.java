@@ -8,10 +8,8 @@ import java.awt.*;
 
 public class Tree extends ForestThings {
 
-
     public Tree(int x,int y)
     {
-
         this.x=x;
         this.y=y;
         height=112;
@@ -29,8 +27,5 @@ public class Tree extends ForestThings {
     public void draw(Graphics2D g)
     {
         super.draw(g);
-
     }
-
-
 }

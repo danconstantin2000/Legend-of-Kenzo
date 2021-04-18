@@ -35,6 +35,7 @@ public  class Enemy extends MapObject{
     public void update(){
 
     }
+    public int getScore(){return Score;}
 
 
 }

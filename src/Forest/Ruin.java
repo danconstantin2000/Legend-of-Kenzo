@@ -7,8 +7,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 
 public class Ruin extends ForestThings {
-
-
     public Ruin(int x,int y)
     {
 
@@ -27,10 +25,8 @@ public class Ruin extends ForestThings {
 
     }
 
-
     public void draw(Graphics2D g)
     {
         super.draw(g);
     }
-
 }

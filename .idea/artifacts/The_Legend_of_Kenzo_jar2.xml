@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="The Legend of Kenzo:jar2">
+    <output-path>$USER_HOME$/Desktop/art</output-path>
+    <root id="archive" name="The Legend of Kenzo.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$USER_HOME$/Desktop/art/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="The Legend of Kenzo" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/jl1.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/mp3spi1.9.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/tritonus_share.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

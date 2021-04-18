@@ -7,11 +7,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 
 public class Bush extends ForestThings {
-
-
     public Bush(int x,int y)
     {
-
         this.x=x;
         this.y=y;
         height=30;
@@ -26,7 +23,6 @@ public class Bush extends ForestThings {
         }
 
     }
-
 
     public void draw(Graphics2D g)
     {

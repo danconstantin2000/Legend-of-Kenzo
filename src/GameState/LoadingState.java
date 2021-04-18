@@ -47,7 +47,6 @@ public class LoadingState extends GameState{
         timer=System.nanoTime();
     }
     public void update(){
-        bg.update();
         long elapsed=(System.nanoTime()-timer)/1000000;
 
         if(elapsed>1000)

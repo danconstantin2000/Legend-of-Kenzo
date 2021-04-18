@@ -15,28 +15,21 @@ public class TileMap {
     private int ymin;
     private int xmax;
     private int ymax;
-
-
-
     //map
-
     private int[][] map;
     private int tileSize;
     private int numRows;
     private int numCols;
     private int width;
     private int height;
-
     private BufferedImage tileset;
     private int numTilesAcross;
     private Tile[][]tiles;
-
     //drawing
     private int rowOffset;
     private int colOffset;
     private int numRowsToDraw;
     private int numColsToDraw;
-
     //Constructor
     public TileMap(int tileSize)
     {
@@ -50,8 +43,6 @@ public class TileMap {
           Ex:tileSize=16,WIDTH=320-->20 coloane;
         * */
         numColsToDraw=GamePanel.WIDTH/tileSize+1;//+ Actualizare
-
-
 
     }
     public void loadTiles(String s)
@@ -100,7 +91,7 @@ public class TileMap {
             InputStream in=getClass().getResourceAsStream(s);
             BufferedReader br=new BufferedReader(new InputStreamReader(in));
             numCols=Integer.parseInt(br.readLine());//Prima linie din fisier(Level1.map)
-            numRows=Integer.parseInt(br.readLine());//A doua linie din fisier(Level2.map);
+            numRows=Integer.parseInt(br.readLine());//A doua linie din fisier(Level1.map);
             map=new int[numRows][numCols];//Initializare matrice
             width=numCols*tileSize;//latimea hartii  in pixeli
             height=numRows*tileSize;//inaltimea hartii in pixeli
@@ -135,9 +126,6 @@ public class TileMap {
     public int getHeight(){return height;}
     public int getNumRows(){return numRows;}
     public int getNumCols(){return numCols;}
-
-
-
     public int getType(int row,int col)
     {
         int rc=map[row][col];
@@ -177,7 +165,7 @@ public class TileMap {
                 if(col>=numCols)break;//Nu mai avem ce desena
 
                 //HEREE
-                if(map[row][col]==0 && map[row][col]==1)
+                if(map[row][col]==0 ||map[row][col]==11)
                 {
                     continue;
                 }
