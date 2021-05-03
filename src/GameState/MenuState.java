@@ -2,24 +2,6 @@ package GameState;
 import TileMap.Background;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-/*
-    -Background bg;
-    -int currentChoice=0;
-    -String[] options;
-    -Color titleColor;
-    -Font titleFont;
-    -Font font;
-
-    +MenuState(gsm)
-    +void init()
-    +void update()
-    +void draw(Graphic2D g)
-    -void select()
-    +void keyPressed(int k)
-    +void keyReleased(int k)
-
- */
-
 
 public class MenuState extends GameState{
     private Background bg;//Imagine de Background a meniului.

@@ -72,11 +72,12 @@ public class GameOverState extends GameState{
     {
         if(currentChoice==0)
         {
-            gsm.setState(GameStateManager.MENUSTATE);
+            gsm.setState(GameStateManager.LOADINGSTATE);
         }
         if(currentChoice==1)
         {
-            System.exit(0);
+            gsm.setState(GameStateManager.MENUSTATE);
+
         }
 
     }

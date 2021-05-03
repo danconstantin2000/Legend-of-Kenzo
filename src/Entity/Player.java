@@ -1,7 +1,6 @@
 package Entity;
-
 import Audio.AudioPlayer;
-import Entity.Enemies.MushroomProjectile;
+import Entity.Enemies.DarkMagician;
 import Entity.Enemies.Projectile;
 import Main.GamePanel;
 import TileMap.*;
@@ -61,7 +60,7 @@ public class Player extends MapObject {
         height = 200;
         //inatime si latime de coliziune
         cwidth =20;
-        cheight =29;
+        cheight =26;
         //atributii
         moveSpeed = 0.3;
         maxSpeed = 1.6;
@@ -126,6 +125,7 @@ public class Player extends MapObject {
     }
 
     //getters
+    public boolean isJumping(){return !(dy==0);}
     public boolean getVoid(){return Void;}
     public boolean getSwitchState(){return switchState;}
     public boolean isDead(){return dead;}
@@ -140,6 +140,7 @@ public class Player extends MapObject {
     public void setLongAttacking(boolean b) {
         longAttacking=b;
     }
+    public void setJumpStart(double js){jumpStart=js;}
     //Verifica atacul dintre player-proiectila ,proiectila-player
     public void checkAttack2(ArrayList<Projectile> projectiles)
     {
@@ -354,6 +355,7 @@ public class Player extends MapObject {
             }
         }
     }
+
     //Calcul pentru incetarea Flinching-ului(Cand un obiect ia damage,acesta are flinching-ul activat)
     private void turnOffFlinching()
     {
@@ -457,7 +459,7 @@ public class Player extends MapObject {
             Void=true;
         }
     }
-
+    //Metoda de update.Se apeleaza toate metodele de mai sus
     public void update() {
 
         // update position
@@ -472,9 +474,14 @@ public class Player extends MapObject {
         setDirection();
         animation.update();
         voidFall();
+        if(isDead())
+        {
+            right=left=false;
+        }
 
 
     }
+    //Metoda de draw.Am tratat mai multe cazuri pentru a fi desenat corect player-ul pe ecran in functie de mai multe sprite-uri.
 
     public void draw(Graphics2D g) {
 
@@ -524,7 +531,7 @@ public class Player extends MapObject {
                 g.drawImage(
                         animation.getImage(),
                         (int) (x + xmap - width / 2),
-                        (int) (y + ymap - height / 2 - 17),
+                        (int) (y + ymap - height / 2 - 18),
                         width
                         , height,
                         null
@@ -566,7 +573,7 @@ public class Player extends MapObject {
            else g.drawImage(
                     animation.getImage(),
                     (int) (x + xmap - width / 2 + width),
-                    (int) (y + ymap - height / 2 -17 ),
+                    (int) (y + ymap - height / 2 -18 ),
                     -width,
                     height,
                     null

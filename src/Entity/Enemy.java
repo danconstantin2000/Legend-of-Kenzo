@@ -1,9 +1,10 @@
 package Entity;
 import Audio.AudioPlayer;
 import TileMap.TileMap;
-import TileMap.TileMap;
 
+//Superclasa Enemy
 public  class Enemy extends MapObject{
+
 
     protected int health;
     protected int maxHealth;
@@ -11,6 +12,7 @@ public  class Enemy extends MapObject{
     protected int damage;
     protected boolean flinching;
     protected long flinchTimer;
+
     public Enemy(TileMap tm)
     {
         super(tm);
@@ -18,6 +20,8 @@ public  class Enemy extends MapObject{
     }
     public boolean isDead(){return dead;}
     public int getDamage(){return damage;}
+
+
     public void hit(int damage)
     {
 
@@ -33,7 +37,6 @@ public  class Enemy extends MapObject{
 
     }
     public void update(){
-
     }
     public int getScore(){return Score;}
 

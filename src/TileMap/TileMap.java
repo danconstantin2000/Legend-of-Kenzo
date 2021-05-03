@@ -119,6 +119,10 @@ public class TileMap {
 
     }
     //Setters si getters
+    public void setTiles(int i,int j,int nr)
+    {
+        map[i][j]=nr;
+    }
     public int getTileSize(){return tileSize;}
     public double getx(){return x;}
     public double gety(){return y;}
@@ -178,14 +182,6 @@ public class TileMap {
         }
 
     }
-
-
-
-
-
-
-
-
 
 
 

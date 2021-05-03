@@ -73,7 +73,7 @@ public class GameStateManager {
 
     public void setState(int state)
     {
-        //Seteaza un nou state, punand state-ul current pe null,si incarcand noul state (state)
+        //Seteaza un nou state, punand state-ul current pe null
         unloadState(currentState);
         currentState=state;
         loadState(currentState);

@@ -3,6 +3,7 @@ package Entity;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+//Clasa care afiseaza viata si energia player-ului.
 
 public class HUD {
 

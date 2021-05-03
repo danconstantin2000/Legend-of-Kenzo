@@ -2,6 +2,7 @@ package GameState;
 
 import Audio.AudioPlayer;
 import Entity.*;
+import Entity.Enemies.DarkMagician;
 import Entity.Enemies.Goblin;
 import Entity.Enemies.Mushroom;
 import Entity.Enemies.Projectile;
@@ -27,6 +28,7 @@ public class Level1State extends GameState{
     private AudioPlayer bgMusic;
     private AudioPlayer bossMusic;
     private ArrayList<ForestThings>forest;
+    private boolean Switch;
 
     public Level1State(GameStateManager gsm)
     {
@@ -49,6 +51,8 @@ public class Level1State extends GameState{
         bossMusic=new AudioPlayer("/Music/Boss.mp3");
         bgMusic.play();
         Projectile.projectiles=new ArrayList<Projectile>();
+        Switch=false;
+
     }
 
     //Metoda ce populeaza harta cu ruine,copaci,tufisuri..
@@ -166,6 +170,9 @@ public class Level1State extends GameState{
             g.setPosition(myPointArray2[i].x,myPointArray2[i].y);
             enemies.add(g);
         }
+        DarkMagician DM=new DarkMagician(tileMap,player);
+        DM.setPosition(3000,20);
+        enemies.add(DM);
     }
 
     //Metode de update
@@ -175,6 +182,7 @@ public class Level1State extends GameState{
             bgMusic.stop();
             if (!bossMusic.hasStopped()) {
                 bgMusic.stop();
+
             }
             else
             {
@@ -191,19 +199,38 @@ public class Level1State extends GameState{
             bgMusic.stop();
             bossMusic.play();
         }
+        if(player.isDead())
+        {
+            bgMusic.stop();
+            bossMusic.stop();
+        }
     }
     private void updateAllEnemies()
     {
+
         for(int i=0;i<enemies.size();i++)
         {
             Enemy e=enemies.get(i);
             e.update();
             if(e.isDead())
             {
-                player.Score=player.Score+e.getScore();
-                enemies.remove(i);
-                i--;
-                explosions.add(new Explosion(e.getx(),e.gety()));
+                if(e instanceof DarkMagician)
+                {
+                    if(((DarkMagician) e).getPlayed())
+                    {
+
+                        player.Score = player.Score + e.getScore();
+                        enemies.remove(i);
+                        i--;
+                        explosions.add(new Explosion(e.getx(), e.gety()));
+                    }
+                }else {
+
+                    player.Score = player.Score + e.getScore();
+                    enemies.remove(i);
+                    i--;
+                    explosions.add(new Explosion(e.getx(), e.gety()));
+                }
             }
         }
         for(int i=0;i<explosions.size();i++)
@@ -224,6 +251,8 @@ public class Level1State extends GameState{
             bossMusic.stop();
             if(player.getSwitchState() ||player.getVoid())
                 gsm.setState(GameStateManager.GAMEOVERSTATE);
+
+
         }
     }
     private void updateAllProjectiles(){
@@ -255,6 +284,18 @@ public class Level1State extends GameState{
         musicThings();
         GameOver();
         updateAllProjectiles();
+        if(player.getx()>2800)
+        {
+          Switch=true;
+          player.setJumpStart(-3.5);
+        }
+        if(Switch==true)
+        {
+            for(int i=0;i<7;i++)
+            {
+                tileMap.setTiles(i,155,11);
+            }
+        }
 
     }
 

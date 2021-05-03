@@ -2,21 +2,6 @@ package GameState;
 import TileMap.Background;
 import java.awt.*;
 //GameState intermediar.De aici se face intrarea in Level1 State;
-/*
-    -Backgroud bg;
-    -int currentChoice;
-    -Color titleColor;
-    -Font titleFont;
-    -long timer;
-    Metode
-    +LoadingState(gsm)
-    +void init()
-    +void update()
-    +void draw(Graphics2D g)
-    +keyPressed(int k)
-    +keyReleased(int k)
-
- */
 
 public class LoadingState extends GameState{
 

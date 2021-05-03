@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+//Clasa pentru explozia care apare la uciderea unui inamic.
 public class Explosion {
 
     private int x;
@@ -29,6 +30,7 @@ public class Explosion {
         width=30;
         height=30;
         try{
+            //citire spitesheet
             BufferedImage spritesheet= ImageIO.read(getClass().getResourceAsStream("/Sprites/Enemies/explosion.gif"));
             sprites=new BufferedImage[6];
             for(int i=0;i<sprites.length;i++)
@@ -42,6 +44,7 @@ public class Explosion {
         {
             e.printStackTrace();
         }
+        //setare animatie
         animation=new Animation();
         animation.setFrames(sprites);
         animation.setDelay(100);
@@ -49,14 +52,12 @@ public class Explosion {
     }
     public void update()
     {
-
+        //update animatie
         animation.update();
+        //Daca animatia s-a termiat,explozia dispare
         if(animation.hasPlayedOnce())
         {
-
             remove=true;
-
-
         }
     }
     public boolean shouldRemove()

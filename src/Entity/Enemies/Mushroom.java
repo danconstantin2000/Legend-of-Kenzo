@@ -76,7 +76,7 @@ public class Mushroom extends Enemy {
         getNextPosition();
         checkTileMapCollision();
         setPosition(xtemp,ytemp);
-        //check flinching
+
         if(myPlayer.getx()>this.x)
         {
             facingRight=true;
