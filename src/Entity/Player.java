@@ -141,6 +141,10 @@ public class Player extends MapObject {
         longAttacking=b;
     }
     public void setJumpStart(double js){jumpStart=js;}
+    public void setHealth(int health)
+    {
+        this.health=health;
+    }
     //Verifica atacul dintre player-proiectila ,proiectila-player
     public void checkAttack2(ArrayList<Projectile> projectiles)
     {

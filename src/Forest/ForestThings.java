@@ -1,6 +1,8 @@
 package Forest;
 
+import Entity.MapObject;
 import Main.GamePanel;
+import TileMap.TileMap;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

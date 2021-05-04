@@ -18,6 +18,7 @@ import static java.lang.Math.abs;
 
 public class DarkMagician extends Enemy {
 
+    private HashMap<String, AudioPlayer> sfx;
     private ArrayList<BufferedImage[]> sprites;
     private final int[] numFrames = {
             8, 8, 7, 2, 8, 2,8
@@ -44,6 +45,7 @@ public class DarkMagician extends Enemy {
     private int longAttackDamage;
     private int smallAttackRange;
     private int longAttackRange;
+
 
 
     public DarkMagician(TileMap tm,Player p) {
@@ -113,21 +115,30 @@ public class DarkMagician extends Enemy {
         animation.setFrames(sprites.get(IDLE));
         animation.setDelay(150);
 
+        sfx=new HashMap<String,AudioPlayer>();
+        sfx.put("death",new AudioPlayer("/SFX/Boss_Death.wav"));
+        sfx.put("jump",new AudioPlayer("/SFX/SFX_Jump_09.wav"));
+        sfx.put("longattack",new AudioPlayer("/SFX/WB18.mp3"));
+        sfx.put("smallattack",new AudioPlayer("/SFX/WB20.mp3"));
+
+
         timer=System.nanoTime();
         jumpTimer=System.nanoTime();
 
 
     }
 
-    public boolean getPlayed()
+    public boolean hasPlayed()
     {
         return animation.hasPlayedOnce();
     }
+
+
     private void setAnimations()
     {
         if(longAttacking) {
             if(currentAction != LONGATTACK) {
-
+                sfx.get("longattack").play();
                 currentAction = LONGATTACK;
                 animation.setFrames(sprites.get(LONGATTACK));
                 animation.setDelay(100);
@@ -137,7 +148,7 @@ public class DarkMagician extends Enemy {
         }
         else if(smallAttacking) {
             if(currentAction != SMALLATTACK) {
-
+                sfx.get("smallattack").play();
                 currentAction = SMALLATTACK;
                 animation.setFrames(sprites.get(SMALLATTACK));
                 animation.setDelay(100);
@@ -157,7 +168,9 @@ public class DarkMagician extends Enemy {
         else if(dy < 0) {
             if(currentAction != JUMPING) {
 
+                sfx.get("jump").play();
                 currentAction = JUMPING;
+
                 animation.setFrames(sprites.get(JUMPING));
                 animation.setDelay(-1);
 
@@ -176,6 +189,7 @@ public class DarkMagician extends Enemy {
 
             if (currentAction != DEATH)
             {
+                sfx.get("death").play();
                 currentAction=DEATH;
                 animation.setFrames(sprites.get(DEATH));
                 animation.setDelay(400);
@@ -192,6 +206,26 @@ public class DarkMagician extends Enemy {
         }
 
 
+    }
+    private void turnOffAttacks()
+    {
+
+        if(currentAction==LONGATTACK)
+        {
+            if(animation.hasPlayedOnce())
+            {
+                longAttacking=false;
+                sfx.get("longattack").stop();
+            }
+        }
+        if(currentAction==SMALLATTACK)
+        {
+            if(animation.hasPlayedOnce())
+            {
+                smallAttacking=false;
+                sfx.get("smallattack").stop();
+            }
+        }
     }
     private void setDirection()
     {
@@ -323,7 +357,8 @@ public class DarkMagician extends Enemy {
         checkAttack();
         if(!dead) {
             if (start) {
-                if (abs(myPlayer.getx() - this.getx()) < 100) {
+                if (abs(myPlayer.getx() - this.getx()) < 130) {
+
                     left = true;
                     start = false;
                 }
@@ -400,7 +435,7 @@ public class DarkMagician extends Enemy {
         }
         if(myPlayer.isDead())
         {
-            left=right=smallAttacking=longAttacking=false;
+            left=right=false;
 
         }
 
@@ -410,6 +445,7 @@ public class DarkMagician extends Enemy {
         setDirection();
         animation.update();
         turnOffFlinching();
+        turnOffAttacks();
 
 
 

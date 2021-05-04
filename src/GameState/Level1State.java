@@ -6,10 +6,7 @@ import Entity.Enemies.DarkMagician;
 import Entity.Enemies.Goblin;
 import Entity.Enemies.Mushroom;
 import Entity.Enemies.Projectile;
-import Forest.Bush;
-import Forest.ForestThings;
-import Forest.Ruin;
-import Forest.Tree;
+import Forest.*;
 import Main.GamePanel;
 import TileMap.TileMap;
 import java.awt.*;
@@ -24,12 +21,16 @@ public class Level1State extends GameState{
     private Player player;
     private ArrayList<Enemy> enemies;
     private ArrayList<Explosion>explosions;
+    private ArrayList<KenzoHead>kenzoHeads;
     private HUD hud;
     private AudioPlayer bgMusic;
     private AudioPlayer bossMusic;
     private ArrayList<ForestThings>forest;
     private boolean Switch;
-
+    private AudioPlayer KHAudio;
+    private boolean timeToSpawnPortal;
+    private Portal level2Portal;
+    private boolean stopBossMusic;
     public Level1State(GameStateManager gsm)
     {
         this.gsm=gsm;
@@ -42,7 +43,7 @@ public class Level1State extends GameState{
         tileMap.setPosition(0,0);
         this.bg=new Background("/Backgrounds/BG9.png");
         player=new Player(tileMap);
-        player.setPosition(100,100);
+        player.setPosition(2600,100);
         populatetrees();
         populateEnemies();
         hud=new HUD(player);
@@ -52,6 +53,13 @@ public class Level1State extends GameState{
         bgMusic.play();
         Projectile.projectiles=new ArrayList<Projectile>();
         Switch=false;
+
+        kenzoHeads=new ArrayList<KenzoHead>();
+        kenzoHeads.add(new KenzoHead(tileMap));
+        kenzoHeads.get(0).setPosition(2700,10);
+        KHAudio=new AudioPlayer("/SFX/Pickup 4.wav");
+        timeToSpawnPortal=false;
+        stopBossMusic=false;
 
     }
 
@@ -173,6 +181,7 @@ public class Level1State extends GameState{
         DarkMagician DM=new DarkMagician(tileMap,player);
         DM.setPosition(3000,20);
         enemies.add(DM);
+
     }
 
     //Metode de update
@@ -194,7 +203,7 @@ public class Level1State extends GameState{
         {
             bgMusic.play();
         }
-        if(player.getx()>2700 && bossMusic.hasStopped())
+        if(player.getx()>2700 && bossMusic.hasStopped() && !stopBossMusic)
         {
             bgMusic.stop();
             bossMusic.play();
@@ -216,13 +225,15 @@ public class Level1State extends GameState{
             {
                 if(e instanceof DarkMagician)
                 {
-                    if(((DarkMagician) e).getPlayed())
+                    if(((DarkMagician) e).hasPlayed())
                     {
-
+                        timeToSpawnPortal=true;
                         player.Score = player.Score + e.getScore();
                         enemies.remove(i);
                         i--;
                         explosions.add(new Explosion(e.getx(), e.gety()));
+                        stopBossMusic=true;
+                        bossMusic.stop();
                     }
                 }else {
 
@@ -280,6 +291,14 @@ public class Level1State extends GameState{
         tileMap.setPosition(GamePanel.WIDTH/2-player.getx(),GamePanel.HEIGHT/2-player.gety());
         player.checkAttack(enemies);
         player.checkAttack2(Projectile.projectiles);
+
+        if(!kenzoHeads.isEmpty())
+            if(player.intersects(kenzoHeads.get(0)))
+            {
+                KHAudio.play();
+                player.setHealth(5);
+                kenzoHeads.get(0).setRemove(true);
+            }
         updateAllEnemies();
         musicThings();
         GameOver();
@@ -296,6 +315,29 @@ public class Level1State extends GameState{
                 tileMap.setTiles(i,155,11);
             }
         }
+        for(int i=0;i<kenzoHeads.size();i++)
+        {
+            kenzoHeads.get(i).update();
+            if(kenzoHeads.get(i).shouldRemove())
+            {
+                kenzoHeads.remove(i);
+                i--;
+            }
+        }
+        if(timeToSpawnPortal)
+        {
+            level2Portal=new Portal(tileMap);
+            level2Portal.setPosition(3120,100);
+            timeToSpawnPortal=false;
+        }
+        if(level2Portal!=null)
+        {
+            level2Portal.update();
+        }
+
+
+
+
 
     }
 
@@ -340,6 +382,16 @@ public class Level1State extends GameState{
         hud.draw(g);
         g.drawString("Score:"+ player.Score,230,12);
         drawProjectiles(g);
+        for(int i=0;i<kenzoHeads.size();i++)
+        {
+            kenzoHeads.get(i).draw(g);
+
+        }
+        if(level2Portal!=null)
+        {
+            level2Portal.draw(g);
+        }
+
     }
 
 
