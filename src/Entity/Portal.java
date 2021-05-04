@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static java.lang.Math.abs;
+
 
 public class Portal extends MapObject{
     private BufferedImage[]sprites;
@@ -17,6 +17,8 @@ public class Portal extends MapObject{
         super(tm);
         width=64;
         height=64;
+        cwidth=20;
+        cheight=20;
         try{
             //citire spitesheet
             BufferedImage spritesheet= ImageIO.read(getClass().getResourceAsStream("/Sprites/Enemies/Portal.png"));

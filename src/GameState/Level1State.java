@@ -334,6 +334,12 @@ public class Level1State extends GameState{
         {
             level2Portal.update();
         }
+        if(level2Portal!=null)
+            if(player.intersects(level2Portal))
+            {
+                System.out.println("Is intersect");
+                gsm.setState(GameStateManager.LOADINGSTATE2);
+            }
 
 
 

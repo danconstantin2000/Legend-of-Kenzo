@@ -76,7 +76,7 @@ public class Player extends MapObject {
         energyCost = 500;
         smallAttackDamage = 1;
         smallAttackRange=100;
-        longAttackDamage = 4;
+        longAttackDamage = 100;
         longAttackRange = 100;
         Score=0;
         // Incarca sprite-urile

@@ -23,11 +23,14 @@ public class GameStateManager {
     * */
     private GameState[] gameStates;//GameStates array;
     private int currentState;//State curent
-    public static final int NUMGAMESTATES=4;//Numar total de State-uri
+    public static final int NUMGAMESTATES=6;//Numar total de State-uri
     public static final int MENUSTATE=0;
     public static final int LEVEL1STATE=1;
     public static final int GAMEOVERSTATE=2;
-    public static final int LOADINGSTATE=3;//La alegerea optiunii Start din meniu dureaza putin sa se incarce toate obiectele
+    public static final int LOADINGSTATE=3;
+    public static final int LOADINGSTATE2=4;
+    public static final int LEVEL2STATE=5;
+    //La alegerea optiunii Start din meniu dureaza putin sa se incarce toate obiectele
     //pe harta asa ca am facut acest state "intermediar"de unde se face intrarea in level1State.
 
     //Constructor GameStateManager
@@ -62,6 +65,14 @@ public class GameStateManager {
         else if(state==LOADINGSTATE)
         {
             gameStates[state]=new LoadingState(this);
+        }
+        else if(state==LOADINGSTATE2)
+        {
+            gameStates[state]=new LoadingState2(this);
+        }
+        else if(state==LEVEL2STATE)
+        {
+            gameStates[state]=new Level2State(this);
         }
     }
 
