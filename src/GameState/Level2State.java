@@ -2,7 +2,7 @@ package GameState;
 
 import Audio.AudioPlayer;
 import Entity.*;
-import Entity.Enemies.Projectile;
+import Entity.Enemies.*;
 import Main.GamePanel;
 import TileMap.TileMap;
 
@@ -11,6 +11,10 @@ import TileMap.Background;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import static java.lang.Math.abs;
 
 public class Level2State extends GameState{
 
@@ -18,19 +22,16 @@ public class Level2State extends GameState{
     private TileMap tileMap;
     private Background bg;
     private Player player;
-   // private ArrayList<Enemy> enemies;
-    //private ArrayList<Explosion>explosions;
-    //private ArrayList<KenzoHead>kenzoHeads;
+    private ArrayList<Enemy> enemies;
+    private ArrayList<Explosion>explosions;
+    private ArrayList<KenzoHead>kenzoHeads;
     private HUD hud;
-    private AudioPlayer bgMusic;
-    private AudioPlayer bossMusic;
-    //private ArrayList<ForestThings>forest;
-    //private boolean Switch;
-    //private AudioPlayer KHAudio;
-    //private boolean timeToSpawnPortal;
-    //private Portal level2Portal;
-
-
+    private boolean stopBossMusic;
+    private boolean Switch;
+    private AudioPlayer KHAudio;
+    private HashMap<String, AudioPlayer> MusicBg;
+    private Ryzen ryzen;
+    private long count;
     public Level2State(GameStateManager gsm)
     {
         this.gsm=gsm;
@@ -43,72 +44,334 @@ public class Level2State extends GameState{
         tileMap.loadMap("/Maps/Level2.map");
         tileMap.setPosition(0,0);
         this.bg=new Background("/Backgrounds/LV2_BG2.png");
+        MusicBg=new HashMap<String,AudioPlayer>();
+
         player=new Player(tileMap);
-        player.setPosition(100,100);
+        player.setPosition(2500,100);
         hud=new HUD(player);
-        bgMusic=new AudioPlayer("/Music/level2.mp3");
-        bossMusic=new AudioPlayer("/Music/Boss2.mp3");
-        bgMusic.play();
+        MusicBg.put("Boss",new AudioPlayer("/Music/Boss2.mp3"));
+        MusicBg.put("bg",new AudioPlayer("/Music/level2.mp3"));
+        MusicBg.get("bg").play();
+        populateEnemies();
+        explosions=new ArrayList<Explosion>();
+       Projectile.projectiles=new ArrayList<Projectile>();
+        stopBossMusic=false;
+        Switch=false;
+        kenzoHeads=new ArrayList<KenzoHead>();
+        kenzoHeads.add(new KenzoHead(tileMap));
+        kenzoHeads.get(0).setPosition(2700,10);
+        KHAudio=new AudioPlayer("/SFX/Pickup 4.wav");
+        ryzen=new Ryzen(tileMap);
+        ryzen.setPosition(3150,80);
+        count=0;
+
 
     }
 
-    private void musicThings()
+    private void populateEnemies() {
+        enemies = new ArrayList<Enemy>();
+        Point[] myPointArray = new Point[]{
+
+              new Point(700, 10),
+                new Point(1200, 10),
+                new Point(2150, 10),
+
+        };
+        Point[] myPointArray2 = new Point[]{
+                new Point(1400, 30),
+                new Point(2000, 30),
+                new Point(2630, 10),
+
+
+        };
+        Point[] myPointArray3 = new Point[]{
+
+                new Point(500, 30),
+                new Point(940, 30),
+                new Point(1650, 10),
+                new Point(2400, 10),
+        };
+        Point[] myPointArray4 = new Point[]{
+
+                new Point(298,80),
+                new Point(1070,80),
+                new Point(2280,100),
+        };
+
+        for(int i=0;i<myPointArray.length;i++)
+        {
+            Mushroom m=new Mushroom(tileMap,player);
+            m.setPosition(myPointArray[i].x,myPointArray[i].y);
+            enemies.add(m);
+        }
+        for(int i=0;i<myPointArray2.length;i++)
+        {
+            Goblin g=new Goblin(tileMap,player);
+            g.setPosition(myPointArray2[i].x,myPointArray2[i].y);
+            enemies.add(g);
+        }
+        for(int i=0;i<myPointArray3.length;i++)
+        {
+            Skeleton s=new Skeleton(tileMap,player);
+            s.setPosition(myPointArray3[i].x,myPointArray3[i].y);
+            enemies.add(s);
+        }
+        for(int i=0;i<myPointArray4.length;i++)
+        {
+            FlyingEye f=new FlyingEye(tileMap,player);
+            f.setPosition(myPointArray4[i].x,myPointArray4[i].y);
+            enemies.add(f);
+        }
+        FireMagician FM=new FireMagician(tileMap,player);
+        FM.setPosition(3000,20);
+        enemies.add(FM);
+
+    }
+    private void updateAllEnemies()
     {
-        if(player.getx()==2700) {
-            bgMusic.stop();
-            if (!bossMusic.hasStopped()) {
-                bgMusic.stop();
 
-            }
-            else
+        for(int i=0;i<enemies.size();i++)
+        {
+            Enemy e=enemies.get(i);
+            e.update();
+            if(e.isDead())
             {
-                bossMusic.play();
-            }
+                if(e instanceof FireMagician) {
+                    if (((FireMagician) e).hasPlayed()) {
 
-        }
-        if(player.getx()<2700 && bgMusic.hasStopped() && bossMusic.hasStopped() &&!player.isDead())
+                        player.Score = player.Score + e.getScore();
+                        enemies.remove(i);
+                        i--;
+                        explosions.add(new Explosion(e.getx(), e.gety()));
+                        stopBossMusic = true;
+                        if(MusicBg.containsKey("Boss"))
+                            MusicBg.get("Boss").stop();
+                    }
+                }else {
+                        player.Score = player.Score + e.getScore();
+                        enemies.remove(i);
+                        i--;
+                        explosions.add(new Explosion(e.getx(), e.gety()));
+                    }
+                }
+            }
+        for(int i=0;i<explosions.size();i++)
         {
-            bgMusic.play();
+            explosions.get(i).update();
+            if(explosions.get(i).shouldRemove())
+            {
+                explosions.remove(i);
+                i--;
+            }
         }
-        if(player.getx()>2700 && bossMusic.hasStopped() )
-        {
-            bgMusic.stop();
-            bossMusic.play();
-        }
+    }
+    private void GameOver()
+    {
         if(player.isDead())
         {
-            bgMusic.stop();
-            bossMusic.stop();
+            if(MusicBg.containsKey("bg") && MusicBg.containsKey("Boss")) {
+                MusicBg.get("bg").stop();
+                MusicBg.get("Boss").stop();
+                MusicBg.remove("bg");
+                MusicBg.remove("Boss");
+            }
+                if (player.getSwitchState() || player.getVoid())
+                    gsm.setState(GameStateManager.GAMEOVERSTATE);
+
+
         }
+    }
+    private void updateAllProjectiles(){
+        for(int i=0;i<Projectile.projectiles.size();i++)
+        {
+            Projectile.projectiles.get(i).update();
+            if(Projectile.projectiles.get(i).shouldRemove())
+            {
+                Projectile.projectiles.remove(i);
+            }
+        }
+    }
+    /*Metoda de update care:
+        -actualizeaza starea player-ului
+        -actualizeaza harta
+        -verifica atacurile dintre player-inamic,player-proiectila
+        -actualizeaza inamicii
+        -actualizeaza proiectilele
+        -actualizeaza sunetele
+
+     */
+    private void musicThings()
+    {
+        if(MusicBg.containsKey("bg") && MusicBg.containsKey("Boss")) {
+            if (player.getx() == 2700) {
+                MusicBg.get("bg").stop();
+                if (!MusicBg.get("Boss").hasStopped()) {
+                    MusicBg.get("bg").stop();
+                } else {
+                    MusicBg.get("Boss").play();
+                }
+
+            }
+            if (player.getx() < 2700 && MusicBg.get("bg").hasStopped() && MusicBg.get("Boss").hasStopped() && !player.isDead()) {
+                MusicBg.get("bg").play();
+            }
+            if (player.getx() > 2700 && MusicBg.get("Boss").hasStopped() && !stopBossMusic) {
+                MusicBg.get("bg").stop();
+                MusicBg.get("Boss").play();
+            }
+        }
+
     }
 
     public void update() {
 
         player.update();
         tileMap.setPosition(GamePanel.WIDTH/2-player.getx(),GamePanel.HEIGHT/2-player.gety());
+        player.checkAttack(enemies);
+        player.checkAttack2(Projectile.projectiles);
+
+        updateAllEnemies();
         musicThings();
+        GameOver();
+        updateAllProjectiles();
+        if(player.getx()>2800)
+        {
+            Switch=true;
+            player.setJumpStart(-3.5);
+        }
+        if(Switch==true)
+        {
+            for(int i=0;i<7;i++)
+            {
+                tileMap.setTiles(i,155,11);
+            }
+        }
+
+        if(!kenzoHeads.isEmpty())
+            if(player.intersects(kenzoHeads.get(0)))
+            {
+                KHAudio.play();
+                player.setHealth(5);
+                kenzoHeads.get(0).setRemove(true);
+            }
+
+        for(int i=0;i<kenzoHeads.size();i++)
+        {
+            kenzoHeads.get(i).update();
+            if(kenzoHeads.get(i).shouldRemove())
+            {
+                kenzoHeads.remove(i);
+                i--;
+            }
+        }
+        ryzen.update();
+       if(stopBossMusic==true)
+       {
+            player.setFacingRight(true);
+
+           for(int i=0;i<8;i++)
+           {
+               tileMap.setTiles(i,198,0);
+               tileMap.setTiles(i,193,0);
+           }
+           for(int j=198;j>193;j--)
+           {
+               tileMap.setTiles(1,j,0);
+           }
+
+           if(abs(player.getx()-ryzen.getx())>50 )
+           {
+                 ryzen.setLeft(true);
+
+           }
+           else
+           {
+               ryzen.setLeft(false);
+
+           }
+
+       }
+
 
 
     }
 
 
     //Metode de draw
+    private void drawEnemies(Graphics2D g)
+    {
+        for(int i=0;i<enemies.size();i++)
+        {
+            enemies.get(i).draw(g);
+        }
+        //draw explotions
+        for(int i=0;i<explosions.size();i++)
+        {
+            explosions.get(i).setMapPosition((int)tileMap.getx(), (int)tileMap.gety());
+            explosions.get(i).draw(g);
+        }
+    }
+    private void drawProjectiles(Graphics2D g)
+    {
+        for(int i=0;i<Projectile.projectiles.size();i++)
+        {
+            Projectile.projectiles.get(i).draw(g);
+        }
+
+    }
 
     public void draw(Graphics2D g) {
 
         bg.draw(g);
         tileMap.draw(g);
+
         player.draw(g);
+        drawEnemies(g);
         hud.draw(g);
         g.drawString("Score:"+ player.Score,230,12);
+        drawProjectiles(g);
 
+        for(int i=0;i<kenzoHeads.size();i++)
+        {
+            kenzoHeads.get(i).draw(g);
+
+
+        }
+
+        ryzen.draw(g);
+        if(stopBossMusic==true)
+        {
+            count++;
+            g.setColor(Color.white);
+            g.setFont(new Font("Courier New",Font.PLAIN,10));
+            if(count<200) {
+                g.drawString("Kenzo:I'm so happy to see you again!", 30, 200);
+            }else if (count>200 && count<600)
+            {
+                g.drawString("Ryzen:Me too brother!", 30, 180);
+                g.drawString("Finnaly we defeated the two evil wizards.",30,200);
+                g.drawString("Now the land of Aokigahara is safe!",30,220);
+            }
+            else if(count>600&& count<800)
+            {
+                g.drawString("Kenzo:That's right!", 30, 180);
+                g.drawString("Let's get out of here and teach the world", 30, 200);
+                g.drawString("how to defend themselves from the evil.",30,220);
+            }
+            else if(count>800 && count<1000)
+            {
+                g.drawString("Ryzen:Let's go!", 30, 180);
+
+            }
+
+        }
 
 
     }
 
 
     public void keyPressed(int k) {
-        if(player.getHealth()!=0) {
+        if(player.getHealth()!=0 && stopBossMusic==false) {
             if (k == KeyEvent.VK_LEFT) player.setLeft(true);
             if (k == KeyEvent.VK_RIGHT) player.setRight(true);
             if (k == KeyEvent.VK_UP) player.setUp(true);

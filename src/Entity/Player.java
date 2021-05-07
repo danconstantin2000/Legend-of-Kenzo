@@ -76,7 +76,7 @@ public class Player extends MapObject {
         energyCost = 500;
         smallAttackDamage = 1;
         smallAttackRange=100;
-        longAttackDamage = 100;
+        longAttackDamage = 3;
         longAttackRange = 100;
         Score=0;
         // Incarca sprite-urile
@@ -133,6 +133,7 @@ public class Player extends MapObject {
     public int getMaxHealth() { return maxHealth; }
     public int getEnergy() { return energy; }
     public int getMaxEnergy() { return maxEnergy; }
+    public boolean getFacingRight(){return facingRight;}
     //setters
     public void setSmallAttacking(boolean b) {
         smallAttacking = b;
@@ -145,6 +146,7 @@ public class Player extends MapObject {
     {
         this.health=health;
     }
+    public void setFacingRight(boolean b){this.facingRight=b;}
     //Verifica atacul dintre player-proiectila ,proiectila-player
     public void checkAttack2(ArrayList<Projectile> projectiles)
     {

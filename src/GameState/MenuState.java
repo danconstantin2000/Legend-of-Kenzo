@@ -64,7 +64,7 @@ public class MenuState extends GameState{
         if(currentChoice==0)
         {
             //LoadingState-->lanseaza in executiel level1 state.
-            gsm.setState(GameStateManager.LOADINGSTATE);
+            gsm.setState(GameStateManager.LOADINGSTATE2);
         }
         if(currentChoice==1)
         {

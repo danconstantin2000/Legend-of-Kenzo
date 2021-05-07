@@ -12,6 +12,7 @@ import TileMap.TileMap;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import TileMap.Background;
 public class Level1State extends GameState{
@@ -23,14 +24,15 @@ public class Level1State extends GameState{
     private ArrayList<Explosion>explosions;
     private ArrayList<KenzoHead>kenzoHeads;
     private HUD hud;
-    private AudioPlayer bgMusic;
-    private AudioPlayer bossMusic;
+
     private ArrayList<ForestThings>forest;
     private boolean Switch;
     private AudioPlayer KHAudio;
     private boolean timeToSpawnPortal;
     private Portal level2Portal;
     private boolean stopBossMusic;
+    private HashMap<String, AudioPlayer> MusicBg;
+
     public Level1State(GameStateManager gsm)
     {
         this.gsm=gsm;
@@ -42,18 +44,19 @@ public class Level1State extends GameState{
         tileMap.loadMap("/Maps/Level1.map");
         tileMap.setPosition(0,0);
         this.bg=new Background("/Backgrounds/BG9.png");
+        MusicBg=new HashMap<String,AudioPlayer>();
+
         player=new Player(tileMap);
-        player.setPosition(2600,100);
+        player.setPosition(100,100);
         populatetrees();
         populateEnemies();
         hud=new HUD(player);
         explosions=new ArrayList<Explosion>();
-        bgMusic=new AudioPlayer("/Music/08-China-Great-Wall.mp3");
-        bossMusic=new AudioPlayer("/Music/Boss.mp3");
-        bgMusic.play();
+        MusicBg.put("Boss",new AudioPlayer("/Music/Boss.mp3"));
+        MusicBg.put("bg",new AudioPlayer("/Music/08-China-Great-Wall.mp3"));
+        MusicBg.get("bg").play();
         Projectile.projectiles=new ArrayList<Projectile>();
         Switch=false;
-
         kenzoHeads=new ArrayList<KenzoHead>();
         kenzoHeads.add(new KenzoHead(tileMap));
         kenzoHeads.get(0).setPosition(2700,10);
@@ -187,32 +190,25 @@ public class Level1State extends GameState{
     //Metode de update
     private void musicThings()
     {
-        if(player.getx()==2700) {
-            bgMusic.stop();
-            if (!bossMusic.hasStopped()) {
-                bgMusic.stop();
+        if(MusicBg.containsKey("bg") && MusicBg.containsKey("Boss")) {
+            if (player.getx() == 2700) {
+                MusicBg.get("bg").stop();
+                if (!MusicBg.get("Boss").hasStopped()) {
+                    MusicBg.get("bg").stop();
+                } else {
+                    MusicBg.get("Boss").play();
+                }
 
             }
-            else
-            {
-                bossMusic.play();
+            if (player.getx() < 2700 && MusicBg.get("bg").hasStopped() && MusicBg.get("Boss").hasStopped() && !player.isDead()) {
+                MusicBg.get("bg").play();
             }
+            if (player.getx() > 2700 && MusicBg.get("Boss").hasStopped() && !stopBossMusic) {
+                MusicBg.get("bg").stop();
+                MusicBg.get("Boss").play();
+            }
+        }
 
-        }
-        if(player.getx()<2700 && bgMusic.hasStopped() && bossMusic.hasStopped() &&!player.isDead())
-        {
-            bgMusic.play();
-        }
-        if(player.getx()>2700 && bossMusic.hasStopped() && !stopBossMusic)
-        {
-            bgMusic.stop();
-            bossMusic.play();
-        }
-        if(player.isDead())
-        {
-            bgMusic.stop();
-            bossMusic.stop();
-        }
     }
     private void updateAllEnemies()
     {
@@ -233,7 +229,8 @@ public class Level1State extends GameState{
                         i--;
                         explosions.add(new Explosion(e.getx(), e.gety()));
                         stopBossMusic=true;
-                        bossMusic.stop();
+                        if(MusicBg.containsKey("Boss"))
+                            MusicBg.get("Boss").stop();
                     }
                 }else {
 
@@ -258,9 +255,13 @@ public class Level1State extends GameState{
     {
         if(player.isDead())
         {
-            bgMusic.stop();
-            bossMusic.stop();
-            if(player.getSwitchState() ||player.getVoid())
+            if(MusicBg.containsKey("bg") && MusicBg.containsKey("Boss")) {
+                MusicBg.get("bg").stop();
+                MusicBg.get("Boss").stop();
+                MusicBg.remove("bg");
+                MusicBg.remove("Boss");
+            }
+            if (player.getSwitchState() || player.getVoid())
                 gsm.setState(GameStateManager.GAMEOVERSTATE);
 
 
@@ -337,7 +338,6 @@ public class Level1State extends GameState{
         if(level2Portal!=null)
             if(player.intersects(level2Portal))
             {
-                System.out.println("Is intersect");
                 gsm.setState(GameStateManager.LOADINGSTATE2);
             }
 
