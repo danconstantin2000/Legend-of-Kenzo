@@ -57,6 +57,7 @@ public class GamePanel extends JPanel implements Runnable,KeyListener{
     public static final int WIDTH=320;
     public static final int HEIGHT=240;
     public static final int SCALE=3;
+    public static boolean inGameFocus=true;
 
     private Thread thread;//Referinta catre thread-ul jocului.(Lanseaza jocul in executie prin metoda run())
     private boolean running;//Flag pentru starea exectutiei.
@@ -129,6 +130,9 @@ public class GamePanel extends JPanel implements Runnable,KeyListener{
     {
         //Update the current gameState
         gsm.update();
+        setFocusable(inGameFocus);
+        requestFocus();
+
     }
     private void draw(){
         gsm.draw(g);

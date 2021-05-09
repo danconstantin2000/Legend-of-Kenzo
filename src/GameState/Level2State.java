@@ -26,12 +26,14 @@ public class Level2State extends GameState{
     private ArrayList<Explosion>explosions;
     private ArrayList<KenzoHead>kenzoHeads;
     private HUD hud;
-    private boolean stopBossMusic;
+    private boolean BossIsDead;
     private boolean Switch;
     private AudioPlayer KHAudio;
     private HashMap<String, AudioPlayer> MusicBg;
     private Ryzen ryzen;
     private long count;
+    private HashMap<String,Enemy>BossEnemies;
+    private boolean exit;
     public Level2State(GameStateManager gsm)
     {
         this.gsm=gsm;
@@ -43,6 +45,7 @@ public class Level2State extends GameState{
         tileMap.loadTiles("/Tilesets/tileset2.png");
         tileMap.loadMap("/Maps/Level2.map");
         tileMap.setPosition(0,0);
+        BossEnemies=new HashMap<String,Enemy>();
         this.bg=new Background("/Backgrounds/LV2_BG2.png");
         MusicBg=new HashMap<String,AudioPlayer>();
 
@@ -55,7 +58,7 @@ public class Level2State extends GameState{
         populateEnemies();
         explosions=new ArrayList<Explosion>();
        Projectile.projectiles=new ArrayList<Projectile>();
-        stopBossMusic=false;
+        BossIsDead=false;
         Switch=false;
         kenzoHeads=new ArrayList<KenzoHead>();
         kenzoHeads.add(new KenzoHead(tileMap));
@@ -64,7 +67,7 @@ public class Level2State extends GameState{
         ryzen=new Ryzen(tileMap);
         ryzen.setPosition(3150,80);
         count=0;
-
+        exit=false;
 
     }
 
@@ -125,6 +128,8 @@ public class Level2State extends GameState{
         FireMagician FM=new FireMagician(tileMap,player);
         FM.setPosition(3000,20);
         enemies.add(FM);
+        BossEnemies.put("Boss",FM);
+
 
     }
     private void updateAllEnemies()
@@ -143,7 +148,7 @@ public class Level2State extends GameState{
                         enemies.remove(i);
                         i--;
                         explosions.add(new Explosion(e.getx(), e.gety()));
-                        stopBossMusic = true;
+                        BossIsDead = true;
                         if(MusicBg.containsKey("Boss"))
                             MusicBg.get("Boss").stop();
                     }
@@ -215,7 +220,7 @@ public class Level2State extends GameState{
             if (player.getx() < 2700 && MusicBg.get("bg").hasStopped() && MusicBg.get("Boss").hasStopped() && !player.isDead()) {
                 MusicBg.get("bg").play();
             }
-            if (player.getx() > 2700 && MusicBg.get("Boss").hasStopped() && !stopBossMusic) {
+            if (player.getx() > 2700 && MusicBg.get("Boss").hasStopped() && !BossIsDead) {
                 MusicBg.get("bg").stop();
                 MusicBg.get("Boss").play();
             }
@@ -265,7 +270,7 @@ public class Level2State extends GameState{
             }
         }
         ryzen.update();
-       if(stopBossMusic==true)
+       if(BossIsDead==true)
        {
             player.setFacingRight(true);
 
@@ -324,7 +329,6 @@ public class Level2State extends GameState{
 
         bg.draw(g);
         tileMap.draw(g);
-
         player.draw(g);
         drawEnemies(g);
         hud.draw(g);
@@ -339,29 +343,73 @@ public class Level2State extends GameState{
         }
 
         ryzen.draw(g);
-        if(stopBossMusic==true)
+        if(abs(player.getx()-BossEnemies.get("Boss").getx())<110 && exit==false)
         {
-            count++;
+            g.setColor(Color.black);
+            g.fillRect(0,170,320,100);
+            g.fillRect(0,0,320,50);
             g.setColor(Color.white);
             g.setFont(new Font("Courier New",Font.PLAIN,10));
-            if(count<200) {
-                g.drawString("Kenzo:I'm so happy to see you again!", 30, 200);
-            }else if (count>200 && count<600)
-            {
-                g.drawString("Ryzen:Me too brother!", 30, 180);
-                g.drawString("Finnaly we defeated the two evil wizards.",30,200);
-                g.drawString("Now the land of Aokigahara is safe!",30,220);
-            }
-            else if(count>600&& count<800)
-            {
-                g.drawString("Kenzo:That's right!", 30, 180);
-                g.drawString("Let's get out of here and teach the world", 30, 200);
-                g.drawString("how to defend themselves from the evil.",30,220);
-            }
-            else if(count>800 && count<1000)
-            {
-                g.drawString("Ryzen:Let's go!", 30, 180);
+            GamePanel.inGameFocus=false;
+            player.setLeft(false);
+            player.setRight(false);
+            count++;
+            if (count < 200) {
+                g.drawString("Kenzo:Dark Magician is Dead!", 30, 200);
+                g.drawString("You are next!", 30, 220);
 
+            } else if (count > 200 && count < 600) {
+                g.drawString("Fire Magician:I will kill your brother", 30, 200);
+                g.drawString("after I kill you.", 30, 220);
+
+            } else if (count > 600 && count < 1000) {
+                g.drawString("Kenzo:Your time is over. ", 30, 180);
+                g.drawString("Good always defeats evil.", 30, 200);
+                g.drawString("The evil will disappear from this land!", 30, 220);
+
+            } else if (count > 1000 && count < 1400) {
+                g.drawString("Fire Magician:Let's see!", 30, 200);
+
+            }
+            else if(count>1400)
+            {
+                GamePanel.inGameFocus=true;
+                exit=true;
+                count=0;
+            }
+        }
+
+
+        if(BossIsDead==true)
+        {
+            g.setColor(Color.black);
+            g.fillRect(0,170,320,100);
+            g.fillRect(0,0,320,50);
+            GamePanel.inGameFocus=false;
+            player.setRight(false);
+            player.setLeft(false);
+            g.setColor(Color.white);
+            g.setFont(new Font("Courier New",Font.PLAIN,10));
+            if(abs(player.getx()-ryzen.getx())<110 ) {
+                count++;
+                if (count < 200) {
+                    g.drawString("Kenzo:I'm so happy to see you again!", 30, 200);
+                } else if (count > 200 && count < 600) {
+                    g.drawString("Ryzen:Me too brother!", 30, 180);
+                    g.drawString("Finnaly we defeated the two evil wizards.", 30, 200);
+                    g.drawString("Now the land of Aokigahara is safe!", 30, 220);
+                } else if (count > 600 && count < 1000) {
+                    g.drawString("Kenzo:That's right!", 30, 180);
+                    g.drawString("Let's get out of here and teach the world", 30, 200);
+                    g.drawString("how to defend themselves from the evil.", 30, 220);
+                } else if (count > 1000 && count < 1400) {
+                    g.drawString("Ryzen:Let's go!", 30, 200);
+
+                }
+                else if(count>1400)
+                {
+
+                }
             }
 
         }
@@ -371,7 +419,7 @@ public class Level2State extends GameState{
 
 
     public void keyPressed(int k) {
-        if(player.getHealth()!=0 && stopBossMusic==false) {
+        if(player.getHealth()!=0 ) {
             if (k == KeyEvent.VK_LEFT) player.setLeft(true);
             if (k == KeyEvent.VK_RIGHT) player.setRight(true);
             if (k == KeyEvent.VK_UP) player.setUp(true);

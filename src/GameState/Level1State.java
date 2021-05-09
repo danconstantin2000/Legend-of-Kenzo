@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import TileMap.Background;
+
+import static java.lang.Math.abs;
+
+
 public class Level1State extends GameState{
 
     private TileMap tileMap;
@@ -32,6 +36,10 @@ public class Level1State extends GameState{
     private Portal level2Portal;
     private boolean stopBossMusic;
     private HashMap<String, AudioPlayer> MusicBg;
+    private int count;
+    private boolean exit;
+    private HashMap<String,Enemy>BossEnemies;
+    private boolean help;
 
     public Level1State(GameStateManager gsm)
     {
@@ -47,7 +55,9 @@ public class Level1State extends GameState{
         MusicBg=new HashMap<String,AudioPlayer>();
 
         player=new Player(tileMap);
-        player.setPosition(100,100);
+        player.setPosition(2500,100);
+        BossEnemies=new HashMap<String,Enemy>();
+
         populatetrees();
         populateEnemies();
         hud=new HUD(player);
@@ -63,6 +73,10 @@ public class Level1State extends GameState{
         KHAudio=new AudioPlayer("/SFX/Pickup 4.wav");
         timeToSpawnPortal=false;
         stopBossMusic=false;
+        count=0;
+        exit=false;
+        help=false;
+
 
     }
 
@@ -183,7 +197,9 @@ public class Level1State extends GameState{
         }
         DarkMagician DM=new DarkMagician(tileMap,player);
         DM.setPosition(3000,20);
+        BossEnemies.put("Boss",DM);
         enemies.add(DM);
+
 
     }
 
@@ -388,6 +404,43 @@ public class Level1State extends GameState{
         hud.draw(g);
         g.drawString("Score:"+ player.Score,230,12);
         drawProjectiles(g);
+        if(player.getx()>110 && help==false)
+        {
+            count++;
+            g.setColor(Color.black);
+            g.setFont(new Font("Courier New",Font.PLAIN,10));
+            g.fillRect(0,170,320,100);
+            g.fillRect(0,0,320,50);
+            GamePanel.inGameFocus=false;
+            player.setLeft(false);
+            player.setRight(false);
+            g.setColor(Color.white);
+            if (count < 200) {
+                g.drawString("You are in Aokigahara forest!", 30, 200);
+            } else if (count > 200 && count < 600) {
+
+                g.drawString("Press right,left arrows for move!", 30, 200);
+                g.drawString("Press w for jump!", 30, 220);
+
+
+            } else if (count > 600 && count < 1000) {
+                g.drawString("Press F for smallAttack!", 30, 200);
+                g.drawString("Press R for LongAttack!", 30, 220);
+
+
+
+            } else if (count > 1000 && count < 1400) {
+                g.drawString("The LongAttack will consume power!", 30, 200);
+
+            }
+            else if(count>1400)
+            {
+                GamePanel.inGameFocus=true;
+                help=true;
+                count=0;
+            }
+
+        }
         for(int i=0;i<kenzoHeads.size();i++)
         {
             kenzoHeads.get(i).draw(g);
@@ -398,11 +451,46 @@ public class Level1State extends GameState{
             level2Portal.draw(g);
         }
 
+        if(abs(player.getx()-BossEnemies.get("Boss").getx())<110 && exit==false)
+        {
+            g.setColor(Color.black);
+            g.fillRect(0,170,320,100);
+            g.fillRect(0,0,320,50);
+            g.setColor(Color.white);
+            g.setFont(new Font("Courier New",Font.PLAIN,10));
+            GamePanel.inGameFocus=false;
+            player.setLeft(false);
+            player.setRight(false);
+            count++;
+            if (count < 200) {
+                g.drawString("Kenzo:Here you are!Give me back my Brother!", 30, 200);
+            } else if (count > 200 && count < 600) {
+                g.drawString("Dark Magician:If you want your brother,", 30, 200);
+                g.drawString("you have to beat me.", 30, 220);
+
+            } else if (count > 600 && count < 1000) {
+                g.drawString("Kenzo:I have been waiting for this moment", 30, 180);
+                g.drawString("for a long time.", 30, 200);
+                g.drawString("I trained for many years to beat you!", 30, 220);
+
+
+            } else if (count > 1000 && count < 1400) {
+                g.drawString("Dark Magician:Show me what you know!", 30, 200);
+
+            }
+            else if(count>1400)
+            {
+                GamePanel.inGameFocus=true;
+                exit=true;
+                count=0;
+            }
+        }
+
     }
 
 
     public void keyPressed(int k) {
-        if(player.getHealth()!=0) {
+        if(player.getHealth()!=0 ) {
             if (k == KeyEvent.VK_LEFT) player.setLeft(true);
             if (k == KeyEvent.VK_RIGHT) player.setRight(true);
             if (k == KeyEvent.VK_UP) player.setUp(true);

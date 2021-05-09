@@ -45,6 +45,7 @@ public class DarkMagician extends Enemy {
     private int longAttackDamage;
     private int smallAttackRange;
     private int longAttackRange;
+    private boolean drawBar;
 
 
 
@@ -79,6 +80,7 @@ public class DarkMagician extends Enemy {
         timeToAttack=true;
         start=true;
         facingRight=false;
+        drawBar=false;
         // Incarca sprite-urile
         try {
 
@@ -357,7 +359,7 @@ public class DarkMagician extends Enemy {
         checkAttack();
         if(!dead) {
             if (start) {
-                if (abs(myPlayer.getx() - this.getx()) < 130) {
+                if (abs(myPlayer.getx() - this.getx()) < 100) {
 
                     left = true;
                     start = false;
@@ -458,6 +460,32 @@ public class DarkMagician extends Enemy {
     public void draw(Graphics2D g) {
 
         setMapPosition();
+        if(abs(myPlayer.getx()-this.getx())<100 )
+        {
+            drawBar=true;
+
+        }
+        if(drawBar==true)
+        {
+            g.setColor(Color.red);
+            g.setFont(new Font("Courier New",Font.PLAIN,15));
+            String bar="";
+
+            for(int i=0;i<this.health;i++)
+            {
+                bar=bar+"_";
+
+
+            }
+            g.drawString(bar,30,200);
+            g.drawString(bar,30,201);
+
+
+            if(this.health==0)
+            {
+                drawBar=false;
+            }
+        }
 
         // draw player
         if(flinching) {

@@ -76,7 +76,7 @@ public class Player extends MapObject {
         energyCost = 500;
         smallAttackDamage = 1;
         smallAttackRange=100;
-        longAttackDamage = 3;
+        longAttackDamage = 5;
         longAttackRange = 100;
         Score=0;
         // Incarca sprite-urile
@@ -392,7 +392,7 @@ public class Player extends MapObject {
                     sfx.get("smallattack").play();
                     currentAction = SMALLATTACK;
                     animation.setFrames(sprites.get(SMALLATTACK));
-                    animation.setDelay(30);
+                    animation.setDelay(50);
 
 
                 }

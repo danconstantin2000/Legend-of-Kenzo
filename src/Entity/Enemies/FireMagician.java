@@ -40,7 +40,7 @@ public class FireMagician extends Enemy {
     private int AttackDamage;
     private int AttackRange;
 
-
+    private boolean drawBar;
 
 
     public FireMagician(TileMap tm,Player p) {
@@ -65,7 +65,7 @@ public class FireMagician extends Enemy {
         Score=1500;
         myPlayer=p;
         dead=false;
-
+        drawBar=false;
         AttackDamage = 2;
         AttackRange=100;
         timeToAttack=true;
@@ -295,7 +295,7 @@ public class FireMagician extends Enemy {
         checkAttack();
         if(!dead) {
             if (start) {
-                if (abs(myPlayer.getx() - this.getx()) < 130) {
+                if (abs(myPlayer.getx() - this.getx()) < 100) {
 
                     left = true;
                     start = false;
@@ -375,6 +375,32 @@ public class FireMagician extends Enemy {
     public void draw(Graphics2D g) {
 
         setMapPosition();
+        if(abs(myPlayer.getx()-this.getx())<100 )
+        {
+            drawBar=true;
+
+        }
+        if(drawBar==true)
+        {
+            g.setColor(Color.red);
+            g.setFont(new Font("Courier New",Font.PLAIN,11));
+            String bar="";
+
+            for(int i=0;i<this.health;i++)
+            {
+                bar=bar+"_";
+
+
+            }
+            g.drawString(bar,25,200);
+            g.drawString(bar,25,201);
+
+
+            if(this.health==0)
+            {
+                drawBar=false;
+            }
+        }
 
         // draw player
         if(flinching) {
