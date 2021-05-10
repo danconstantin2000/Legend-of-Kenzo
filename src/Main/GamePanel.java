@@ -1,5 +1,6 @@
 package Main;
 import GameState.GameStateManager;
+
 import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -58,7 +59,7 @@ public class GamePanel extends JPanel implements Runnable,KeyListener{
     public static final int HEIGHT=240;
     public static final int SCALE=3;
     public static boolean inGameFocus=true;
-
+    public static boolean LoadState=false;
     private Thread thread;//Referinta catre thread-ul jocului.(Lanseaza jocul in executie prin metoda run())
     private boolean running;//Flag pentru starea exectutiei.
     private int FPS=60;//Numar de frame-uri pe secunda;
@@ -110,6 +111,7 @@ public class GamePanel extends JPanel implements Runnable,KeyListener{
 
             start = System.nanoTime();
             update();
+
             draw();
             drawToScreen();
             elapsed = System.nanoTime() - start;
@@ -126,8 +128,7 @@ public class GamePanel extends JPanel implements Runnable,KeyListener{
             }
         }
     }
-    private void update()
-    {
+    private void update(){
         //Update the current gameState
         gsm.update();
         setFocusable(inGameFocus);

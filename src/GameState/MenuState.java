@@ -1,15 +1,24 @@
 package GameState;
+import Main.Game;
+import Main.GamePanel;
 import TileMap.Background;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileReader;
 
 public class MenuState extends GameState{
     private Background bg;//Imagine de Background a meniului.
     private int currentChoice=0;//Alegere curenta
-    private String[] options={"Start","Help","Save","Load","Settings","Quit"};//Vector de optiuni
+    private String[] options={"Start","Help","Load","Settings","Quit"};//Vector de optiuni
     private Color titleColor;//Culoare titlu
     private Font titleFont;//Font titlu
     private Font font;//Font optiuni
+    private boolean exists;
+    private File myfile;
     public MenuState(GameStateManager gsm)
     {
         this.gsm=gsm;
@@ -22,6 +31,7 @@ public class MenuState extends GameState{
            e.printStackTrace();
        }
 
+
     }
 
     public void init(){
@@ -29,6 +39,16 @@ public class MenuState extends GameState{
         titleColor=new Color(0,0,0);
         titleFont=new Font("Courier New",Font.BOLD,18);
         font=new Font("Courier New",Font.PLAIN,12);
+         myfile=new File("save.json");
+         if(myfile.exists())
+         {
+             exists=true;
+         }
+         else
+         {
+             exists=false;
+         }
+
     }
     public void update(){
     }
@@ -46,17 +66,46 @@ public class MenuState extends GameState{
         g.setFont(font);
         for(int i=0;i<options.length;i++)
         {
-            if(i==currentChoice)
+            if(i==2)
             {
-                g.setColor(Color.blue);
+
+                if(exists==true)
+                {
+
+                    if (i == currentChoice) {
+                        g.setColor(Color.blue);
+                    } else {
+                        g.setColor(Color.BLACK);
+                    }
+                    g.drawString(options[i], 145, 140 + i * 15);
+
+                }
+                else if(exists==false)
+                {
+
+                    if (i == currentChoice) {
+                        g.setColor(Color.GRAY);
+                    } else {
+                        g.setColor(Color.GRAY);
+                    }
+                    g.drawString(options[i],145,140+i*15);
+                }
+
             }
-            else
-            {
-                g.setColor(Color.BLACK);
+            else {
+
+                    if (i == currentChoice) {
+                        g.setColor(Color.blue);
+                    } else {
+                        g.setColor(Color.BLACK);
+                    }
+                    //Draw options
+                    g.drawString(options[i], 145, 140 + i * 15);
+                }
+
+
             }
-            //Draw options
-            g.drawString(options[i],145,140+i*15);
-        }
+
     }
     private void select()
     {
@@ -64,7 +113,7 @@ public class MenuState extends GameState{
         if(currentChoice==0)
         {
             //LoadingState-->lanseaza in executiel level1 state.
-            gsm.setState(GameStateManager.LOADINGSTATE2);
+            gsm.setState(GameStateManager.LOADINGSTATE);
         }
         if(currentChoice==1)
         {
@@ -72,9 +121,27 @@ public class MenuState extends GameState{
         }
         if(currentChoice==2)
         {
+            if(myfile.exists()) {
 
+                String level = "";
+                JSONParser parser = new JSONParser();
+                try {
+                    Object obj = parser.parse(new FileReader("save.json"));
+                    JSONObject jsonObject = (JSONObject) obj;
+                    String LevelSTR = jsonObject.get("LevelType").toString();
+                    level = LevelSTR;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                GamePanel.LoadState = true;
+                if (level.equals("Level1State")) {
+                    gsm.setState(GameStateManager.LOADINGSTATE);
+                } else if (level.equals("Level2State")) {
+                    gsm.setState(GameStateManager.LOADINGSTATE2);
+                }
+            }
         }
-        if(currentChoice==5)
+        if(currentChoice==4)
         {
             System.exit(0);
         }

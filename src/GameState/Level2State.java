@@ -8,9 +8,13 @@ import TileMap.TileMap;
 
 
 import TileMap.Background;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -34,6 +38,10 @@ public class Level2State extends GameState{
     private long count;
     private HashMap<String,Enemy>BossEnemies;
     private boolean exit;
+    //saving things
+    private boolean timeToSave;
+    private boolean save;
+
     public Level2State(GameStateManager gsm)
     {
         this.gsm=gsm;
@@ -50,7 +58,43 @@ public class Level2State extends GameState{
         MusicBg=new HashMap<String,AudioPlayer>();
 
         player=new Player(tileMap);
-        player.setPosition(2500,100);
+        if(GamePanel.LoadState==true)
+        {
+            JSONParser parser =new JSONParser();
+            try
+            {
+
+                Object obj=parser.parse(new FileReader("save.json"));
+                JSONObject jsonObject=(JSONObject) obj;
+                String healthSTR=jsonObject.get("Health").toString();
+                String scoreSTR=jsonObject.get("Score").toString();
+                String pxSTR=jsonObject.get("PlayerX").toString();
+                String pySTR=jsonObject.get("PlayerY").toString();
+                String energySTR=jsonObject.get("PlayerEnergy").toString();
+
+                int health=Integer.parseInt(healthSTR);
+                int score=Integer.parseInt(scoreSTR);
+                int x=Integer.parseInt(pxSTR);
+                int y=Integer.parseInt(pySTR);
+                int energy=Integer.parseInt(energySTR);
+                player.setPosition(x,y);
+                player.setHealth(health);
+                player.setScore(score);
+                player.setEnergy(energy);
+                save=true;
+
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+        else {
+            player.setPosition(100, 100);
+            save=false;
+        }
+
         hud=new HUD(player);
         MusicBg.put("Boss",new AudioPlayer("/Music/Boss2.mp3"));
         MusicBg.put("bg",new AudioPlayer("/Music/level2.mp3"));
@@ -68,6 +112,8 @@ public class Level2State extends GameState{
         ryzen.setPosition(3150,80);
         count=0;
         exit=false;
+        GamePanel.LoadState=false;
+
 
     }
 
@@ -103,27 +149,73 @@ public class Level2State extends GameState{
 
         for(int i=0;i<myPointArray.length;i++)
         {
-            Mushroom m=new Mushroom(tileMap,player);
-            m.setPosition(myPointArray[i].x,myPointArray[i].y);
-            enemies.add(m);
+            if(GamePanel.LoadState==true)
+            {
+                if(player.getx()<myPointArray[i].x)
+                {
+                    Mushroom m=new Mushroom(tileMap,player);
+                    m.setPosition(myPointArray[i].x,myPointArray[i].y);
+                    enemies.add(m);
+                }
+            }
+            else {
+                Mushroom m = new Mushroom(tileMap, player);
+                m.setPosition(myPointArray[i].x, myPointArray[i].y);
+                enemies.add(m);
+            }
         }
         for(int i=0;i<myPointArray2.length;i++)
         {
-            Goblin g=new Goblin(tileMap,player);
-            g.setPosition(myPointArray2[i].x,myPointArray2[i].y);
-            enemies.add(g);
+            if(GamePanel.LoadState==true)
+            {
+                if(player.getx()<myPointArray2[i].x)
+                {
+                    Goblin g=new Goblin(tileMap,player);
+                    g.setPosition(myPointArray2[i].x,myPointArray2[i].y);
+                    enemies.add(g);
+
+                }
+            }
+            else {
+                Goblin g = new Goblin(tileMap, player);
+                g.setPosition(myPointArray2[i].x, myPointArray2[i].y);
+                enemies.add(g);
+            }
         }
         for(int i=0;i<myPointArray3.length;i++)
         {
-            Skeleton s=new Skeleton(tileMap,player);
-            s.setPosition(myPointArray3[i].x,myPointArray3[i].y);
-            enemies.add(s);
+            if(GamePanel.LoadState==true)
+            {
+                if(player.getx()<myPointArray3[i].x)
+                {
+                    Skeleton s = new Skeleton(tileMap, player);
+                    s.setPosition(myPointArray3[i].x, myPointArray3[i].y);
+                    enemies.add(s);
+                }
+            }
+            else {
+                Skeleton s = new Skeleton(tileMap, player);
+                s.setPosition(myPointArray3[i].x, myPointArray3[i].y);
+                enemies.add(s);
+            }
         }
         for(int i=0;i<myPointArray4.length;i++)
         {
-            FlyingEye f=new FlyingEye(tileMap,player);
-            f.setPosition(myPointArray4[i].x,myPointArray4[i].y);
-            enemies.add(f);
+            if(GamePanel.LoadState==true)
+            {
+                if(player.getx()<myPointArray3[i].x)
+                {
+                    FlyingEye f=new FlyingEye(tileMap,player);
+                    f.setPosition(myPointArray4[i].x,myPointArray4[i].y);
+                    enemies.add(f);
+                }
+
+            }
+            else {
+                FlyingEye f = new FlyingEye(tileMap, player);
+                f.setPosition(myPointArray4[i].x, myPointArray4[i].y);
+                enemies.add(f);
+            }
         }
         FireMagician FM=new FireMagician(tileMap,player);
         FM.setPosition(3000,20);
@@ -295,7 +387,34 @@ public class Level2State extends GameState{
 
            }
 
+
+
        }
+        if(timeToSave==true) {
+
+
+            JSONObject obj=new JSONObject();
+            obj.put("Health",player.getHealth());
+            obj.put("Score",player.getScore());
+            obj.put("PlayerX",player.getx());
+            obj.put("PlayerY",player.gety());
+            obj.put("PlayerEnergy",player.getEnergy());
+            obj.put("LevelType","Level2State");
+
+
+            try(FileWriter file =new FileWriter("save.json"))
+            {
+
+                file.write(obj.toString());
+                file.flush();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            timeToSave=false;
+        }
 
 
 
@@ -334,6 +453,19 @@ public class Level2State extends GameState{
         hud.draw(g);
         g.drawString("Score:"+ player.Score,230,12);
         drawProjectiles(g);
+        if(player.getx()>2500 && save==false)
+        {   count++;
+            if(count<200) {
+                g.drawString("Saving...", 250, 30);
+            }
+            else if(count>200)
+            {
+                count=0;
+                save=true;
+                timeToSave=true;
+
+            }
+        }
 
         for(int i=0;i<kenzoHeads.size();i++)
         {

@@ -7,14 +7,21 @@ import Entity.Enemies.Goblin;
 import Entity.Enemies.Mushroom;
 import Entity.Enemies.Projectile;
 import Forest.*;
+import Main.Game;
 import Main.GamePanel;
 import TileMap.TileMap;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 import TileMap.Background;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 
 import static java.lang.Math.abs;
 
@@ -41,6 +48,9 @@ public class Level1State extends GameState{
     private HashMap<String,Enemy>BossEnemies;
     private boolean help;
 
+    //saving things
+    private boolean timeToSave;
+    private boolean save;
     public Level1State(GameStateManager gsm)
     {
         this.gsm=gsm;
@@ -53,9 +63,43 @@ public class Level1State extends GameState{
         tileMap.setPosition(0,0);
         this.bg=new Background("/Backgrounds/BG9.png");
         MusicBg=new HashMap<String,AudioPlayer>();
-
         player=new Player(tileMap);
-        player.setPosition(2500,100);
+        if(GamePanel.LoadState==true)
+        {
+            JSONParser parser =new JSONParser();
+            try
+            {
+                Object obj=parser.parse(new FileReader("save.json"));
+                JSONObject jsonObject=(JSONObject) obj;
+                String healthSTR=jsonObject.get("Health").toString();
+                String scoreSTR=jsonObject.get("Score").toString();
+                String pxSTR=jsonObject.get("PlayerX").toString();
+                String pySTR=jsonObject.get("PlayerY").toString();
+                String energySTR=jsonObject.get("PlayerEnergy").toString();
+
+                int health=Integer.parseInt(healthSTR);
+                int score=Integer.parseInt(scoreSTR);
+                int x=Integer.parseInt(pxSTR);
+                int y=Integer.parseInt(pySTR);
+                int energy=Integer.parseInt(energySTR);
+                player.setPosition(x,y);
+                player.setHealth(health);
+                player.setScore(score);
+                player.setEnergy(energy);
+                save=true;
+
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+        else {
+            player.setPosition(100, 100);
+            save=false;
+        }
+
         BossEnemies=new HashMap<String,Enemy>();
 
         populatetrees();
@@ -76,6 +120,8 @@ public class Level1State extends GameState{
         count=0;
         exit=false;
         help=false;
+        timeToSave=false;
+        GamePanel.LoadState=false;
 
 
     }
@@ -165,6 +211,7 @@ public class Level1State extends GameState{
     //Metoda ce populeaza harta cu inamici precum ciuperca,gobin etc
     private void populateEnemies()
     {
+
         enemies=new ArrayList<Enemy>();
         Point[] myPointArray=new Point[]{
                 new Point(450,100),
@@ -185,15 +232,38 @@ public class Level1State extends GameState{
         };
         for(int i=0;i<myPointArray.length;i++)
         {
-            Mushroom m=new Mushroom(tileMap,player);
-            m.setPosition(myPointArray[i].x,myPointArray[i].y);
-            enemies.add(m);
+            if(GamePanel.LoadState==true)
+            {
+                if(player.getx()<myPointArray[i].x)
+                {
+                    Mushroom m=new Mushroom(tileMap,player);
+                    m.setPosition(myPointArray[i].x,myPointArray[i].y);
+                    enemies.add(m);
+                }
+            }
+            else {
+                Mushroom m = new Mushroom(tileMap, player);
+                m.setPosition(myPointArray[i].x, myPointArray[i].y);
+                enemies.add(m);
+            }
         }
         for(int i=0;i<myPointArray2.length;i++)
         {
-            Goblin g=new Goblin(tileMap,player);
-            g.setPosition(myPointArray2[i].x,myPointArray2[i].y);
-            enemies.add(g);
+            if(GamePanel.LoadState==true)
+            {
+                if(player.getx()<myPointArray2[i].x)
+                {
+                    Goblin g=new Goblin(tileMap,player);
+                    g.setPosition(myPointArray2[i].x,myPointArray2[i].y);
+                    enemies.add(g);
+
+                }
+            }
+            else {
+                Goblin g = new Goblin(tileMap, player);
+                g.setPosition(myPointArray2[i].x, myPointArray2[i].y);
+                enemies.add(g);
+            }
         }
         DarkMagician DM=new DarkMagician(tileMap,player);
         DM.setPosition(3000,20);
@@ -359,6 +429,31 @@ public class Level1State extends GameState{
 
 
 
+        if(timeToSave==true) {
+
+
+            JSONObject obj=new JSONObject();
+            obj.put("Health",player.getHealth());
+            obj.put("Score",player.getScore());
+            obj.put("PlayerX",player.getx());
+            obj.put("PlayerY",player.gety());
+            obj.put("PlayerEnergy",player.getEnergy());
+            obj.put("LevelType","Level1State");
+
+
+            try(FileWriter file =new FileWriter("save.json"))
+            {
+
+                file.write(obj.toString());
+                file.flush();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            timeToSave=false;
+        }
 
 
     }
@@ -404,7 +499,20 @@ public class Level1State extends GameState{
         hud.draw(g);
         g.drawString("Score:"+ player.Score,230,12);
         drawProjectiles(g);
-        if(player.getx()>110 && help==false)
+        if(player.getx()>2500 && save==false)
+        {   count++;
+            if(count<200) {
+                g.drawString("Saving...", 250, 30);
+            }
+            else if(count>200)
+            {
+                count=0;
+                save=true;
+                timeToSave=true;
+
+            }
+        }
+        if(player.getx()>110 && help==false&& player.getx()<200)
         {
             count++;
             g.setColor(Color.black);

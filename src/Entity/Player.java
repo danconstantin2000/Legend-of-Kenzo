@@ -134,6 +134,7 @@ public class Player extends MapObject {
     public int getEnergy() { return energy; }
     public int getMaxEnergy() { return maxEnergy; }
     public boolean getFacingRight(){return facingRight;}
+    public int getScore(){return Score;}
     //setters
     public void setSmallAttacking(boolean b) {
         smallAttacking = b;
@@ -147,6 +148,8 @@ public class Player extends MapObject {
         this.health=health;
     }
     public void setFacingRight(boolean b){this.facingRight=b;}
+    public void setScore(int score){this.Score=score;}
+    public void setEnergy(int energy){this.energy=energy;}
     //Verifica atacul dintre player-proiectila ,proiectila-player
     public void checkAttack2(ArrayList<Projectile> projectiles)
     {

@@ -1,4 +1,6 @@
 package GameState;
+
+
 import java.awt.*;
 public class GameStateManager {
     /*
@@ -92,8 +94,7 @@ public class GameStateManager {
     }
 
     //Update currentState
-    public void update()
-    {
+    public void update() {
             if(gameStates[currentState] != null) {
 
                 gameStates[currentState].update();
