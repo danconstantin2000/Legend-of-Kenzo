@@ -13,7 +13,7 @@ import java.io.FileReader;
 public class MenuState extends GameState{
     private Background bg;//Imagine de Background a meniului.
     private int currentChoice=0;//Alegere curenta
-    private String[] options={"Start","Help","Load","Settings","Quit"};//Vector de optiuni
+    private String[] options={"Start","Help","Load","Quit"};//Vector de optiuni
     private Color titleColor;//Culoare titlu
     private Font titleFont;//Font titlu
     private Font font;//Font optiuni
@@ -117,6 +117,7 @@ public class MenuState extends GameState{
         }
         if(currentChoice==1)
         {
+            gsm.setState(GameStateManager.HELPSTATE);
 
         }
         if(currentChoice==2)

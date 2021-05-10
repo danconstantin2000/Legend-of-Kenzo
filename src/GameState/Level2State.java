@@ -273,7 +273,7 @@ public class Level2State extends GameState{
                 MusicBg.remove("Boss");
             }
                 if (player.getSwitchState() || player.getVoid())
-                    gsm.setState(GameStateManager.GAMEOVERSTATE);
+                    gsm.setState(GameStateManager.GAMEOVERSTATE2);
 
 
         }

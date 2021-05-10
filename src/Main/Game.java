@@ -32,6 +32,9 @@ public class Game
         //Fereastra sa fie de dimensiunea setPreferredSize<---GamePanel.
         window.pack();
 
+
+
+
         //Fereastra vizibila.
         window.setVisible(true);
     }
