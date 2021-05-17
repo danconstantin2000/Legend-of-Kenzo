@@ -7,7 +7,6 @@ import Entity.Enemies.Goblin;
 import Entity.Enemies.Mushroom;
 import Entity.Enemies.Projectile;
 import Forest.*;
-import Main.Game;
 import Main.GamePanel;
 import TileMap.TileMap;
 import java.awt.*;
@@ -16,16 +15,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-
 import TileMap.Background;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-
 import static java.lang.Math.abs;
-
-
 public class Level1State extends GameState{
 
     private TileMap tileMap;
@@ -35,7 +28,6 @@ public class Level1State extends GameState{
     private ArrayList<Explosion>explosions;
     private ArrayList<KenzoHead>kenzoHeads;
     private HUD hud;
-
     private ArrayList<ForestThings>forest;
     private boolean Switch;
     private AudioPlayer KHAudio;
@@ -47,12 +39,9 @@ public class Level1State extends GameState{
     private boolean exit;
     private HashMap<String,Enemy>BossEnemies;
     private boolean help;
-
-    //saving things
     private boolean timeToSave;
     private boolean save;
-    public Level1State(GameStateManager gsm)
-    {
+    public Level1State(GameStateManager gsm) {
         this.gsm=gsm;
         init();
     }
@@ -64,44 +53,8 @@ public class Level1State extends GameState{
         this.bg=new Background("/Backgrounds/BG9.png");
         MusicBg=new HashMap<String,AudioPlayer>();
         player=new Player(tileMap);
-        if(GamePanel.LoadState==true)
-        {
-            JSONParser parser =new JSONParser();
-            try
-            {
-                Object obj=parser.parse(new FileReader("save.json"));
-                JSONObject jsonObject=(JSONObject) obj;
-                String healthSTR=jsonObject.get("Health").toString();
-                String scoreSTR=jsonObject.get("Score").toString();
-                String pxSTR=jsonObject.get("PlayerX").toString();
-                String pySTR=jsonObject.get("PlayerY").toString();
-                String energySTR=jsonObject.get("PlayerEnergy").toString();
-
-                int health=Integer.parseInt(healthSTR);
-                int score=Integer.parseInt(scoreSTR);
-                int x=Integer.parseInt(pxSTR);
-                int y=Integer.parseInt(pySTR);
-                int energy=Integer.parseInt(energySTR);
-                player.setPosition(x,y);
-                player.setHealth(health);
-                player.setScore(score);
-                player.setEnergy(energy);
-                save=true;
-
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
-
-        }
-        else {
-            player.setPosition(100, 100);
-            save=false;
-        }
-
+        loadfromJsonFile();
         BossEnemies=new HashMap<String,Enemy>();
-
         populatetrees();
         populateEnemies();
         hud=new HUD(player);
@@ -122,13 +75,41 @@ public class Level1State extends GameState{
         help=false;
         timeToSave=false;
         GamePanel.LoadState=false;
-
-
     }
-
-    //Metoda ce populeaza harta cu ruine,copaci,tufisuri..
-    private void populatetrees()
-    {
+    private void loadfromJsonFile() {
+        if(GamePanel.LoadState==true) {
+            JSONParser parser =new JSONParser();
+            try
+            {
+                Object obj=parser.parse(new FileReader("save.json"));
+                JSONObject jsonObject=(JSONObject) obj;
+                String healthSTR=jsonObject.get("Health").toString();
+                String scoreSTR=jsonObject.get("Score").toString();
+                String pxSTR=jsonObject.get("PlayerX").toString();
+                String pySTR=jsonObject.get("PlayerY").toString();
+                String energySTR=jsonObject.get("PlayerEnergy").toString();
+                int health=Integer.parseInt(healthSTR);
+                int score=Integer.parseInt(scoreSTR);
+                int x=Integer.parseInt(pxSTR);
+                int y=Integer.parseInt(pySTR);
+                int energy=Integer.parseInt(energySTR);
+                player.setPosition(x,y);
+                player.setHealth(health);
+                player.setSCORE(score);
+                player.setEnergy(energy);
+                save=true;
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else {
+            player.setPosition(100, 100);
+            save=false;
+        }
+    }
+    private void populatetrees() {
         forest=new ArrayList<ForestThings>();
         Point[] myPointArrayTrees=new Point[]{
                 new Point(100,100),
@@ -201,11 +182,8 @@ public class Level1State extends GameState{
             forest.add(r);
         }
 
-
     }
-    //Metoda ce populeaza harta cu inamici precum ciuperca,gobin etc
-    private void populateEnemies()
-    {
+    private void populateEnemies() {
 
         enemies=new ArrayList<Enemy>();
         Point[] myPointArray=new Point[]{
@@ -265,12 +243,8 @@ public class Level1State extends GameState{
         BossEnemies.put("Boss",DM);
         enemies.add(DM);
 
-
     }
-
-    //Metode de update
-    private void musicThings()
-    {
+    private void musicThings() {
         if(MusicBg.containsKey("bg") && MusicBg.containsKey("Boss")) {
             if (player.getx() == 2700) {
                 MusicBg.get("bg").stop();
@@ -292,9 +266,7 @@ public class Level1State extends GameState{
         }
 
     }
-    private void updateAllEnemies()
-    {
-
+    private void updateAllEnemies() {
         for(int i=0;i<enemies.size();i++)
         {
             Enemy e=enemies.get(i);
@@ -335,8 +307,7 @@ public class Level1State extends GameState{
             }
         }
     }
-    private void GameOver()
-    {
+    private void GameOver() {
         if(player.isDead())
         {
             if(MusicBg.containsKey("bg") && MusicBg.containsKey("Boss")) {
@@ -347,7 +318,6 @@ public class Level1State extends GameState{
             }
             if (player.getSwitchState() || player.getVoid())
                 gsm.setState(GameStateManager.GAMEOVERSTATE);
-
 
         }
     }
@@ -361,22 +331,7 @@ public class Level1State extends GameState{
             }
         }
     }
-    /*Metoda de update care:
-        -actualizeaza starea player-ului
-        -actualizeaza harta
-        -verifica atacurile dintre player-inamic,player-proiectila
-        -actualizeaza inamicii
-        -actualizeaza proiectilele
-        -actualizeaza sunetele
-
-     */
-    public void update() {
-
-        player.update();
-        tileMap.setPosition(GamePanel.WIDTH/2-player.getx(),GamePanel.HEIGHT/2-player.gety());
-        player.checkAttack(enemies);
-        player.checkAttack2(Projectile.projectiles);
-
+    private void playerIntersectedHead() {
         if(!kenzoHeads.isEmpty())
             if(player.intersects(kenzoHeads.get(0)))
             {
@@ -384,14 +339,12 @@ public class Level1State extends GameState{
                 player.setHealth(5);
                 kenzoHeads.get(0).setRemove(true);
             }
-        updateAllEnemies();
-        musicThings();
-        GameOver();
-        updateAllProjectiles();
+    }
+    private void BossFight() {
         if(player.getx()>2800)
         {
-          Switch=true;
-          player.setJumpStart(-3.5);
+            Switch=true;
+            player.setJumpStart(-3.5);
         }
         if(Switch==true)
         {
@@ -400,6 +353,8 @@ public class Level1State extends GameState{
                 tileMap.setTiles(i,155,11);
             }
         }
+    }
+    private void updateHeads() {
         for(int i=0;i<kenzoHeads.size();i++)
         {
             kenzoHeads.get(i).update();
@@ -409,6 +364,8 @@ public class Level1State extends GameState{
                 i--;
             }
         }
+    }
+    private void portalSpawn() {
         if(timeToSpawnPortal)
         {
             level2Portal=new Portal(tileMap);
@@ -425,8 +382,8 @@ public class Level1State extends GameState{
                 gsm.setState(GameStateManager.LOADINGSTATE2);
             }
 
-
-
+    }
+    private void TimeToSave() {
         if(timeToSave==true) {
 
 
@@ -455,11 +412,23 @@ public class Level1State extends GameState{
 
 
     }
+    public void update() {
+        player.update();
+        tileMap.setPosition(GamePanel.WIDTH/2-player.getx(),GamePanel.HEIGHT/2-player.gety());
+        player.checkAttack(enemies);
+        player.checkAttack2(Projectile.projectiles);
+        playerIntersectedHead();
+        updateAllEnemies();
+        musicThings();
+        GameOver();
+        updateAllProjectiles();
+        BossFight();
+        updateHeads();
+        portalSpawn();
+        TimeToSave();
+    }
 
-
-    //Metode de draw
-    private void drawForest(Graphics2D g)
-    {
+    private void drawForest(Graphics2D g) {
 
         for(int i=0;i<forest.size();i++)
         {
@@ -467,50 +436,25 @@ public class Level1State extends GameState{
             forest.get(i).draw(g);
         }
     }
-    private void drawEnemies(Graphics2D g)
-    {
+    private void drawEnemies(Graphics2D g) {
         for(int i=0;i<enemies.size();i++)
         {
             enemies.get(i).draw(g);
         }
-        //draw explotions
         for(int i=0;i<explosions.size();i++)
         {
             explosions.get(i).setMapPosition((int)tileMap.getx(), (int)tileMap.gety());
             explosions.get(i).draw(g);
         }
     }
-    private void drawProjectiles(Graphics2D g)
-    {
+    private void drawProjectiles(Graphics2D g) {
         for(int i=0;i<Projectile.projectiles.size();i++)
         {
             Projectile.projectiles.get(i).draw(g);
         }
 
     }
-    public void draw(Graphics2D g) {
-
-        bg.draw(g);
-        drawForest(g);
-        tileMap.draw(g);
-        player.draw(g);
-        drawEnemies(g);
-        hud.draw(g);
-        g.drawString("Score:"+ player.getScore(),230,12);
-        drawProjectiles(g);
-        if(player.getx()>2500 && save==false)
-        {   count++;
-            if(count<200) {
-                g.drawString("Saving...", 250, 30);
-            }
-            else if(count>200)
-            {
-                count=0;
-                save=true;
-                timeToSave=true;
-
-            }
-        }
+    private void drawTutorial(Graphics2D g) {
         if(player.getx()>110 && help==false&& player.getx()<200)
         {
             count++;
@@ -549,6 +493,23 @@ public class Level1State extends GameState{
             }
 
         }
+    }
+    private void drawSaving(Graphics2D g) {
+        if(player.getx()>2500 && save==false)
+        {   count++;
+            if(count<200) {
+                g.drawString("Saving...", 250, 30);
+            }
+            else if(count>200)
+            {
+                count=0;
+                save=true;
+                timeToSave=true;
+
+            }
+        }
+    }
+    private void drawHeads(Graphics2D g) {
         for(int i=0;i<kenzoHeads.size();i++)
         {
             kenzoHeads.get(i).draw(g);
@@ -558,7 +519,8 @@ public class Level1State extends GameState{
         {
             level2Portal.draw(g);
         }
-
+    }
+    private void drawBossDialogue(Graphics2D g) {
         if(abs(player.getx()-BossEnemies.get("Boss").getx())<110 && exit==false)
         {
             g.setColor(Color.black);
@@ -595,8 +557,21 @@ public class Level1State extends GameState{
         }
 
     }
+    public void draw(Graphics2D g) {
 
-
+        bg.draw(g);
+        drawForest(g);
+        tileMap.draw(g);
+        player.draw(g);
+        drawEnemies(g);
+        hud.draw(g);
+        g.drawString("Score:"+ player.getScore(),230,12);
+        drawProjectiles(g);
+        drawTutorial(g);
+        drawSaving(g);
+        drawHeads(g);
+        drawBossDialogue(g);
+    }
     public void keyPressed(int k) {
         if(player.getHealth()!=0 ) {
             if (k == KeyEvent.VK_LEFT) player.setLeft(true);
@@ -608,7 +583,6 @@ public class Level1State extends GameState{
             if (k == KeyEvent.VK_F) player.setSmallAttacking(true);
         }
     }
-
     public void keyReleased(int k) {
         if(k == KeyEvent.VK_LEFT) player.setLeft(false);
         if(k == KeyEvent.VK_RIGHT) player.setRight(false);

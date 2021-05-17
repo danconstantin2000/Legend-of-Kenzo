@@ -1,15 +1,10 @@
 package Entity.Enemies;
-
 import Entity.Animation;
-import Entity.MapObject;
 import Entity.Player;
 import TileMap.TileMap;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
-
 import static java.lang.Math.abs;
 
 public class FlyingEyeProj  extends Projectile{
@@ -21,16 +16,13 @@ public class FlyingEyeProj  extends Projectile{
     private Player myPlayer;
     private int damage;
     private int health;
-    public FlyingEyeProj(TileMap tm, boolean right,Player p)
-    {
-
+    public FlyingEyeProj(TileMap tm, boolean right,Player p) {
         super(tm);
         moveSpeed=2.25;
         facingRight=right;
         if(right)
         {
             dx=moveSpeed;
-
         }
         else
         {
@@ -40,7 +32,6 @@ public class FlyingEyeProj  extends Projectile{
         height=48;
         cwidth=14;
         cheight=15;
-
         health=1;
         damage=1;
         myPlayer=p;
@@ -60,28 +51,22 @@ public class FlyingEyeProj  extends Projectile{
             animation=new Animation();
             animation.setFrames(sprites);
             animation.setDelay(200);
-
         }
         catch(Exception e)
         {
             e.printStackTrace();
         }
-
     }
     public int getDamage()
     {
         return damage;
     }
-
-    public void hit(int damage)
-    {
+    public void hit(int damage) {
         health-=damage;
         if(health<0){health=0;}
         if(health==0)setHit();
     }
-
-    public void setHit()
-    {
+    public void setHit() {
         if(hit)return;
         hit=true;
         animation.setFrames(hitSprites);
@@ -90,10 +75,7 @@ public class FlyingEyeProj  extends Projectile{
 
     }
     public boolean shouldRemove(){return remove;}
-    public void update()
-    {
-        checkTileMapCollision();
-        setPosition(xtemp,ytemp);
+    private void AttackThings() {
         if(dx==0 && !hit)
         {
             setHit();
@@ -112,11 +94,14 @@ public class FlyingEyeProj  extends Projectile{
         {
             setHit();
         }
-        animation.update();
-
     }
-    public void draw(Graphics2D g)
-    {
+    public void update() {
+        checkTileMapCollision();
+        setPosition(xtemp,ytemp);
+        AttackThings();
+        animation.update();
+    }
+    public void draw(Graphics2D g) {
         setMapPosition();
         if (facingRight) {
             g.drawImage(

@@ -1,11 +1,8 @@
 package Entity.Enemies;
-
 import Entity.MapObject;
 import TileMap.TileMap;
-
 import java.awt.*;
 import java.util.ArrayList;
-
 abstract public class Projectile extends MapObject {
     public static ArrayList<Projectile> projectiles;
     public Projectile(TileMap tm)

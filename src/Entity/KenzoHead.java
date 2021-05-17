@@ -1,9 +1,5 @@
 package Entity;
-
-import Entity.MapObject;
-import Forest.ForestThings;
 import TileMap.TileMap;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -12,8 +8,7 @@ public class KenzoHead extends MapObject{
 
     private BufferedImage image;
     private boolean remove;
-    public KenzoHead(TileMap tm)
-    {
+    public KenzoHead(TileMap tm) {
         super(tm);
         height=20;
         width=32;
@@ -31,13 +26,10 @@ public class KenzoHead extends MapObject{
         }
 
     }
-    private void getNextPosition()
-    {
-        // movement
+    private void getNextPosition() {
         if(falling)
         {
             dy+=fallSpeed;
-
         }
     }
     public void setRemove(boolean b)
@@ -48,17 +40,12 @@ public class KenzoHead extends MapObject{
     {
         return remove;
     }
-
-    public void update()
-    {
+    public void update() {
         getNextPosition();
         checkTileMapCollision();
         setPosition(xtemp,ytemp);
     }
-
-
-    public void draw(Graphics2D g)
-    {
+    public void draw(Graphics2D g) {
         setMapPosition();
 
         g.drawImage(

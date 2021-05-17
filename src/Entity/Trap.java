@@ -1,10 +1,5 @@
 package Entity;
-
-
-import Entity.MapObject;
-import Forest.ForestThings;
 import TileMap.TileMap;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -12,8 +7,7 @@ import java.awt.image.BufferedImage;
 public class Trap extends MapObject{
 
     private BufferedImage image;
-    public Trap(TileMap tm)
-    {
+    public Trap(TileMap tm) {
         super(tm);
         height=16;
         width=48;
@@ -31,29 +25,20 @@ public class Trap extends MapObject{
         }
 
     }
-    private void getNextPosition()
-    {
-        // movement
+    private void getNextPosition() {
         if(falling)
         {
             dy+=fallSpeed;
 
         }
     }
-
-
-    public void update()
-    {
+    public void update() {
         getNextPosition();
         checkTileMapCollision();
         setPosition(xtemp,ytemp);
     }
-
-
-    public void draw(Graphics2D g)
-    {
+    public void draw(Graphics2D g) {
         setMapPosition();
-
         g.drawImage(
                 image,
                 (int) (x + xmap - width / 2),

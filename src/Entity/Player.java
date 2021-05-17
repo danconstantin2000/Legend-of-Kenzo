@@ -1,6 +1,5 @@
 package Entity;
 import Audio.AudioPlayer;
-import Entity.Enemies.DarkMagician;
 import Entity.Enemies.Projectile;
 import Main.GamePanel;
 import TileMap.*;
@@ -9,11 +8,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
-
-//Clasa personajului principal(Kenzo)
 public class Player extends MapObject {
-
-    //informatii player
     private int health;
     private int maxHealth;
     private int energy;
@@ -21,29 +16,21 @@ public class Player extends MapObject {
     private boolean dead;
     private boolean flinching;
     private long flinchTimer;
-    //longAttack
     private boolean longAttacking;
     private int energyCost;
     private int longAttackDamage;
     private int longAttackRange;
-    //smallAttack
     private boolean smallAttacking;
     private int smallAttackDamage;
     private int smallAttackRange;
-
-    //Variabila pentru a verifica necesitatea de a trece la gameoverState
     private  boolean switchState;
-    //variabila pentru a verifica caderea in gol
     private boolean Void;
     private static int SCORE=0;
-
-    // spritesheet
     private ArrayList<BufferedImage[]> sprites;
     private final int[] numFrames = {
             6, 6, 6, 2, 8, 2,8
     };
 
-    //Animatii spritesheet
     private static final int LONGATTACK = 0;
     private static final int SMALLATTACK=1;
     private static final int DEATH = 2;
@@ -52,16 +39,12 @@ public class Player extends MapObject {
     private static final int JUMPING=5;
     private static final int RUNNING=6;
     private HashMap<String, AudioPlayer> sfx;
-    //constructor
     public Player(TileMap tm) {
         super(tm);
-        //inaltime si latime de citire din spritesheet
         width = 200;
         height = 200;
-        //inatime si latime de coliziune
         cwidth =20;
         cheight =26;
-        //atributii
         moveSpeed = 0.3;
         maxSpeed = 1.6;
         stopSpeed = 0.4;
@@ -78,7 +61,6 @@ public class Player extends MapObject {
         smallAttackRange=100;
         longAttackDamage = 3;
         longAttackRange = 100;
-        // Incarca sprite-urile
         try {
 
             BufferedImage spritesheet = ImageIO.read(
@@ -120,10 +102,7 @@ public class Player extends MapObject {
         sfx.put("herodeath",new AudioPlayer("/SFX/Hero_Dies.mp3"));
         sfx.put("enemy_take_dmg",new AudioPlayer("/SFX/Enemy_Damage.mp3"));
         sfx.put("hero_take_dmg",new AudioPlayer("/SFX/Hero_TakesDMG.wav"));
-
     }
-
-    //getters
     public boolean isJumping(){return !(dy==0);}
     public boolean getVoid(){return Void;}
     public boolean getSwitchState(){return switchState;}
@@ -134,7 +113,6 @@ public class Player extends MapObject {
     public int getMaxEnergy() { return maxEnergy; }
     public boolean getFacingRight(){return facingRight;}
     public int getScore(){return SCORE;}
-    //setters
     public void setSmallAttacking(boolean b) {
         smallAttacking = b;
     }
@@ -156,17 +134,11 @@ public class Player extends MapObject {
     {
         SCORE=score;
     }
-
-    //Verifica atacul dintre player-proiectila ,proiectila-player
-    public void checkAttack2(ArrayList<Projectile> projectiles)
-    {
+    public void checkAttack2(ArrayList<Projectile> projectiles) {
         for(int i=0;i<projectiles.size();i++) {
             Projectile mp = projectiles.get(i);
-            //Cand ia proiectila damage.
-            //Daca playerul folosest longattack-ul:
             if (longAttacking) {
                 if (facingRight) {
-                    //Daca proiectila este la dreapta player-ului,dar este in range-ul atacului,inseamna ca acesta s-a produs.
                     if (mp.getx() > x && mp.getx() < x + longAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
                         mp.hit(longAttackDamage);
                         sfx.get("enemy_take_dmg").play();
@@ -178,24 +150,19 @@ public class Player extends MapObject {
                         sfx.get("enemy_take_dmg").play();
                     }
                 }
-                //Daca Playerul foloseste smallattack-ul:
             } else if (smallAttacking) {
                 if (facingRight) {
-                    //Daca proiectila este la dreapta player-ului,dar este in range-ul atacului,inseamna ca acesta s-a produs.
                     if (mp.getx() > x && mp.getx() < x + smallAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
                         mp.hit(smallAttackDamage);
                         sfx.get("enemy_take_dmg").play();
                     }
                 } else {
-                    //Daca proiectila este la stanga playerului in timp ce el priveste spre stanga,dar este in range-ul atacului,inseamna ca acesta s-a produs.
                     if (mp.getx() < x && mp.getx() > x - smallAttackRange && mp.gety() > y - height / 2 && mp.gety() < y + height / 2) {
                         mp.hit(smallAttackDamage);
                         sfx.get("enemy_take_dmg").play();
                     }
                 }
             }
-            //Cand ia playerul damage:
-            //Daca playerul se intersecteaza cu proiectila,aceasta se distruge si ia din viata playerului.
             if(intersects(mp))
             {
                 Projectile.projectiles.get(i).setHit();
@@ -203,12 +170,9 @@ public class Player extends MapObject {
             }
         }
     }
-//Similar ca atacul cu proiectile dar este cu inamici
-    public void checkAttack(ArrayList<Enemy> enemies)
-    {
+    public void checkAttack(ArrayList<Enemy> enemies) {
         for(int i=0;i<enemies.size();i++) {
             Enemy e = enemies.get(i);
-            //long attack
             if (longAttacking) {
                 if (facingRight) {
                     if (e.getx() > x && e.getx() < x + longAttackRange && e.gety() > y - height / 2 && e.gety() < y + height / 2) {
@@ -248,12 +212,8 @@ public class Player extends MapObject {
             }
 
         }
-
-
     }
-    //Playerul a fost nimerit
-    public void hit(int damage)
-    {
+    public void hit(int damage) {
         if(flinching)return;
         health-=damage;
         if(health==0)flinching=false;
@@ -263,9 +223,7 @@ public class Player extends MapObject {
         flinching=true;
         flinchTimer=System.nanoTime();
     }
-//La fiecare longAttack,se scade 500 din totalul de 2500 de energie.Aceasta se incarca inapoi treptat.
-    public void EnergyActions()
-    {
+    public void EnergyActions() {
         if(longAttacking) {
 
             if (energy < energyCost) {
@@ -280,27 +238,21 @@ public class Player extends MapObject {
         }
         energy++;
     }
-
     private void getNextPosition() {
 
-        //Daca se apasa sageata stanga playerul se misca inapoi pe harta.
         if(left) {
             dx -= moveSpeed;
-            //Se atinge viteza maxima treptat si aceasta nu mai poate fi depasita.
             if(dx < -maxSpeed) {
                 dx = -maxSpeed;
             }
         }
-        //Daca se apasa sageata dreapta ,playerul se misca in fata.
         else if(right) {
             dx += moveSpeed;
-            //Se atinge viteza maxima treptat si aceasta nu mai poate fi depasita.
             if(dx > maxSpeed) {
                 dx = maxSpeed;
             }
         }
         else {
-            //Daca tasta nu mai este apasata,playerul nu se mai poate misca si trebuie incetinit
             if(dx > 0) {
                 dx -= stopSpeed;
                 if(dx < 0) {
@@ -315,32 +267,22 @@ public class Player extends MapObject {
             }
         }
 
-        //In timp ce playerul ataca si nu se afla in aer,el nu se poate misca.
         if((currentAction == SMALLATTACK|| currentAction == LONGATTACK) && !(jumping || falling)) {
             dx = 0;
         }
-        //Daca playerul sare,trebuie setata si aterizarea.
         if(jumping && !falling) {
             dy = jumpStart;
             falling = true;
         }
 
-        // Playerul aterizeaza cu viteza fallSpeed.
         if(falling) {
             dy += fallSpeed ;
-            //Daca dy>0,acesta nu mai poate sari.
             if(dy > 0) jumping = false;
-            //Daca playerul se afla in aer ,el aterizeaza cu viteza stopJumpSpeed.
             if(dy < 0 && !jumping) dy += stopJumpSpeed;
-            //Cand atinge viteza maxFallSpeed,acesta nu o poate depasi.
             if(dy > maxFallSpeed) dy = maxFallSpeed;
         }
-
-
     }
-
-    private void shouldSwitchState()
-    {
+    private void shouldSwitchState() {
         if(currentAction==DEATH)
         {
             if(animation.hasPlayedOnce())
@@ -349,9 +291,7 @@ public class Player extends MapObject {
             }
         }
     }
-    //Daca animatia pentru atac s-a terminat,s-a terminat si atacul.
-    private void turnOffAttacks()
-    {
+    private void turnOffAttacks() {
 
         if(currentAction==LONGATTACK)
         {
@@ -371,10 +311,7 @@ public class Player extends MapObject {
             }
         }
     }
-
-    //Calcul pentru incetarea Flinching-ului(Cand un obiect ia damage,acesta are flinching-ul activat)
-    private void turnOffFlinching()
-    {
+    private void turnOffFlinching() {
         if(flinching)
         {
             long elapsed=(System.nanoTime()-flinchTimer)/1000000;
@@ -384,9 +321,7 @@ public class Player extends MapObject {
             }
         }
     }
-    //Setaria animatiilor din spritesheet.In functie de setarea actiunii,sprite-ul corespuznator se va actualiza pe ecran.
-    private void setAnimations()
-    {
+    private void setAnimations() {
             if(longAttacking) {
                 if(currentAction != LONGATTACK) {
                     sfx.get("longattack").play();
@@ -454,20 +389,14 @@ public class Player extends MapObject {
             }
 
     }
-    //Setaria directiei dreapta-stanga.
-    private void setDirection()
-    {
+    private void setDirection() {
 
             if(right) facingRight = true;
             if(left) {
                 facingRight = false;
             }
     }
-
-
-    private void voidFall()
-    {
-        //Metoda pentru verificarea iesirii de pe ecran cand playerul cade in gol.
+    private void voidFall() {
         if(  y+ymap+cheight> GamePanel.HEIGHT)
         {
 
@@ -475,10 +404,8 @@ public class Player extends MapObject {
             Void=true;
         }
     }
-    //Metoda de update.Se apeleaza toate metodele de mai sus
     public void update() {
 
-        // update position
         getNextPosition();
         checkTileMapCollision();
         setPosition(xtemp, ytemp);
@@ -495,15 +422,11 @@ public class Player extends MapObject {
             right=left=false;
         }
 
-
     }
-    //Metoda de draw.Am tratat mai multe cazuri pentru a fi desenat corect player-ul pe ecran in functie de mai multe sprite-uri.
-
     public void draw(Graphics2D g) {
 
         setMapPosition();
 
-        // draw player
         if(flinching) {
             long elapsed =
                     (System.nanoTime() - flinchTimer) / 1000000;
@@ -598,7 +521,6 @@ public class Player extends MapObject {
         }
 
     }
-
 
 }
 

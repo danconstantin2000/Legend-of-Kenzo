@@ -7,8 +7,7 @@ import javax.sound.sampled.Clip;
 
 public class AudioPlayer {
     private Clip clip;
-    public AudioPlayer(String s)
-    {
+    public AudioPlayer(String s) {
         try
         {
             AudioInputStream ais= AudioSystem.getAudioInputStream(getClass().getResourceAsStream(s));
@@ -29,8 +28,7 @@ public class AudioPlayer {
             e.printStackTrace();
         }
     }
-    public void play()
-    {
+    public void play() {
         if(clip==null)return;
         stop();
         clip.setFramePosition(0);
@@ -40,13 +38,11 @@ public class AudioPlayer {
     {
         if(clip.isRunning())clip.stop();
     }
-    public void close()
-    {
+    public void close() {
         stop();
         clip.close();
     }
-    public boolean hasStopped()
-    {
+    public boolean hasStopped() {
         if(!clip.isRunning())
         {
             return true;

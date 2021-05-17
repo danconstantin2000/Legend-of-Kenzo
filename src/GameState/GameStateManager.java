@@ -3,29 +3,9 @@ package GameState;
 
 import java.awt.*;
 public class GameStateManager {
-    /*
-        -GameState[] gameStates;
-        -int currentState;
-        +static final int NUMGAMESTATES;
-        +static final int MENUSTATE;
-        +static final int LEVEL1STATE;
-        +static final int GAMEOVERSTATE;
-        +static final int LOADING STATE;
-        Metode:
-        +GameStateManager()
-        -void loadState(int state)
-        -void unloadState(int state)
-        +void setState(int state)
-        +void update()
-        +void draw(Graphics2D g)
-        +void keyPressed(int k)
-        +void keyReleased(int k)
-        Clasa cu rolul de manager al State-urilor
-
-    * */
-    private GameState[] gameStates;//GameStates array;
-    private int currentState;//State curent
-    public static final int NUMGAMESTATES=9;//Numar total de State-uri
+    private GameState[] gameStates;
+    private int currentState;
+    public static final int NUMGAMESTATES=9;
     public static final int MENUSTATE=0;
     public static final int LEVEL1STATE=1;
     public static final int GAMEOVERSTATE=2;
@@ -35,26 +15,13 @@ public class GameStateManager {
     public static final int GAMEOVERSTATE2=6;
     public static final int HELPSTATE=7;
     public static final int ENDSTATE=8;
-    //La alegerea optiunii Start din meniu dureaza putin sa se incarce toate obiectele
-    //pe harta asa ca am facut acest state "intermediar"de unde se face intrarea in level1State.
 
-    //Constructor GameStateManager
-    public GameStateManager()
-    {
+    public GameStateManager() {
         gameStates=new GameState[NUMGAMESTATES];
-        currentState=MENUSTATE;//Seteaza State-ul curent ca fiind MENUSTATE.
-        loadState(currentState);//Incarca state-ul curent.
+        currentState=MENUSTATE;
+        loadState(currentState);
     }
-
-
-    private void loadState(int state)
-    {
-        /*
-            if(state==flag)
-            {
-                    Instantiere state.
-            }
-         */
+    private void loadState(int state) {
         if(state==MENUSTATE)
         {
             gameStates[state]=new MenuState(this);
@@ -93,38 +60,26 @@ public class GameStateManager {
 
         }
     }
-
     private void unloadState(int state)
     {
         gameStates[state]=null;
     }
-
-
-    public void setState(int state)
-    {
-        //Seteaza un nou state, punand state-ul current pe null
+    public void setState(int state) {
         unloadState(currentState);
         currentState=state;
         loadState(currentState);
-
     }
-
-    //Update currentState
     public void update() {
             if(gameStates[currentState] != null) {
 
                 gameStates[currentState].update();
             }
     }
-    //draw CurrentState
-    public void draw(Graphics2D g)
-    {
+    public void draw(Graphics2D g) {
         try {
             if(gameStates[currentState] != null) gameStates[currentState].draw(g);
         }catch(Exception e){}
     }
-
-
     public void keyPressed(int k)
     {
        if(gameStates[currentState]!=null) gameStates[currentState].keyPressed(k);

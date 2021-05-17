@@ -1,14 +1,7 @@
 package GameState;
-
-import Main.GamePanel;
 import TileMap.Background;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.FileReader;
 
 public class HelpState extends GameState{
 
@@ -16,13 +9,11 @@ public class HelpState extends GameState{
     private Font titleFont;
     private Color titleColor;
     private Font font;
-    private int currentChoice=0;//Alegere curenta
-    private String[] options={"Back"};//Vector de optiuni
-    public HelpState(GameStateManager gsm)
-    {
+    private int currentChoice=0;
+    private String[] options={"Back"};
+    public HelpState(GameStateManager gsm) {
         this.gsm=gsm;
         try{
-            //Initializari
             init();
         }
         catch(Exception e)
@@ -30,16 +21,14 @@ public class HelpState extends GameState{
             e.printStackTrace();
         }
     }
-    public void init()
-    {
+    public void init() {
         bg=new Background("/Backgrounds/BG4.png");
         titleColor=new Color(0,0,0);
         titleFont=new Font("Courier New",Font.BOLD,18);
         font=new Font("Courier New",Font.PLAIN,12);
     }
     public void update(){}
-    public void draw(Graphics2D g)
-    {
+    public void draw(Graphics2D g) {
         bg.draw(g);
         g.setColor(titleColor);
         g.setFont(titleFont);
@@ -57,30 +46,19 @@ public class HelpState extends GameState{
         g.drawString("F = Attack 2;",10,195);
 
         for(int i=0;i<options.length;i++)
-        {
-
-
-                if (i == currentChoice) {
+        {   if (i == currentChoice) {
                     g.setColor(Color.blue);
                 } else {
                     g.setColor(Color.BLACK);
                 }
-                //Draw options
                 g.drawString(options[i], 145, 200 + i * 15);
-
-
-
         }
 
-
     }
-    private void select()
-    {
-        //In functie de optiune,putem face trecerea la un nou state etc;
+    private void select() {
         if(currentChoice==0)
         {
             gsm.setState(GameStateManager.MENUSTATE);
-
         }
     }
     public void keyPressed(int k) {
@@ -104,7 +82,6 @@ public class HelpState extends GameState{
 
         }
     }
-
     public void keyReleased(int k) { }
 
 }

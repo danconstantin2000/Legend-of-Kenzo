@@ -1,15 +1,10 @@
 package Entity.Enemies;
-
 import Entity.Animation;
-import Entity.MapObject;
 import Entity.Player;
 import TileMap.TileMap;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
-
 import static java.lang.Math.abs;
 
 public class MushroomProjectile  extends Projectile{
@@ -21,8 +16,7 @@ public class MushroomProjectile  extends Projectile{
     private Player myPlayer;
     private int damage;
     private int health;
-    public MushroomProjectile(TileMap tm, boolean right,Player p)
-    {
+    public MushroomProjectile(TileMap tm, boolean right,Player p) {
 
         super(tm);
         moveSpeed=2.25;
@@ -30,7 +24,6 @@ public class MushroomProjectile  extends Projectile{
         if(right)
         {
             dx=moveSpeed;
-
         }
         else
         {
@@ -40,7 +33,6 @@ public class MushroomProjectile  extends Projectile{
         height=50;
         cwidth=14;
         cheight=15;
-
         health=1;
         damage=1;
         myPlayer=p;
@@ -60,28 +52,22 @@ public class MushroomProjectile  extends Projectile{
              animation=new Animation();
              animation.setFrames(sprites);
              animation.setDelay(200);
-
         }
         catch(Exception e)
         {
             e.printStackTrace();
         }
-
     }
     public int getDamage()
     {
         return damage;
     }
-
-    public void hit(int damage)
-    {
+    public void hit(int damage) {
         health-=damage;
         if(health<0){health=0;}
         if(health==0)setHit();
     }
-
-    public void setHit()
-    {
+    public void setHit() {
         if(hit)return;
         hit=true;
         animation.setFrames(hitSprites);
@@ -90,13 +76,10 @@ public class MushroomProjectile  extends Projectile{
 
     }
     public boolean shouldRemove(){return remove;}
-    public void update()
-    {
-        checkTileMapCollision();
-        setPosition(xtemp,ytemp);
+    private void attackThings() {
         if(dx==0 && !hit)
         {
-           setHit();
+            setHit();
         }
         if(hit &&animation.hasPlayedOnce())
         {
@@ -112,11 +95,14 @@ public class MushroomProjectile  extends Projectile{
         {
             setHit();
         }
-        animation.update();
-
     }
-    public void draw(Graphics2D g)
-    {
+    public void update() {
+        checkTileMapCollision();
+        setPosition(xtemp,ytemp);
+        attackThings();
+        animation.update();
+    }
+    public void draw(Graphics2D g) {
         setMapPosition();
         if (facingRight) {
             g.drawImage(
@@ -142,6 +128,5 @@ public class MushroomProjectile  extends Projectile{
 
         }
     }
-
 
 }

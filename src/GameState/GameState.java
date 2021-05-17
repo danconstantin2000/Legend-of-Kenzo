@@ -1,10 +1,5 @@
 package GameState;
 
-
-/*
-Clasa abstracta mostenita de fiecare gamestate;
-*
-* */
 public abstract  class GameState {
     protected GameStateManager gsm;
     public abstract void init();

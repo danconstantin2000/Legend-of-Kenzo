@@ -1,29 +1,20 @@
 package Entity.Enemies;
-
 import Audio.AudioPlayer;
 import Entity.Animation;
 import Entity.Enemy;
 import Entity.Player;
 import TileMap.TileMap;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
-import java.util.ArrayList;
-
 import static java.lang.Math.abs;
 
 public class Skeleton extends Enemy {
     private AudioPlayer sfx;
     private BufferedImage[]sprites;
     private Player myPlayer;
-
-    public Skeleton(TileMap tm,Player p)
-    {
-
+    public Skeleton(TileMap tm,Player p) {
         super(tm);
-
         moveSpeed=0.3;
         maxSpeed=0.3;
         fallSpeed=0.2;
@@ -55,28 +46,15 @@ public class Skeleton extends Enemy {
         left=false;
         right=false;
         sfx=new AudioPlayer("/SFX/Bomb-Explosion.mp3");
-
-
-
     }
-    private void getNextPosition()
-    {
-        // movement
+    private void getNextPosition() {
         if(falling)
         {
             dy+=fallSpeed;
 
         }
-
-
     }
-    public void update()
-    {
-
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(xtemp,ytemp);
-
+    private void faceByPlayerPoz() {
         if(myPlayer.getx()>this.x)
         {
             facingRight=true;
@@ -85,6 +63,8 @@ public class Skeleton extends Enemy {
         {
             facingRight=false;
         }
+    }
+    private void startAttack() {
         if(abs(this.x-myPlayer.getx())<200) {
             animation.update();
             if (animation.hasPlayedOnce()) {
@@ -104,6 +84,8 @@ public class Skeleton extends Enemy {
 
             }
         }
+    }
+    private void turnOffFlinching(){
         if(flinching)
         {
 
@@ -113,16 +95,22 @@ public class Skeleton extends Enemy {
                 flinching=false;
             }
         }
+    }
+    public void update() {
 
+        getNextPosition();
+        checkTileMapCollision();
+        setPosition(xtemp,ytemp);
+        faceByPlayerPoz();
+        startAttack();
+        turnOffFlinching();
         if(dead)
         {
             sfx.play();
         }
 
     }
-    public void draw(Graphics2D g)
-    {
-        // if(notOnScreen()){return;}
+    public void draw(Graphics2D g) {
         if(flinching) {
             long elapsed =
                     (System.nanoTime() - flinchTimer) / 1000000;
@@ -130,7 +118,6 @@ public class Skeleton extends Enemy {
                 return;
             }
         }
-
         setMapPosition();
         super.draw(g);
     }

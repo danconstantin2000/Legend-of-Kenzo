@@ -1,29 +1,21 @@
 package Entity.Enemies;
-
 import Audio.AudioPlayer;
 import Entity.Animation;
 import Entity.Enemy;
 import Entity.Player;
 import TileMap.TileMap;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
-import java.util.ArrayList;
-
 import static java.lang.Math.abs;
 
 public class Goblin extends Enemy {
     private AudioPlayer sfx;
     private BufferedImage[]sprites;
     private Player myPlayer;
-
-    public Goblin(TileMap tm,Player p)
-    {
+    public Goblin(TileMap tm,Player p) {
 
         super(tm);
-
         moveSpeed=0.3;
         maxSpeed=0.3;
         fallSpeed=0.2;
@@ -56,25 +48,14 @@ public class Goblin extends Enemy {
         right=false;
         sfx=new AudioPlayer("/SFX/Bomb-Explosion.mp3");
 
-
-
     }
-    private void getNextPosition()
-    {
-        // movement
+    private void getNextPosition() {
         if(falling)
         {
             dy+=fallSpeed;
-
         }
-
-
     }
-    public void update()
-    {
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(xtemp,ytemp);
+    private void faceByPlayerPoz() {
         if(myPlayer.getx()>this.x)
         {
             facingRight=true;
@@ -83,6 +64,8 @@ public class Goblin extends Enemy {
         {
             facingRight=false;
         }
+    }
+    private void startAttack() {
         if(abs(this.x-myPlayer.getx())<200) {
             animation.update();
 
@@ -90,41 +73,46 @@ public class Goblin extends Enemy {
 
             if (animation.hasPlayedOnce()) {
 
-                    if(facingRight)
-                    {
-                       gb = new GoblinBomb(tileMap, true, myPlayer, this.x);
+                if(facingRight)
+                {
+                    gb = new GoblinBomb(tileMap, true, myPlayer, this.x);
 
-                    }
-                    else
-                    {
-                       gb = new GoblinBomb(tileMap, false, myPlayer, this.x);
-                    }
-                    gb.setPosition(x, y);
-                    Projectile.projectiles.add(gb);
-                    animation.setPlayedOnce(false);
+                }
+                else
+                {
+                    gb = new GoblinBomb(tileMap, false, myPlayer, this.x);
+                }
+                gb.setPosition(x, y);
+                Projectile.projectiles.add(gb);
+                animation.setPlayedOnce(false);
             }
         }
 
 
+    }
+    private void turnOffFlinching() {
         if(flinching)
         {
-
             long elapsed=(System.nanoTime()-flinchTimer)/1000000;
             if(elapsed>400)
             {
                 flinching=false;
             }
         }
-
+    }
+    public void update() {
+        getNextPosition();
+        checkTileMapCollision();
+        setPosition(xtemp,ytemp);
+        faceByPlayerPoz();
+        startAttack();
+        turnOffFlinching();
         if(dead)
         {
             sfx.play();
         }
-
     }
-    public void draw(Graphics2D g)
-    {
-        // if(notOnScreen()){return;}
+    public void draw(Graphics2D g) {
         if(flinching) {
             long elapsed =
                     (System.nanoTime() - flinchTimer) / 1000000;
@@ -132,7 +120,6 @@ public class Goblin extends Enemy {
                 return;
             }
         }
-
         setMapPosition();
         super.draw(g);
     }

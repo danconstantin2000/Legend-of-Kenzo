@@ -1,12 +1,8 @@
 package GameState;
-
-
 import Entity.Player;
 import TileMap.Background;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
-//Similar menuState
 public class GameOverState extends GameState{
 
     private Background bg;
@@ -15,8 +11,7 @@ public class GameOverState extends GameState{
     private Font font;
     private Color titleColor;
     private Font titleFont;
-    public GameOverState(GameStateManager gsm)
-    {
+    public GameOverState(GameStateManager gsm) {
         this.gsm=gsm;
         try{
             init();
@@ -26,7 +21,6 @@ public class GameOverState extends GameState{
             e.printStackTrace();
         }
     }
-
     public void init(){
         bg=new Background("/Backgrounds/GOBG.png");
         titleColor=new Color(0,0,0);
@@ -34,19 +28,14 @@ public class GameOverState extends GameState{
         font=new Font("Courier New",Font.PLAIN,12);
         Player.ResetScore();
     }
-    public void update(){
-
-    }
+    public void update(){ }
     public void draw(Graphics2D g){
-        //draw bg
+
         bg.draw(g);
-        //draw title
         g.setColor(titleColor);
         g.setFont(titleFont);
         g.drawString("GAME OVER",110,70);
         g.drawString("TRY AGAIN?",110,90);
-
-        //draw menu options
         g.setFont(font);
         for(int i=0;i<options.length;i++)
         {
@@ -67,11 +56,9 @@ public class GameOverState extends GameState{
             else {
                 g.drawString(options[i], 150, 140 + i * 15);
             }
-
         }
     }
-    private void select()
-    {
+    private void select() {
         if(currentChoice==0)
         {
             gsm.setState(GameStateManager.LOADINGSTATE);
@@ -81,7 +68,6 @@ public class GameOverState extends GameState{
             gsm.setState(GameStateManager.MENUSTATE);
 
         }
-
     }
     public void keyPressed(int k) {
         if(k== KeyEvent.VK_ENTER)
@@ -104,5 +90,5 @@ public class GameOverState extends GameState{
 
         }
     }
-    public void keyReleased(int k) { }
+    public void keyReleased(int k) {}
 }

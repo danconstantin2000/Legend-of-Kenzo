@@ -1,29 +1,20 @@
 package Entity.Enemies;
-
 import Audio.AudioPlayer;
 import Entity.Animation;
 import Entity.Enemy;
 import Entity.Player;
 import TileMap.TileMap;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
-import java.util.ArrayList;
-
 import static java.lang.Math.abs;
 
 public class FlyingEye extends Enemy {
     private AudioPlayer sfx;
     private BufferedImage[]sprites;
     private Player myPlayer;
-
-    public FlyingEye(TileMap tm,Player p)
-    {
-
+    public FlyingEye(TileMap tm,Player p) {
         super(tm);
-
         moveSpeed=0.3;
         maxSpeed=0.3;
         fallSpeed=0.2;
@@ -56,17 +47,8 @@ public class FlyingEye extends Enemy {
         right=false;
         sfx=new AudioPlayer("/SFX/Bomb-Explosion.mp3");
 
-
-
     }
-
-    public void update()
-    {
-
-
-        checkTileMapCollision();
-        setPosition(xtemp,ytemp);
-
+    private void faceByPlayerPoz() {
         if(myPlayer.getx()>this.x)
         {
             facingRight=true;
@@ -75,6 +57,8 @@ public class FlyingEye extends Enemy {
         {
             facingRight=false;
         }
+    }
+    private void startAttack() {
         if(abs(this.x-myPlayer.getx())<200) {
             animation.update();
             if (animation.hasPlayedOnce()) {
@@ -87,13 +71,13 @@ public class FlyingEye extends Enemy {
                     Fep = new FlyingEyeProj(tileMap, false, myPlayer);
 
                 }
-
                 Fep.setPosition(x, y);
                 Projectile.projectiles.add(Fep);
                 animation.setPlayedOnce(false);
-
             }
         }
+    }
+    private void turnOffFlinching() {
         if(flinching)
         {
 
@@ -103,16 +87,20 @@ public class FlyingEye extends Enemy {
                 flinching=false;
             }
         }
-
+    }
+    public void update() {
+        checkTileMapCollision();
+        setPosition(xtemp,ytemp);
+        faceByPlayerPoz();
+        startAttack();
+        turnOffFlinching();
         if(dead)
         {
             sfx.play();
         }
-
     }
-    public void draw(Graphics2D g)
-    {
-        // if(notOnScreen()){return;}
+    public void draw(Graphics2D g) {
+
         if(flinching) {
             long elapsed =
                     (System.nanoTime() - flinchTimer) / 1000000;
@@ -120,7 +108,6 @@ public class FlyingEye extends Enemy {
                 return;
             }
         }
-
         setMapPosition();
         super.draw(g);
     }

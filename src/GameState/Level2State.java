@@ -4,28 +4,19 @@ import Audio.AudioPlayer;
 import Cave.*;
 import Entity.*;
 import Entity.Enemies.*;
-import Forest.ForestThings;
-import Forest.Tree;
 import Main.GamePanel;
 import TileMap.TileMap;
-
-
 import TileMap.Background;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import static java.lang.Math.abs;
-
 public class Level2State extends GameState{
-
-
     private TileMap tileMap;
     private Background bg;
     private Player player;
@@ -44,17 +35,13 @@ public class Level2State extends GameState{
     private HashMap<String,Enemy>BossEnemies;
     private static int PlayerLV2Score;
     private boolean exit;
-    //saving things
     private boolean timeToSave;
     private boolean save;
-
-    public Level2State(GameStateManager gsm)
-    {
+    public Level2State(GameStateManager gsm) {
         this.gsm=gsm;
         init();
     }
-    public void init()
-    {
+    public void init() {
         tileMap=new TileMap(16);
         tileMap.loadTiles("/Tilesets/tileset2.png");
         tileMap.loadMap("/Maps/Level2.map");
@@ -63,6 +50,30 @@ public class Level2State extends GameState{
         this.bg=new Background("/Backgrounds/LV2_BG2.png");
         MusicBg=new HashMap<String,AudioPlayer>();
         player=new Player(tileMap);
+        loadFromJsonFile();
+        hud=new HUD(player);
+        MusicBg.put("Boss",new AudioPlayer("/Music/Boss2.mp3"));
+        MusicBg.put("bg",new AudioPlayer("/Music/level2.mp3"));
+        MusicBg.get("bg").play();
+        populateEnemies();
+        explosions=new ArrayList<Explosion>();
+        Projectile.projectiles=new ArrayList<Projectile>();
+        BossIsDead=false;
+        Switch=false;
+        kenzoHeads=new ArrayList<KenzoHead>();
+        kenzoHeads.add(new KenzoHead(tileMap));
+        kenzoHeads.get(0).setPosition(2700,10);
+        KHAudio=new AudioPlayer("/SFX/Pickup 4.wav");
+        ryzen=new Ryzen(tileMap);
+        ryzen.setPosition(3150,80);
+        count=0;
+        exit=false;
+        GamePanel.LoadState=false;
+        populateRocks();
+        populateTraps();
+        PlayerLV2Score=player.getScore();
+    }
+    private void loadFromJsonFile() {
         if(GamePanel.LoadState==true)
         {
             JSONParser parser =new JSONParser();
@@ -99,37 +110,12 @@ public class Level2State extends GameState{
             player.setPosition(100, 100);
             save=false;
         }
-
-        hud=new HUD(player);
-        MusicBg.put("Boss",new AudioPlayer("/Music/Boss2.mp3"));
-        MusicBg.put("bg",new AudioPlayer("/Music/level2.mp3"));
-        MusicBg.get("bg").play();
-        populateEnemies();
-        explosions=new ArrayList<Explosion>();
-       Projectile.projectiles=new ArrayList<Projectile>();
-        BossIsDead=false;
-        Switch=false;
-        kenzoHeads=new ArrayList<KenzoHead>();
-        kenzoHeads.add(new KenzoHead(tileMap));
-        kenzoHeads.get(0).setPosition(2700,10);
-        KHAudio=new AudioPlayer("/SFX/Pickup 4.wav");
-        ryzen=new Ryzen(tileMap);
-        ryzen.setPosition(3150,80);
-        count=0;
-        exit=false;
-        GamePanel.LoadState=false;
-        populateRocks();
-        populateTraps();
-        PlayerLV2Score=player.getScore();
     }
-
     public static int getPlayerLV2Score()
     {
         return PlayerLV2Score;
     }
-
-    private void populateRocks()
-    {
+    private void populateRocks() {
         cave=new ArrayList<CaveThings>();
         Point[] myPointArrayRocks1=new Point[]{
                 new Point(100,95),
@@ -144,28 +130,22 @@ public class Level2State extends GameState{
                 new Point(1700,80),
                 new Point(2270,80),
                 new Point(2410,47),
-
         };
         Point[] myPointArrayRocks2=new Point[]{
                 new Point(450,78),
                 new Point(1400,93),
                 new Point(1900,125),
 
-
-
         };
         Point[] myPointArrayRocks3=new Point[]{
                 new Point(700,63),
                 new Point(1575,78),
                 new Point(2100,110),
-
         };
         Point[] myPointArrayTree=new Point[]{
                 new Point(2790,63),
                 new Point(2590,63),
                 new Point(2990,63),
-
-
         };
 
         for(int i=0;i<myPointArrayRocks1.length;i++)
@@ -190,9 +170,7 @@ public class Level2State extends GameState{
             cave.add(mt);
         }
     }
-
-    private void populateTraps()
-    {
+    private void populateTraps() {
         traps=new ArrayList<Trap>();
         Point[] myPointArray=new Point[]{
                 new Point(150,20),
@@ -205,9 +183,6 @@ public class Level2State extends GameState{
                 new Point(1881,20),
                 new Point(1900,20),
                 new Point(2515,20),
-
-
-
         };
         for(int i=0;i<myPointArray.length;i++)
         {
@@ -324,8 +299,7 @@ public class Level2State extends GameState{
 
 
     }
-    private void updateAllEnemies()
-    {
+    private void updateAllEnemies() {
 
         for(int i=0;i<enemies.size();i++)
         {
@@ -342,8 +316,10 @@ public class Level2State extends GameState{
                         i--;
                         explosions.add(new Explosion(e.getx(), e.gety()));
                         BossIsDead = true;
-                        if(MusicBg.containsKey("Boss"))
-                            MusicBg.get("Boss").stop();
+                        if(MusicBg.containsKey("Boss")) {
+                                MusicBg.get("Boss").stop();
+                                MusicBg.remove("Boss");
+                            }
                     }
                 }else {
                     player.setScore(player.getScore()+ e.getScore());
@@ -363,8 +339,7 @@ public class Level2State extends GameState{
             }
         }
     }
-    private void GameOver()
-    {
+    private void GameOver() {
         if(player.isDead())
         {
             if(MusicBg.containsKey("bg") && MusicBg.containsKey("Boss")) {
@@ -389,17 +364,7 @@ public class Level2State extends GameState{
             }
         }
     }
-    /*Metoda de update care:
-        -actualizeaza starea player-ului
-        -actualizeaza harta
-        -verifica atacurile dintre player-inamic,player-proiectila
-        -actualizeaza inamicii
-        -actualizeaza proiectilele
-        -actualizeaza sunetele
-
-     */
-    private void musicThings()
-    {
+    private void musicThings() {
         if(MusicBg.containsKey("bg") && MusicBg.containsKey("Boss")) {
             if (player.getx() == 2700) {
                 MusicBg.get("bg").stop();
@@ -420,15 +385,7 @@ public class Level2State extends GameState{
         }
 
     }
-
-    public void update() {
-
-
-        player.update();
-        tileMap.setPosition(GamePanel.WIDTH/2-player.getx(),GamePanel.HEIGHT/2-player.gety());
-        player.checkAttack(enemies);
-        player.checkAttack2(Projectile.projectiles);
-
+    private void trapsUpdate() {
         for(int i=0;i<traps.size();i++)
         {
             traps.get(i).update();
@@ -437,10 +394,8 @@ public class Level2State extends GameState{
                 player.hit(1);
             }
         }
-        updateAllEnemies();
-        musicThings();
-        GameOver();
-        updateAllProjectiles();
+    }
+    private void bossFight() {
         if(player.getx()>2800)
         {
             Switch=true;
@@ -453,7 +408,8 @@ public class Level2State extends GameState{
                 tileMap.setTiles(i,155,11);
             }
         }
-
+    }
+    private void headsUpdate() {
         if(!kenzoHeads.isEmpty())
             if(player.intersects(kenzoHeads.get(0)))
             {
@@ -471,35 +427,30 @@ public class Level2State extends GameState{
                 i--;
             }
         }
-        ryzen.update();
-       if(BossIsDead==true)
-       {
+    }
+    private void contactWithRyzen() {
+        if (BossIsDead == true) {
             player.setFacingRight(true);
 
-           for(int i=0;i<8;i++)
-           {
-               tileMap.setTiles(i,198,0);
-               tileMap.setTiles(i,193,0);
-           }
-           for(int j=198;j>193;j--)
-           {
-               tileMap.setTiles(1,j,0);
-           }
+            for (int i = 0; i < 8; i++) {
+                tileMap.setTiles(i, 198, 0);
+                tileMap.setTiles(i, 193, 0);
+            }
+            for (int j = 198; j > 193; j--) {
+                tileMap.setTiles(1, j, 0);
+            }
 
-           if(abs(player.getx()-ryzen.getx())>50 )
-           {
-                 ryzen.setLeft(true);
+            if (abs(player.getx() - ryzen.getx()) > 50) {
+                ryzen.setLeft(true);
 
-           }
-           else
-           {
-               ryzen.setLeft(false);
+            } else {
+                ryzen.setLeft(false);
 
-           }
+            }
 
-
-
-       }
+        }
+    }
+    private void TimeToSave() {
         if(timeToSave==true) {
 
 
@@ -527,13 +478,26 @@ public class Level2State extends GameState{
         }
 
 
-
     }
 
+    public void update() {
+        player.update();
+        tileMap.setPosition(GamePanel.WIDTH/2-player.getx(),GamePanel.HEIGHT/2-player.gety());
+        player.checkAttack(enemies);
+        player.checkAttack2(Projectile.projectiles);
+        trapsUpdate();
+        updateAllEnemies();
+        musicThings();
+        GameOver();
+        updateAllProjectiles();
+        bossFight();
+        headsUpdate();
+        ryzen.update();
+        contactWithRyzen();
+        TimeToSave();
+    }
 
-    //Metode de draw
-    private void drawCave(Graphics2D g)
-    {
+    private void drawCave(Graphics2D g) {
 
         for(int i=0;i<cave.size();i++)
         {
@@ -541,8 +505,7 @@ public class Level2State extends GameState{
             cave.get(i).draw(g);
         }
     }
-    private void drawEnemies(Graphics2D g)
-    {
+    private void drawEnemies(Graphics2D g) {
         for(int i=0;i<enemies.size();i++)
         {
             enemies.get(i).draw(g);
@@ -554,30 +517,21 @@ public class Level2State extends GameState{
             explosions.get(i).draw(g);
         }
     }
-    private void drawProjectiles(Graphics2D g)
-    {
+    private void drawProjectiles(Graphics2D g) {
         for(int i=0;i<Projectile.projectiles.size();i++)
         {
             Projectile.projectiles.get(i).draw(g);
         }
 
     }
-
-    public void draw(Graphics2D g) {
-
-        bg.draw(g);
-        drawCave(g);
-        tileMap.draw(g);
-        player.draw(g);
-        drawEnemies(g);
-        hud.draw(g);
-        g.drawString("Score:"+ player.getScore(),230,12);
-        drawProjectiles(g);
+    private void drawTraps(Graphics2D g) {
         for(int i=0;i<traps.size();i++)
         {
             traps.get(i).draw(g);
 
         }
+    }
+    private void drawSaving(Graphics2D g) {
         if(player.getx()>2500 && save==false)
         {   count++;
             if(count<200) {
@@ -591,15 +545,15 @@ public class Level2State extends GameState{
 
             }
         }
-
+    }
+    private void drawHeads(Graphics2D g) {
         for(int i=0;i<kenzoHeads.size();i++)
         {
             kenzoHeads.get(i).draw(g);
-
-
         }
 
-        ryzen.draw(g);
+    }
+    private void drawBossDialogue(Graphics2D g) {
         if(abs(player.getx()-BossEnemies.get("Boss").getx())<110 && exit==false)
         {
             g.setColor(Color.black);
@@ -635,8 +589,8 @@ public class Level2State extends GameState{
                 count=0;
             }
         }
-
-
+    }
+    private void drawRyzenDialogue(Graphics2D g) {
         if(BossIsDead==true)
         {
             g.setColor(Color.black);
@@ -673,10 +627,25 @@ public class Level2State extends GameState{
 
         }
 
-
     }
 
+    public void draw(Graphics2D g) {
 
+        bg.draw(g);
+        drawCave(g);
+        tileMap.draw(g);
+        player.draw(g);
+        drawEnemies(g);
+        hud.draw(g);
+        g.drawString("Score:"+ player.getScore(),230,12);
+        drawProjectiles(g);
+        drawTraps(g);
+        drawSaving(g);
+        drawHeads(g);
+        ryzen.draw(g);
+        drawBossDialogue(g);
+        drawRyzenDialogue(g);
+    }
     public void keyPressed(int k) {
         if(player.getHealth()!=0 ) {
             if (k == KeyEvent.VK_LEFT) player.setLeft(true);
@@ -688,7 +657,6 @@ public class Level2State extends GameState{
             if (k == KeyEvent.VK_F) player.setSmallAttacking(true);
         }
     }
-
     public void keyReleased(int k) {
         if(k == KeyEvent.VK_LEFT) player.setLeft(false);
         if(k == KeyEvent.VK_RIGHT) player.setRight(false);

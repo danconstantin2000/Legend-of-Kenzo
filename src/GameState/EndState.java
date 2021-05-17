@@ -1,15 +1,8 @@
 package GameState;
-
 import Audio.AudioPlayer;
 import Main.GamePanel;
 import TileMap.Background;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.FileReader;
 
 public class EndState extends GameState{
 
@@ -23,11 +16,9 @@ public class EndState extends GameState{
     private boolean exit;
     private AudioPlayer end;
 
-    public EndState(GameStateManager gsm)
-    {
+    public EndState(GameStateManager gsm) {
         this.gsm=gsm;
         try{
-            //Initializari
             init();
         }
         catch(Exception e)
@@ -35,8 +26,7 @@ public class EndState extends GameState{
             e.printStackTrace();
         }
     }
-    public void init()
-    {
+    public void init() {
         bg=new Background("/Backgrounds/IMAGE1.png");
         bg2=new Background("/Backgrounds/IMAGE2.png");
         bg3=new Background("/Backgrounds/IMAGE3.png");
@@ -48,14 +38,9 @@ public class EndState extends GameState{
         end=new AudioPlayer("/Music/Ending.mp3");
         end.play();
 
-
     }
     public void update(){}
-    public void draw(Graphics2D g)
-    {
-        g.setColor(titleColor);
-
-        contor++;
+    private void drawDialogue(Graphics2D g) {
         if(exit==false)
         {
             if(contor<800)
@@ -97,16 +82,14 @@ public class EndState extends GameState{
 
             }
             else if(contor>2400 && contor<3000){
-             g.setFont(titleFont);
-             g.clearRect(0,0,320,240);
-             g.drawString("Thanks for playing!",60,130);
+                g.setFont(titleFont);
+                g.clearRect(0,0,320,240);
+                g.drawString("Thanks for playing!",60,130);
                 if(contor>2870)
                 {
-                    end.stop();
-                    end=null;
+                    if(!end.hasStopped())
+                        end.stop();
                 }
-
-
             }
             else if(contor>3000)
             {
@@ -117,17 +100,13 @@ public class EndState extends GameState{
             }
         }
 
-
-
-
-
-
     }
-
-    public void keyPressed(int k) {
-
+    public void draw(Graphics2D g) {
+        g.setColor(titleColor);
+        contor++;
+        drawDialogue(g);
     }
-
+    public void keyPressed(int k) { }
     public void keyReleased(int k) { }
 
 }

@@ -1,19 +1,15 @@
 package Entity.Enemies;
-
 import Audio.AudioPlayer;
 import Entity.Animation;
 import Entity.Enemy;
 import Entity.Player;
 import TileMap.TileMap;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-
 import static java.lang.Math.abs;
 
 public class DarkMagician extends Enemy {
@@ -30,34 +26,26 @@ public class DarkMagician extends Enemy {
     private static final int IDLE=4;
     private static final int JUMPING=5;
     private static final int RUNNING=6;
-
     private boolean smallAttacking;
     private boolean longAttacking;
     private boolean start;
-    private Player myPlayer;
     private boolean timeToAttack;
-
+    private boolean drawBar;
     private long timer;
     private int rand;
     private long jumpTimer;
-
     private int smallAttackDamage;
     private int longAttackDamage;
     private int smallAttackRange;
     private int longAttackRange;
-    private boolean drawBar;
-
-
+    private Player myPlayer;
 
     public DarkMagician(TileMap tm,Player p) {
         super(tm);
-        //inaltime si latime de citire din spritesheet
         width = 250;
         height = 250;
-        //inatime si latime de coliziune
         cwidth =20;
         cheight =28;
-        //atributii
         moveSpeed = 0.3;
         maxSpeed = 1.1;
         stopSpeed = 0.4;
@@ -70,9 +58,7 @@ public class DarkMagician extends Enemy {
         damage=1;
         Score=1500;
         myPlayer=p;
-
         dead=false;
-
         smallAttackDamage = 1;
         smallAttackRange=100;
         longAttackDamage = 2;
@@ -81,7 +67,6 @@ public class DarkMagician extends Enemy {
         start=true;
         facingRight=false;
         drawBar=false;
-        // Incarca sprite-urile
         try {
 
             BufferedImage spritesheet = ImageIO.read(
@@ -122,30 +107,21 @@ public class DarkMagician extends Enemy {
         sfx.put("jump",new AudioPlayer("/SFX/SFX_Jump_09.wav"));
         sfx.put("longattack",new AudioPlayer("/SFX/WB18.mp3"));
         sfx.put("smallattack",new AudioPlayer("/SFX/WB20.mp3"));
-
-
         timer=System.nanoTime();
         jumpTimer=System.nanoTime();
 
-
     }
-
     public boolean hasPlayed()
     {
         return animation.hasPlayedOnce();
     }
-
-
-    private void setAnimations()
-    {
+    private void setAnimations() {
         if(longAttacking) {
             if(currentAction != LONGATTACK) {
                 sfx.get("longattack").play();
                 currentAction = LONGATTACK;
                 animation.setFrames(sprites.get(LONGATTACK));
                 animation.setDelay(100);
-
-
             }
         }
         else if(smallAttacking) {
@@ -154,8 +130,6 @@ public class DarkMagician extends Enemy {
                 currentAction = SMALLATTACK;
                 animation.setFrames(sprites.get(SMALLATTACK));
                 animation.setDelay(100);
-
-
             }
         }
         else if(dy > 0)
@@ -164,12 +138,10 @@ public class DarkMagician extends Enemy {
                 currentAction = FALLING;
                 animation.setFrames(sprites.get(FALLING));
                 animation.setDelay(100);
-
             }
         }
         else if(dy < 0) {
             if(currentAction != JUMPING) {
-
                 sfx.get("jump").play();
                 currentAction = JUMPING;
 
@@ -183,19 +155,15 @@ public class DarkMagician extends Enemy {
                 currentAction = RUNNING;
                 animation.setFrames(sprites.get(RUNNING));
                 animation.setDelay(80);
-
             }
         }
         else  if(dead) {
-
-
             if (currentAction != DEATH)
             {
                 sfx.get("death").play();
                 currentAction=DEATH;
                 animation.setFrames(sprites.get(DEATH));
                 animation.setDelay(400);
-
             }
         }else
         {
@@ -203,14 +171,10 @@ public class DarkMagician extends Enemy {
                 currentAction = IDLE;
                 animation.setFrames(sprites.get(IDLE));
                 animation.setDelay(150);
-
             }
         }
-
-
     }
-    private void turnOffAttacks()
-    {
+    private void turnOffAttacks() {
 
         if(currentAction==LONGATTACK)
         {
@@ -229,8 +193,7 @@ public class DarkMagician extends Enemy {
             }
         }
     }
-    private void setDirection()
-    {
+    private void setDirection() {
 
         if(right) facingRight = true;
         if(left) {
@@ -239,24 +202,19 @@ public class DarkMagician extends Enemy {
     }
     private void getNextPosition() {
 
-        //Daca se apasa sageata stanga playerul se misca inapoi pe harta.
         if(left) {
             dx -= moveSpeed;
-            //Se atinge viteza maxima treptat si aceasta nu mai poate fi depasita.
             if(dx < -maxSpeed) {
                 dx = -maxSpeed;
             }
         }
-        //Daca se apasa sageata dreapta ,playerul se misca in fata.
         else if(right) {
             dx += moveSpeed;
-            //Se atinge viteza maxima treptat si aceasta nu mai poate fi depasita.
             if(dx > maxSpeed) {
                 dx = maxSpeed;
             }
         }
         else {
-            //Daca tasta nu mai este apasata,playerul nu se mai poate misca si trebuie incetinit
             if(dx > 0) {
                 dx -= stopSpeed;
                 if(dx < 0) {
@@ -271,31 +229,22 @@ public class DarkMagician extends Enemy {
             }
         }
 
-        //In timp ce playerul ataca si nu se afla in aer,el nu se poate misca.
         if((currentAction == SMALLATTACK|| currentAction == LONGATTACK) && !(jumping || falling)) {
             dx = 0;
         }
-        //Daca playerul sare,trebuie setata si aterizarea.
         if(jumping && !falling) {
             dy = jumpStart;
             falling = true;
         }
 
-        // Playerul aterizeaza cu viteza fallSpeed.
         if(falling) {
             dy += fallSpeed ;
-            //Daca dy>0,acesta nu mai poate sari.
             if(dy > 0) jumping = false;
-            //Daca playerul se afla in aer ,el aterizeaza cu viteza stopJumpSpeed.
             if(dy < 0 && !jumping) dy += stopJumpSpeed;
-            //Cand atinge viteza maxFallSpeed,acesta nu o poate depasi.
             if(dy > maxFallSpeed) dy = maxFallSpeed;
         }
-
-
     }
-    private void turnOffFlinching()
-    {
+    private void turnOffFlinching() {
         if(flinching)
         {
             long elapsed=(System.nanoTime()-flinchTimer)/1000000;
@@ -305,60 +254,37 @@ public class DarkMagician extends Enemy {
             }
         }
     }
-
-    public void checkAttack()
-    {
-            //long attack
+    public void checkAttack() {
             if (longAttacking) {
                 if (facingRight) {
                     if (myPlayer.getx() > x && myPlayer.getx() < x + longAttackRange && myPlayer.gety() > y - height / 2 && myPlayer.gety() < y + height / 2) {
                         myPlayer.hit(longAttackDamage);
-
-
                     }
                 } else {
                     if (myPlayer.getx() < x && myPlayer.getx() > x - longAttackRange && myPlayer.gety() > y - height / 2 && myPlayer.gety() < y + height / 2) {
-
                         myPlayer.hit(longAttackDamage);
-
-
                     }
                 }
             } else if (smallAttacking) {
                 if (facingRight) {
                     if (myPlayer.getx() > x && myPlayer.getx() < x + smallAttackRange && myPlayer.gety() > y - height / 2 && myPlayer.gety() < y + height / 2) {
                         myPlayer.hit(smallAttackDamage);
-
-
                     }
                 } else {
                     if (myPlayer.getx() < x && myPlayer.getx() > x - smallAttackRange && myPlayer.gety() > y - height / 2 && myPlayer.gety() < y + height / 2) {
-
                         myPlayer.hit(smallAttackDamage);
-
-
                     }
                 }
-
-
-
         }
 
-
     }
-    public void update() {
-
+    private void startAttack() {
         long elapsed = (System.nanoTime() - timer) / 1000000;
         long elapsedJump=(System.nanoTime()-jumpTimer)/1000000;
 
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(xtemp, ytemp);
-        checkAttack();
         if(!dead) {
             if (start) {
                 if (abs(myPlayer.getx() - this.getx()) < 100) {
-
                     left = true;
                     start = false;
                 }
@@ -399,7 +325,6 @@ public class DarkMagician extends Enemy {
                     longAttacking = false;
                     timeToAttack = false;
                 }
-
             }
 
             if (smallAttacking == true) {
@@ -416,8 +341,6 @@ public class DarkMagician extends Enemy {
             }
             if (elapsed > 6000) {
                 timeToAttack = true;
-
-
             }
             if (elapsed > 6300) {
                 timer = System.nanoTime();
@@ -436,27 +359,21 @@ public class DarkMagician extends Enemy {
         if(myPlayer.isDead())
         {
             left=right=false;
-
         }
-
-
+    }
+    public void update() {
+        getNextPosition();
+        checkTileMapCollision();
+        setPosition(xtemp, ytemp);
+        checkAttack();
+        startAttack();
         setAnimations();
         setDirection();
         animation.update();
         turnOffFlinching();
         turnOffAttacks();
-
-
-
-
-
     }
-
-    //Metoda de draw.Am tratat mai multe cazuri pentru a fi desenat corect player-ul pe ecran in functie de mai multe sprite-uri.
-
-    public void draw(Graphics2D g) {
-
-        setMapPosition();
+    private void drawBar(Graphics2D g){
         if(abs(myPlayer.getx()-this.getx())<100 )
         {
             drawBar=true;
@@ -483,8 +400,11 @@ public class DarkMagician extends Enemy {
                 drawBar=false;
             }
         }
+    }
+    public void draw(Graphics2D g) {
 
-        // draw player
+        setMapPosition();
+        drawBar(g);
         if(flinching) {
             long elapsed =
                     (System.nanoTime() - flinchTimer) / 1000000;
@@ -494,8 +414,6 @@ public class DarkMagician extends Enemy {
         }
 
         if (facingRight) {
-
-
                 g.drawImage(
                         animation.getImage(),
                         (int) (x + xmap - width / 2),
@@ -504,12 +422,10 @@ public class DarkMagician extends Enemy {
                         , height,
                         null
                 );
-
         }
         else
         {
-
-             g.drawImage(
+            g.drawImage(
                         animation.getImage(),
                         (int) (x + xmap - width / 2 + width),
                         (int) (y + ymap - height / 2 -27 ),
@@ -517,11 +433,6 @@ public class DarkMagician extends Enemy {
                         height,
                         null
                 );
-
         }
-
     }
-
-
-
 }

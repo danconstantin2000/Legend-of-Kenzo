@@ -1,16 +1,10 @@
 package Entity.Enemies;
-
-
 import Entity.Animation;
-import Entity.MapObject;
 import Entity.Player;
 import TileMap.TileMap;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
-
 import static java.lang.Math.abs;
 
 public class SkeletonProj  extends Projectile{
@@ -22,8 +16,7 @@ public class SkeletonProj  extends Projectile{
     private Player myPlayer;
     private int damage;
     private int health;
-    public SkeletonProj(TileMap tm, boolean right,Player p)
-    {
+    public SkeletonProj(TileMap tm, boolean right,Player p) {
 
         super(tm);
         moveSpeed=2.25;
@@ -41,7 +34,6 @@ public class SkeletonProj  extends Projectile{
         height=102;
         cwidth=14;
         cheight=15;
-
         health=1;
         damage=2;
         myPlayer=p;
@@ -73,28 +65,20 @@ public class SkeletonProj  extends Projectile{
     {
         return damage;
     }
-
-    public void hit(int damage)
-    {
+    public void hit(int damage) {
         health-=damage;
         if(health<0){health=0;}
         if(health==0)setHit();
     }
-
-    public void setHit()
-    {
+    public void setHit() {
         if(hit)return;
         hit=true;
         animation.setFrames(hitSprites);
         animation.setDelay(70);
         dx=0;
-
     }
     public boolean shouldRemove(){return remove;}
-    public void update()
-    {
-        checkTileMapCollision();
-        setPosition(xtemp,ytemp);
+    private void attackThings() {
         if(dx==0 && !hit)
         {
             setHit();
@@ -113,11 +97,14 @@ public class SkeletonProj  extends Projectile{
         {
             setHit();
         }
-        animation.update();
-
     }
-    public void draw(Graphics2D g)
-    {
+    public void update() {
+        checkTileMapCollision();
+        setPosition(xtemp,ytemp);
+        attackThings();
+        animation.update();
+    }
+    public void draw(Graphics2D g) {
         setMapPosition();
         if (facingRight) {
             g.drawImage(
@@ -143,6 +130,4 @@ public class SkeletonProj  extends Projectile{
 
         }
     }
-
-
 }

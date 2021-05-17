@@ -1,30 +1,26 @@
 package GameState;
 import Entity.Player;
-import Main.Game;
 import Main.GamePanel;
 import TileMap.Background;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileReader;
 
 public class MenuState extends GameState{
-    private Background bg;//Imagine de Background a meniului.
-    private int currentChoice=0;//Alegere curenta
-    private String[] options={"Start","Help","Load","Quit"};//Vector de optiuni
-    private Color titleColor;//Culoare titlu
-    private Font titleFont;//Font titlu
-    private Font font;//Font optiuni
+    private Background bg;
+    private int currentChoice=0;
+    private String[] options={"Start","Help","Load","Quit"};
+    private Color titleColor;
+    private Font titleFont;
+    private Font font;
     private boolean exists;
     private File myfile;
-    public MenuState(GameStateManager gsm)
-    {
+    public MenuState(GameStateManager gsm) {
         this.gsm=gsm;
        try{
-           //Initializari
            init();
        }
        catch(Exception e)
@@ -32,9 +28,7 @@ public class MenuState extends GameState{
            e.printStackTrace();
        }
 
-
     }
-
     public void init(){
         bg=new Background("/Backgrounds/MENUBG.png");
         titleColor=new Color(0,0,0);
@@ -49,21 +43,14 @@ public class MenuState extends GameState{
          {
              exists=false;
          }
-
     }
-    public void update(){
-    }
+    public void update(){ }
     public void draw(Graphics2D g){
-        //draw bg
+
         bg.draw(g);
-        //draw title
         g.setColor(titleColor);
         g.setFont(titleFont);
         g.drawString("The legend of Kenzo",70,70);
-
-        //optiune selectata-->albastra
-        //optiune neselectata-->neagra
-
         g.setFont(font);
         for(int i=0;i<options.length;i++)
         {
@@ -100,28 +87,22 @@ public class MenuState extends GameState{
                     } else {
                         g.setColor(Color.BLACK);
                     }
-                    //Draw options
                     g.drawString(options[i], 145, 140 + i * 15);
                 }
-
 
             }
 
     }
-    private void select()
-    {
-        //In functie de optiune,putem face trecerea la un nou state etc;
+    private void select() {
+
         if(currentChoice==0)
         {
-            //LoadingState-->lanseaza in executiel level1 state.
             Player.ResetScore();
             gsm.setState(GameStateManager.LOADINGSTATE);
         }
         if(currentChoice==1)
         {
-
             gsm.setState(GameStateManager.HELPSTATE);
-
         }
         if(currentChoice==2)
         {
@@ -171,7 +152,6 @@ public class MenuState extends GameState{
 
         }
     }
-
     public void keyReleased(int k) { }
 
 }

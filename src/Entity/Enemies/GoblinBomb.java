@@ -1,15 +1,11 @@
 package Entity.Enemies;
 
 import Entity.Animation;
-import Entity.MapObject;
 import Entity.Player;
 import TileMap.TileMap;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
-
 import static java.lang.Math.abs;
 
 public class GoblinBomb  extends Projectile{
@@ -23,8 +19,7 @@ public class GoblinBomb  extends Projectile{
     private int health;
     private double startpoz;
 
-    public GoblinBomb(TileMap tm, boolean right,Player p,double x)
-    {
+    public GoblinBomb(TileMap tm, boolean right,Player p,double x) {
 
         super(tm);
         moveSpeed=2.5;
@@ -69,45 +64,29 @@ public class GoblinBomb  extends Projectile{
         {
             e.printStackTrace();
         }
-
     }
     public int getDamage()
     {
         return damage;
     }
-
-    public void hit(int damage)
-    {
+    public void hit(int damage) {
         health-=damage;
         if(health<0){health=0;}
         if(health==0)setHit();
     }
-    private void getNextPosition()
-    {
-
-    }
-
-    public void setHit()
-    {
+    public void setHit() {
         if(hit)return;
         hit=true;
         animation.setFrames(hitSprites);
         animation.setDelay(40);
         dx=0;
-
     }
     public boolean shouldRemove(){return remove;}
-    public void update()
-    {
-
-        checkTileMapCollision();
-        setPosition(xtemp,ytemp);
-        getNextPosition();
+    private void attackThings(){
         if(dx==0 && !hit)
         {
             setHit();
         }
-
         if(hit &&animation.hasPlayedOnce())
         {
             remove=true;
@@ -118,7 +97,6 @@ public class GoblinBomb  extends Projectile{
             x=0;
             setHit();
         }
-
 
         if(abs(x-startpoz)>50)
         {
@@ -132,6 +110,13 @@ public class GoblinBomb  extends Projectile{
             setHit();
         }
 
+    }
+    public void update()
+    {
+
+        checkTileMapCollision();
+        setPosition(xtemp,ytemp);
+        attackThings();
         animation.update();
 
     }
@@ -150,7 +135,6 @@ public class GoblinBomb  extends Projectile{
         }
         else
         {
-
             g.drawImage(
                     animation.getImage(),
                     (int) (x + xmap - width / 2 + width),
