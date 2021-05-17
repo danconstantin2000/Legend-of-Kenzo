@@ -1,4 +1,5 @@
 package GameState;
+import Entity.Player;
 import Main.Game;
 import Main.GamePanel;
 import TileMap.Background;
@@ -113,10 +114,12 @@ public class MenuState extends GameState{
         if(currentChoice==0)
         {
             //LoadingState-->lanseaza in executiel level1 state.
+            Player.ResetScore();
             gsm.setState(GameStateManager.LOADINGSTATE);
         }
         if(currentChoice==1)
         {
+
             gsm.setState(GameStateManager.HELPSTATE);
 
         }
@@ -142,7 +145,7 @@ public class MenuState extends GameState{
                 }
             }
         }
-        if(currentChoice==4)
+        if(currentChoice==3)
         {
             System.exit(0);
         }

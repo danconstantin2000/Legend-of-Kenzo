@@ -14,7 +14,7 @@ public class Game
         /*
         public void setContentPane(Container contentPane);
         Instanta GamePanel*/
-        window.setContentPane(new GamePanel());
+        window.setContentPane(GamePanel.getInstance());
 
 
         /*

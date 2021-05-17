@@ -30,7 +30,9 @@ public abstract class ForestThings {
         {
             return;
         }
-        g.drawImage(image,x+xmap-width/2,y+ymap-height/2+5,null);
+        else {
+            g.drawImage(image, x + xmap - width / 2, y + ymap - height / 2 + 5, null);
+        }
     }
     public boolean notOnScreen() {
         return x + xmap + width < 0 ||

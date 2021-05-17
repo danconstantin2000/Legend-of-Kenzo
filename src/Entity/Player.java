@@ -35,7 +35,7 @@ public class Player extends MapObject {
     private  boolean switchState;
     //variabila pentru a verifica caderea in gol
     private boolean Void;
-
+    private static int SCORE=0;
 
     // spritesheet
     private ArrayList<BufferedImage[]> sprites;
@@ -76,9 +76,8 @@ public class Player extends MapObject {
         energyCost = 500;
         smallAttackDamage = 1;
         smallAttackRange=100;
-        longAttackDamage = 5;
+        longAttackDamage = 3;
         longAttackRange = 100;
-        Score=0;
         // Incarca sprite-urile
         try {
 
@@ -134,7 +133,7 @@ public class Player extends MapObject {
     public int getEnergy() { return energy; }
     public int getMaxEnergy() { return maxEnergy; }
     public boolean getFacingRight(){return facingRight;}
-    public int getScore(){return Score;}
+    public int getScore(){return SCORE;}
     //setters
     public void setSmallAttacking(boolean b) {
         smallAttacking = b;
@@ -148,8 +147,16 @@ public class Player extends MapObject {
         this.health=health;
     }
     public void setFacingRight(boolean b){this.facingRight=b;}
-    public void setScore(int score){this.Score=score;}
+    public void setScore(int score){SCORE=score;}
     public void setEnergy(int energy){this.energy=energy;}
+    public static void ResetScore(){
+        SCORE=0;
+    }
+    public static void setSCORE(int score)
+    {
+        SCORE=score;
+    }
+
     //Verifica atacul dintre player-proiectila ,proiectila-player
     public void checkAttack2(ArrayList<Projectile> projectiles)
     {

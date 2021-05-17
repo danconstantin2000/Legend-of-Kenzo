@@ -132,11 +132,9 @@ public class Level1State extends GameState{
         forest=new ArrayList<ForestThings>();
         Point[] myPointArrayTrees=new Point[]{
                 new Point(100,100),
-                new Point(30,100),
+                 new Point(30,100),
                 new Point(170,100),
-                new Point(430,68),
-               // new Point(100,100),
-                //new Point(100,100),
+                new Point(425,68),
                 new Point(530, 51),
                 new Point(600, 51),
                 new Point(670, 51),
@@ -147,7 +145,7 @@ public class Level1State extends GameState{
                 new Point(1090, 67),
                 new Point(1160, 67),
                 new Point(1300, 67),
-                new Point(1450, 52),
+                new Point(1440, 52),
                 new Point(1560, 67),
                 new Point(1670, 51),
                 new Point(1740, 51),
@@ -176,18 +174,15 @@ public class Level1State extends GameState{
         }
         Point[] myPointArrayBush=new Point[]
         {
-            new Point(275,42),
-                new Point(310,42),
+                new Point(295,42),
                 new Point(630,10),
                 new Point(770,10),
-                new Point(925,27),
                 new Point(1050,27),
-                new Point(1185,27),
-                new Point(1410,10),
+                new Point(1188,27),
                 new Point(1700,10),
-                new Point(1920,10),
-                new Point(2625,27),
-                new Point(2825,27),
+                new Point(1910,10),
+                new Point(2620,27),
+                new Point(2830,27),
 
         };
         for(int i=0;i<myPointArrayBush.length;i++)
@@ -196,8 +191,8 @@ public class Level1State extends GameState{
             forest.add(b);
         }
         Point[] myPointArrayRuin=new Point[]{
-                        new Point(985,27),
-                        new Point(1830,10),
+                        new Point(980,27),
+                        new Point(1835,10),
                         new Point(2550,27)
         };
         for(int i=0;i<myPointArrayRuin.length;i++)
@@ -282,7 +277,7 @@ public class Level1State extends GameState{
                 if (!MusicBg.get("Boss").hasStopped()) {
                     MusicBg.get("bg").stop();
                 } else {
-                    MusicBg.get("Boss").play();
+                        MusicBg.get("Boss").play();
                 }
 
             }
@@ -291,7 +286,8 @@ public class Level1State extends GameState{
             }
             if (player.getx() > 2700 && MusicBg.get("Boss").hasStopped() && !stopBossMusic) {
                 MusicBg.get("bg").stop();
-                MusicBg.get("Boss").play();
+                if(MusicBg.containsKey("Boss"))
+                     MusicBg.get("Boss").play();
             }
         }
 
@@ -310,17 +306,19 @@ public class Level1State extends GameState{
                     if(((DarkMagician) e).hasPlayed())
                     {
                         timeToSpawnPortal=true;
-                        player.Score = player.Score + e.getScore();
+                        player.setScore(player.getScore()+ e.getScore());
                         enemies.remove(i);
                         i--;
                         explosions.add(new Explosion(e.getx(), e.gety()));
                         stopBossMusic=true;
-                        if(MusicBg.containsKey("Boss"))
+                        if(MusicBg.containsKey("Boss")) {
                             MusicBg.get("Boss").stop();
+                            MusicBg.remove("Boss");
+                        }
                     }
                 }else {
 
-                    player.Score = player.Score + e.getScore();
+                    player.setScore(player.getScore()+ e.getScore());
                     enemies.remove(i);
                     i--;
                     explosions.add(new Explosion(e.getx(), e.gety()));
@@ -462,6 +460,7 @@ public class Level1State extends GameState{
     //Metode de draw
     private void drawForest(Graphics2D g)
     {
+
         for(int i=0;i<forest.size();i++)
         {
             forest.get(i).setMapPosition((int)tileMap.getx(),(int)tileMap.gety());
@@ -492,12 +491,12 @@ public class Level1State extends GameState{
     public void draw(Graphics2D g) {
 
         bg.draw(g);
-        tileMap.draw(g);
         drawForest(g);
+        tileMap.draw(g);
         player.draw(g);
         drawEnemies(g);
         hud.draw(g);
-        g.drawString("Score:"+ player.Score,230,12);
+        g.drawString("Score:"+ player.getScore(),230,12);
         drawProjectiles(g);
         if(player.getx()>2500 && save==false)
         {   count++;
@@ -527,18 +526,19 @@ public class Level1State extends GameState{
                 g.drawString("You are in Aokigahara forest!", 30, 200);
             } else if (count > 200 && count < 600) {
 
-                g.drawString("Press right,left arrows for move!", 30, 200);
+                g.drawString("Press right,left arrows to move!", 30, 200);
                 g.drawString("Press w for jump!", 30, 220);
 
 
             } else if (count > 600 && count < 1000) {
-                g.drawString("Press F for smallAttack!", 30, 200);
-                g.drawString("Press R for LongAttack!", 30, 220);
+                g.drawString("Press F for the first attack!", 30, 200);
+                g.drawString("Press R for the second attack!", 30, 220);
 
 
 
             } else if (count > 1000 && count < 1400) {
-                g.drawString("The LongAttack will consume power!", 30, 200);
+                g.drawString("The second attack will consume power", 30, 200);
+                g.drawString("and will give more damage to the enemies!", 30, 220);
 
             }
             else if(count>1400)

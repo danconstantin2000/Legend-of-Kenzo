@@ -1,6 +1,7 @@
 package GameState;
 
 
+import Entity.Player;
 import TileMap.Background;
 
 import java.awt.*;
@@ -31,6 +32,7 @@ public class GameOverState extends GameState{
         titleColor=new Color(0,0,0);
         titleFont=new Font("Courier New",Font.BOLD,18);
         font=new Font("Courier New",Font.PLAIN,12);
+        Player.ResetScore();
     }
     public void update(){
 

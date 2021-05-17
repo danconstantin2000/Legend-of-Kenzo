@@ -53,7 +53,7 @@ public class FireMagician extends Enemy {
         cheight =28;
         //atributii
         moveSpeed = 0.3;
-        maxSpeed = 1.5;
+        maxSpeed = 1.3;
         stopSpeed = 0.4;
         fallSpeed = 0.1;
         maxFallSpeed = 4.0;

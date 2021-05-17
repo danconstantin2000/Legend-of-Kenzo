@@ -70,15 +70,25 @@ public class GamePanel extends JPanel implements Runnable,KeyListener{
     private Graphics2D g;
     //GameStateManager
     private GameStateManager gsm;
+    private static GamePanel singleGamePanelInstance;
 
     //Constructor
-    public GamePanel()
+    private GamePanel()
     {
+
         super();
         setPreferredSize(new Dimension(WIDTH*SCALE,HEIGHT*SCALE));//Dimensiuni
         setFocusable(true);//Seteaza flag-ul focusable pe true pentru a putea interactiona cu tastatura/mouse/etc
         requestFocus();
 
+    }
+    public static GamePanel getInstance()
+    {
+        if(singleGamePanelInstance==null)
+        {
+            return new GamePanel();
+        }
+        return singleGamePanelInstance;
     }
 
     public void addNotify()

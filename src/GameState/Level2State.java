@@ -1,8 +1,11 @@
 package GameState;
 
 import Audio.AudioPlayer;
+import Cave.*;
 import Entity.*;
 import Entity.Enemies.*;
+import Forest.ForestThings;
+import Forest.Tree;
 import Main.GamePanel;
 import TileMap.TileMap;
 
@@ -29,6 +32,8 @@ public class Level2State extends GameState{
     private ArrayList<Enemy> enemies;
     private ArrayList<Explosion>explosions;
     private ArrayList<KenzoHead>kenzoHeads;
+    private ArrayList<CaveThings>cave;
+    private ArrayList<Trap>traps;
     private HUD hud;
     private boolean BossIsDead;
     private boolean Switch;
@@ -37,6 +42,7 @@ public class Level2State extends GameState{
     private Ryzen ryzen;
     private long count;
     private HashMap<String,Enemy>BossEnemies;
+    private static int PlayerLV2Score;
     private boolean exit;
     //saving things
     private boolean timeToSave;
@@ -56,7 +62,6 @@ public class Level2State extends GameState{
         BossEnemies=new HashMap<String,Enemy>();
         this.bg=new Background("/Backgrounds/LV2_BG2.png");
         MusicBg=new HashMap<String,AudioPlayer>();
-
         player=new Player(tileMap);
         if(GamePanel.LoadState==true)
         {
@@ -113,10 +118,105 @@ public class Level2State extends GameState{
         count=0;
         exit=false;
         GamePanel.LoadState=false;
-
-
+        populateRocks();
+        populateTraps();
+        PlayerLV2Score=player.getScore();
     }
 
+    public static int getPlayerLV2Score()
+    {
+        return PlayerLV2Score;
+    }
+
+    private void populateRocks()
+    {
+        cave=new ArrayList<CaveThings>();
+        Point[] myPointArrayRocks1=new Point[]{
+                new Point(100,95),
+                new Point(30,95),
+                new Point(170,95),
+                new Point(240,95),
+                new Point(583,63),
+                new Point(800,63),
+                new Point (935,80),
+                new Point (1060,80),
+                new Point(1190,80),
+                new Point(1700,80),
+                new Point(2270,80),
+                new Point(2410,47),
+
+        };
+        Point[] myPointArrayRocks2=new Point[]{
+                new Point(450,78),
+                new Point(1400,93),
+                new Point(1900,125),
+
+
+
+        };
+        Point[] myPointArrayRocks3=new Point[]{
+                new Point(700,63),
+                new Point(1575,78),
+                new Point(2100,110),
+
+        };
+        Point[] myPointArrayTree=new Point[]{
+                new Point(2790,63),
+                new Point(2590,63),
+                new Point(2990,63),
+
+
+        };
+
+        for(int i=0;i<myPointArrayRocks1.length;i++)
+        {
+            Rock r=new Rock(myPointArrayRocks1[i].x,myPointArrayRocks1[i].y);
+            cave.add(r);
+        }
+
+        for(int i=0;i<myPointArrayRocks2.length;i++)
+        {
+            Rock2 r2=new Rock2(myPointArrayRocks2[i].x,myPointArrayRocks2[i].y);
+            cave.add(r2);
+        }
+        for(int i=0;i<myPointArrayRocks3.length;i++)
+        {
+            Rock3 r3=new Rock3(myPointArrayRocks3[i].x,myPointArrayRocks3[i].y);
+            cave.add(r3);
+        }
+        for(int i=0;i<myPointArrayTree.length;i++)
+        {
+            MagicalTree mt=new MagicalTree(myPointArrayTree[i].x,myPointArrayTree[i].y);
+            cave.add(mt);
+        }
+    }
+
+    private void populateTraps()
+    {
+        traps=new ArrayList<Trap>();
+        Point[] myPointArray=new Point[]{
+                new Point(150,20),
+                new Point(169,20),
+                new Point(580,20),
+                new Point(599,20),
+                new Point(1530,20),
+                new Point(1549,20),
+                new Point(1862,20),
+                new Point(1881,20),
+                new Point(1900,20),
+                new Point(2515,20),
+
+
+
+        };
+        for(int i=0;i<myPointArray.length;i++)
+        {
+            Trap t=new Trap(tileMap);
+            t.setPosition(myPointArray[i].x,myPointArray[i].y);
+            traps.add(t);
+        }
+
+    }
     private void populateEnemies() {
         enemies = new ArrayList<Enemy>();
         Point[] myPointArray = new Point[]{
@@ -236,7 +336,8 @@ public class Level2State extends GameState{
                 if(e instanceof FireMagician) {
                     if (((FireMagician) e).hasPlayed()) {
 
-                        player.Score = player.Score + e.getScore();
+                        player.setScore(player.getScore()+ e.getScore());
+
                         enemies.remove(i);
                         i--;
                         explosions.add(new Explosion(e.getx(), e.gety()));
@@ -245,8 +346,8 @@ public class Level2State extends GameState{
                             MusicBg.get("Boss").stop();
                     }
                 }else {
-                        player.Score = player.Score + e.getScore();
-                        enemies.remove(i);
+                    player.setScore(player.getScore()+ e.getScore());
+                    enemies.remove(i);
                         i--;
                         explosions.add(new Explosion(e.getx(), e.gety()));
                     }
@@ -322,11 +423,20 @@ public class Level2State extends GameState{
 
     public void update() {
 
+
         player.update();
         tileMap.setPosition(GamePanel.WIDTH/2-player.getx(),GamePanel.HEIGHT/2-player.gety());
         player.checkAttack(enemies);
         player.checkAttack2(Projectile.projectiles);
 
+        for(int i=0;i<traps.size();i++)
+        {
+            traps.get(i).update();
+            if(player.intersects(traps.get(i)))
+            {
+                player.hit(1);
+            }
+        }
         updateAllEnemies();
         musicThings();
         GameOver();
@@ -422,6 +532,15 @@ public class Level2State extends GameState{
 
 
     //Metode de draw
+    private void drawCave(Graphics2D g)
+    {
+
+        for(int i=0;i<cave.size();i++)
+        {
+            cave.get(i).setMapPosition((int)tileMap.getx(),(int)tileMap.gety());
+            cave.get(i).draw(g);
+        }
+    }
     private void drawEnemies(Graphics2D g)
     {
         for(int i=0;i<enemies.size();i++)
@@ -447,12 +566,18 @@ public class Level2State extends GameState{
     public void draw(Graphics2D g) {
 
         bg.draw(g);
+        drawCave(g);
         tileMap.draw(g);
         player.draw(g);
         drawEnemies(g);
         hud.draw(g);
-        g.drawString("Score:"+ player.Score,230,12);
+        g.drawString("Score:"+ player.getScore(),230,12);
         drawProjectiles(g);
+        for(int i=0;i<traps.size();i++)
+        {
+            traps.get(i).draw(g);
+
+        }
         if(player.getx()>2500 && save==false)
         {   count++;
             if(count<200) {
@@ -491,8 +616,8 @@ public class Level2State extends GameState{
                 g.drawString("You are next!", 30, 220);
 
             } else if (count > 200 && count < 600) {
-                g.drawString("Fire Magician:I will kill your brother", 30, 200);
-                g.drawString("after I kill you.", 30, 220);
+                g.drawString("Fire Magician:I will kill you for this!", 30, 200);
+                g.drawString("The end of Aokigahara land has arrived!", 30, 220);
 
             } else if (count > 600 && count < 1000) {
                 g.drawString("Kenzo:Your time is over. ", 30, 180);
@@ -540,6 +665,8 @@ public class Level2State extends GameState{
                 }
                 else if(count>1400)
                 {
+                    gsm.setState(GameStateManager.ENDSTATE);
+
 
                 }
             }

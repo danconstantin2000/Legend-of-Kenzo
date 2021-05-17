@@ -351,8 +351,6 @@ public class DarkMagician extends Enemy {
         long elapsed = (System.nanoTime() - timer) / 1000000;
         long elapsedJump=(System.nanoTime()-jumpTimer)/1000000;
 
-
-
         getNextPosition();
         checkTileMapCollision();
         setPosition(xtemp, ytemp);
@@ -440,7 +438,6 @@ public class DarkMagician extends Enemy {
             left=right=false;
 
         }
-
 
 
         setAnimations();
