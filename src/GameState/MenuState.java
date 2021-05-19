@@ -2,12 +2,12 @@ package GameState;
 import Entity.Player;
 import Main.GamePanel;
 import TileMap.Background;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class MenuState extends GameState{
     private Background bg;
@@ -17,7 +17,7 @@ public class MenuState extends GameState{
     private Font titleFont;
     private Font font;
     private boolean exists;
-    private File myfile;
+    private String level="";
     public MenuState(GameStateManager gsm) {
         this.gsm=gsm;
        try{
@@ -34,14 +34,32 @@ public class MenuState extends GameState{
         titleColor=new Color(0,0,0);
         titleFont=new Font("Courier New",Font.BOLD,18);
         font=new Font("Courier New",Font.PLAIN,12);
-         myfile=new File("save.json");
-         if(myfile.exists())
+
+        Connection c = null;
+        Statement stmt = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:data.db");
+            c.setAutoCommit(false);
+            stmt = c.createStatement();
+            c.commit();
+            ResultSet rs = stmt.executeQuery( "SELECT * FROM PLAYERINFO WHERE ID='Player';" );
+            level=rs.getString("LevelType");
+            stmt.close();
+            c.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println("Operation done successfully");
+         if(level.equals("-"))
          {
-             exists=true;
+
+             exists=false;
          }
          else
          {
-             exists=false;
+             exists=true;
          }
     }
     public void update(){ }
@@ -106,18 +124,26 @@ public class MenuState extends GameState{
         }
         if(currentChoice==2)
         {
-            if(myfile.exists()) {
-
-                String level = "";
-                JSONParser parser = new JSONParser();
+            if(exists) {
+                Connection c = null;
+                Statement stmt = null;
+                String level="";
                 try {
-                    Object obj = parser.parse(new FileReader("save.json"));
-                    JSONObject jsonObject = (JSONObject) obj;
-                    String LevelSTR = jsonObject.get("LevelType").toString();
-                    level = LevelSTR;
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    Class.forName("org.sqlite.JDBC");
+                    c = DriverManager.getConnection("jdbc:sqlite:data.db");
+                    c.setAutoCommit(false);
+                    stmt = c.createStatement();
+                    c.commit();
+                    ResultSet rs = stmt.executeQuery( "SELECT * FROM PLAYERINFO WHERE ID='Player';" );
+                    level=rs.getString("LevelType");
+                    rs.close();
+                    stmt.close();
+                    c.close();
+                } catch ( Exception e ) {
+                    System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+                    System.exit(0);
                 }
+                System.out.println("Operation done successfully");
                 GamePanel.LoadState = true;
                 if (level.equals("Level1State")) {
                     gsm.setState(GameStateManager.LOADINGSTATE);

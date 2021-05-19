@@ -11,14 +11,11 @@ import Main.GamePanel;
 import TileMap.TileMap;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import TileMap.Background;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import static java.lang.Math.abs;
+import java.sql.*;
 public class Level1State extends GameState{
 
     private TileMap tileMap;
@@ -53,7 +50,7 @@ public class Level1State extends GameState{
         this.bg=new Background("/Backgrounds/BG9.png");
         MusicBg=new HashMap<String,AudioPlayer>();
         player=new Player(tileMap);
-        loadfromJsonFile();
+        loadfromDataBase();
         BossEnemies=new HashMap<String,Enemy>();
         populatetrees();
         populateEnemies();
@@ -76,33 +73,35 @@ public class Level1State extends GameState{
         timeToSave=false;
         GamePanel.LoadState=false;
     }
-    private void loadfromJsonFile() {
+    private void loadfromDataBase() {
         if(GamePanel.LoadState==true) {
-            JSONParser parser =new JSONParser();
-            try
-            {
-                Object obj=parser.parse(new FileReader("save.json"));
-                JSONObject jsonObject=(JSONObject) obj;
-                String healthSTR=jsonObject.get("Health").toString();
-                String scoreSTR=jsonObject.get("Score").toString();
-                String pxSTR=jsonObject.get("PlayerX").toString();
-                String pySTR=jsonObject.get("PlayerY").toString();
-                String energySTR=jsonObject.get("PlayerEnergy").toString();
-                int health=Integer.parseInt(healthSTR);
-                int score=Integer.parseInt(scoreSTR);
-                int x=Integer.parseInt(pxSTR);
-                int y=Integer.parseInt(pySTR);
-                int energy=Integer.parseInt(energySTR);
-                player.setPosition(x,y);
+            Connection c = null;
+            Statement stmt = null;
+            try {
+                Class.forName("org.sqlite.JDBC");
+                c = DriverManager.getConnection("jdbc:sqlite:data.db");
+                c.setAutoCommit(false);
+                stmt = c.createStatement();
+                c.commit();
+                ResultSet rs = stmt.executeQuery( "SELECT * FROM PLAYERINFO WHERE ID='Player';" );
+                double xplayer = rs.getDouble("x");
+                double yplayer = rs.getDouble("y");
+                int health = rs.getInt("Health");
+                int score=rs.getInt("Score");
+                int energy=rs.getInt("Energy");
+                player.setPosition(xplayer,yplayer);
                 player.setHealth(health);
-                player.setSCORE(score);
+                player.setScore(score);
                 player.setEnergy(energy);
                 save=true;
+                rs.close();
+                stmt.close();
+                c.close();
+            } catch ( Exception e ) {
+                System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+                System.exit(0);
             }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
+            System.out.println("Operation done successfully");
         }
         else {
             player.setPosition(100, 100);
@@ -384,32 +383,33 @@ public class Level1State extends GameState{
 
     }
     private void TimeToSave() {
-        if(timeToSave==true) {
+        if(timeToSave==true)
+        {
 
-
-            JSONObject obj=new JSONObject();
-            obj.put("Health",player.getHealth());
-            obj.put("Score",player.getScore());
-            obj.put("PlayerX",player.getx());
-            obj.put("PlayerY",player.gety());
-            obj.put("PlayerEnergy",player.getEnergy());
-            obj.put("LevelType","Level1State");
-
-
-            try(FileWriter file =new FileWriter("save.json"))
-            {
-
-                file.write(obj.toString());
-                file.flush();
+            Connection c = null;
+            Statement stmt = null;
+            try {
+                Class.forName("org.sqlite.JDBC");
+                c = DriverManager.getConnection("jdbc:sqlite:data.db");
+                c.setAutoCommit(false);
+                stmt = c.createStatement();
+                String sql = "UPDATE PLAYERINFO set x="+player.getx()+" where ID='Player';"+
+                        "UPDATE PLAYERINFO set y="+player.gety()+" where ID='Player';"+
+                        "UPDATE PLAYERINFO set LevelType='Level1State' where ID='Player';"+
+                        "UPDATE PLAYERINFO set Health="+player.getHealth()+" where ID='Player';"+
+                        "UPDATE PLAYERINFO set Score="+player.getScore()+" where ID='Player';"+
+                        "UPDATE PLAYERINFO set Energy="+player.getEnergy()+" where ID='Player';";
+                stmt.executeUpdate(sql);
+                stmt.close();
+                c.commit();
+                c.close();
+            } catch ( Exception e ) {
+                System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+                System.exit(0);
             }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
-
+            System.out.println("Records updated successfully");
             timeToSave=false;
         }
-
 
     }
     public void update() {
