@@ -5,7 +5,7 @@ import java.awt.*;
 public class GameStateManager {
     private GameState[] gameStates;
     private int currentState;
-    public static final int NUMGAMESTATES=9;
+    public static final int NUMGAMESTATES=10;
     public static final int MENUSTATE=0;
     public static final int LEVEL1STATE=1;
     public static final int GAMEOVERSTATE=2;
@@ -15,6 +15,7 @@ public class GameStateManager {
     public static final int GAMEOVERSTATE2=6;
     public static final int HELPSTATE=7;
     public static final int ENDSTATE=8;
+    public static final int SETTINGSSTATE=9;
 
     public GameStateManager() {
         gameStates=new GameState[NUMGAMESTATES];
@@ -57,7 +58,10 @@ public class GameStateManager {
         else if(state==ENDSTATE)
         {
             gameStates[state]=new EndState(this);
-
+        }
+        else if(state==SETTINGSSTATE)
+        {
+            gameStates[state]=new SettingsState(this);
         }
     }
     private void unloadState(int state)

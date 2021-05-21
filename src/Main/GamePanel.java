@@ -4,11 +4,15 @@ import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class GamePanel extends JPanel implements Runnable,KeyListener{
     public static final int WIDTH=320;
     public static final int HEIGHT=240;
-    public static  int SCALE=3;
+    public static  int SCALE;
     public static boolean inGameFocus=true;
     public static boolean LoadState=false;
     private Thread thread;
@@ -24,9 +28,11 @@ public class GamePanel extends JPanel implements Runnable,KeyListener{
     {
 
         super();
+        SCALE=readScalefromDataBase();
         setPreferredSize(new Dimension(WIDTH*SCALE,HEIGHT*SCALE));
         setFocusable(true);
         requestFocus();
+
 
     }
 
@@ -37,6 +43,29 @@ public class GamePanel extends JPanel implements Runnable,KeyListener{
             return new GamePanel();
         }
         return singleGamePanelInstance;
+    }
+    private int readScalefromDataBase()
+    {
+        Connection c = null;
+        Statement stmt = null;
+        int scale=0;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:data.db");
+            c.setAutoCommit(false);
+            stmt = c.createStatement();
+            c.commit();
+            ResultSet rs = stmt.executeQuery( "SELECT * FROM SETTINGS WHERE ID='Scale';" );
+            scale = rs.getInt("Value");
+            rs.close();
+            stmt.close();
+            c.close();
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        System.out.println("Operation done successfully");
+        return scale;
     }
 
     public void addNotify()

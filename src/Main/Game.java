@@ -14,13 +14,17 @@ public class Game
                 c = DriverManager.getConnection("jdbc:sqlite:data.db");
                 stmt = c.createStatement();
                 String sql = "CREATE TABLE PLAYERINFO " +
-                        "(ID CHAR(50)," +
+                        "(ID CHAR(50) PRIMARY KEY," +
                         "x REAL NOT NULL, " +
                         "y REAL NOT NULL, " +
                         "LevelType CHAR(50), " +
                         "Health INT NOT NULL,"+
                         "Score INT NOT NULL,"+
                         "Energy INT NOT NULL)";
+                stmt.executeUpdate(sql);
+                sql="CREATE TABLE SETTINGS "+
+                        "(ID CHAR(50) PRIMARY KEY,"+
+                        "Value INT NOT NULL)";
                 stmt.executeUpdate(sql);
                 stmt.close();
                 c.close();
@@ -35,6 +39,9 @@ public class Game
                 stmt = c.createStatement();
                 String sql = "INSERT INTO PLAYERINFO(ID,x,y,LevelType,Health,Score,Energy) " +
                         "VALUES ('Player',0,0,'-',0,0,0)";
+                stmt.executeUpdate(sql);
+                sql="INSERT INTO SETTINGS(ID,Value) "+
+                        "VALUES ('Scale',3)";
                 stmt.executeUpdate(sql);
                 stmt.close();
                 c.commit();

@@ -12,7 +12,7 @@ import java.sql.Statement;
 public class MenuState extends GameState{
     private Background bg;
     private int currentChoice=0;
-    private String[] options={"Start","Help","Load","Quit"};
+    private String[] options={"Start","Help","Load","Settings","Quit"};
     private Color titleColor;
     private Font titleFont;
     private Font font;
@@ -153,6 +153,10 @@ public class MenuState extends GameState{
             }
         }
         if(currentChoice==3)
+        {
+            gsm.setState(GameStateManager.SETTINGSSTATE);
+        }
+        if(currentChoice==4)
         {
             System.exit(0);
         }
