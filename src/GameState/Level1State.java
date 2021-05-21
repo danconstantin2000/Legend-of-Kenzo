@@ -8,6 +8,7 @@ import Entity.Enemies.Mushroom;
 import Entity.Enemies.Projectile;
 import Forest.*;
 import Main.GamePanel;
+import Observer.Observer;
 import TileMap.TileMap;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -16,6 +17,9 @@ import java.util.HashMap;
 import TileMap.Background;
 import static java.lang.Math.abs;
 import java.sql.*;
+import java.util.LinkedList;
+import Observer.*;
+
 public class Level1State extends GameState{
 
     private TileMap tileMap;
@@ -38,6 +42,8 @@ public class Level1State extends GameState{
     private boolean help;
     private boolean timeToSave;
     private boolean save;
+    private LinkedList<Observer> observers;
+
     public Level1State(GameStateManager gsm) {
         this.gsm=gsm;
         init();
@@ -72,6 +78,15 @@ public class Level1State extends GameState{
         help=false;
         timeToSave=false;
         GamePanel.LoadState=false;
+        observers=new LinkedList<Observer>();
+        observers.add(new ObserverA());
+        observers.add(new ObserverB());
+
+    }
+    private void notifyAllObservers(int sc,Graphics2D g)
+    {
+        if(player.getx()>150)
+            observers.forEach(observer -> observer.update(sc,g));
     }
     private void loadfromDataBase() {
         if(GamePanel.LoadState==true) {
@@ -565,7 +580,7 @@ public class Level1State extends GameState{
         player.draw(g);
         drawEnemies(g);
         hud.draw(g);
-        g.drawString("Score:"+ player.getScore(),230,12);
+        notifyAllObservers(player.getScore(),g);
         drawProjectiles(g);
         drawTutorial(g);
         drawSaving(g);

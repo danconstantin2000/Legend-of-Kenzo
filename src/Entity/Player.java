@@ -2,12 +2,15 @@ package Entity;
 import Audio.AudioPlayer;
 import Entity.Enemies.Projectile;
 import Main.GamePanel;
+import Observer.Observer;
 import TileMap.*;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.LinkedList;
+import Observer.ObserverA;
 public class Player extends MapObject {
     private int health;
     private int maxHealth;
@@ -26,6 +29,7 @@ public class Player extends MapObject {
     private  boolean switchState;
     private boolean Void;
     private static int SCORE=0;
+
     private ArrayList<BufferedImage[]> sprites;
     private final int[] numFrames = {
             6, 6, 6, 2, 8, 2,8
@@ -421,6 +425,7 @@ public class Player extends MapObject {
         {
             right=left=false;
         }
+
 
     }
     public void draw(Graphics2D g) {
