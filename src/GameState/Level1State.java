@@ -42,7 +42,7 @@ public class Level1State extends GameState{
     private boolean help;
     private boolean timeToSave;
     private boolean save;
-    private LinkedList<Observer> observers;
+
 
     public Level1State(GameStateManager gsm) {
         this.gsm=gsm;
@@ -78,16 +78,11 @@ public class Level1State extends GameState{
         help=false;
         timeToSave=false;
         GamePanel.LoadState=false;
-        observers=new LinkedList<Observer>();
-        observers.add(new ObserverA());
-        observers.add(new ObserverB());
+
 
     }
-    private void notifyAllObservers(int sc,Graphics2D g)
-    {
-        if(player.getx()>150)
-            observers.forEach(observer -> observer.update(sc,g));
-    }
+
+
     private void loadfromDataBase() {
         if(GamePanel.LoadState==true) {
             Connection c = null;
@@ -400,7 +395,6 @@ public class Level1State extends GameState{
     private void TimeToSave() {
         if(timeToSave==true)
         {
-
             Connection c = null;
             Statement stmt = null;
             try {
@@ -441,6 +435,7 @@ public class Level1State extends GameState{
         updateHeads();
         portalSpawn();
         TimeToSave();
+
     }
 
     private void drawForest(Graphics2D g) {
@@ -580,7 +575,7 @@ public class Level1State extends GameState{
         player.draw(g);
         drawEnemies(g);
         hud.draw(g);
-        notifyAllObservers(player.getScore(),g);
+        player.notifyAllObservers(player.getScore(),g);
         drawProjectiles(g);
         drawTutorial(g);
         drawSaving(g);

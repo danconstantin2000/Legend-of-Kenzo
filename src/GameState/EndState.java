@@ -73,7 +73,7 @@ public class EndState extends GameState{
             {
                 bg3.draw(g);
                 g.setFont(titleFont);
-                g.drawString("Aokigahara",125,145);
+                g.drawString("Aokigahara",110,145);
                 g.setFont(new Font("Courier New",Font.PLAIN,10));
                 g.drawString("       Aokigahara has become one of the most famous",0,160);
                 g.drawString(" lands in the world.People from all over the world",0,180);

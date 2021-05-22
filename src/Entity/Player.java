@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.LinkedList;
-import Observer.ObserverA;
+import Observer.*;
 public class Player extends MapObject {
     private int health;
     private int maxHealth;
@@ -29,6 +29,7 @@ public class Player extends MapObject {
     private  boolean switchState;
     private boolean Void;
     private static int SCORE=0;
+    private HashMap<String,Observer> observers;
 
     private ArrayList<BufferedImage[]> sprites;
     private final int[] numFrames = {
@@ -65,6 +66,11 @@ public class Player extends MapObject {
         smallAttackRange=100;
         longAttackDamage = 3;
         longAttackRange = 100;
+
+        observers= new HashMap<String, Observer>();
+        addObserver("obsA",new ObserverA());
+        addObserver("obsB",new ObserverB());
+
         try {
 
             BufferedImage spritesheet = ImageIO.read(
@@ -106,7 +112,23 @@ public class Player extends MapObject {
         sfx.put("herodeath",new AudioPlayer("/SFX/Hero_Dies.mp3"));
         sfx.put("enemy_take_dmg",new AudioPlayer("/SFX/Enemy_Damage.mp3"));
         sfx.put("hero_take_dmg",new AudioPlayer("/SFX/Hero_TakesDMG.wav"));
+
     }
+    public void notifyAllObservers(int sc,Graphics2D g)
+    {
+
+            observers.forEach((k, v) -> v.update(sc,x,g));
+
+    }
+    public void removeObserver(String index)
+    {
+        observers.remove(index);
+    }
+    public void addObserver(String index,Observer obs)
+    {
+        observers.put(index,obs);
+    }
+
     public boolean isJumping(){return !(dy==0);}
     public boolean getVoid(){return Void;}
     public boolean getSwitchState(){return switchState;}
@@ -131,6 +153,8 @@ public class Player extends MapObject {
     public void setFacingRight(boolean b){this.facingRight=b;}
     public void setScore(int score){SCORE=score;}
     public void setEnergy(int energy){this.energy=energy;}
+
+
     public static void ResetScore(){
         SCORE=0;
     }

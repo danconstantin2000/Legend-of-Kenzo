@@ -4,9 +4,9 @@ import java.awt.*;
 
 public class ObserverB implements Observer{
 
-    public void update(int sc, Graphics2D g){
+    public void update(int sc,double x, Graphics2D g){
 
-        if(sc==0)
+        if(sc==0 && x>200)
         {
             g.setColor(Color.BLACK);
             g.setFont(new Font("Courier New",Font.PLAIN,10));

@@ -54,7 +54,6 @@ public class MenuState extends GameState{
         System.out.println("Operation done successfully");
          if(level.equals("-"))
          {
-
              exists=false;
          }
          else

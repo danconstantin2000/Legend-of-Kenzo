@@ -22,20 +22,17 @@ public class GamePanel extends JPanel implements Runnable,KeyListener{
     private BufferedImage image;
     private Graphics2D g;
     private GameStateManager gsm;
-    private static GamePanel singleGamePanelInstance=null;
 
+    private static GamePanel singleGamePanelInstance=null;
     private GamePanel()
     {
-
         super();
         SCALE=readScalefromDataBase();
         setPreferredSize(new Dimension(WIDTH*SCALE,HEIGHT*SCALE));
         setFocusable(true);
         requestFocus();
 
-
     }
-
     public static GamePanel getInstance()
     {
         if(singleGamePanelInstance==null)

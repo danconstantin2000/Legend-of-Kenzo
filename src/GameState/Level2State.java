@@ -5,7 +5,7 @@ import Cave.*;
 import Entity.*;
 import Entity.Enemies.*;
 import Main.GamePanel;
-import Observer.Observer;
+import Observer.ObserverB;
 import TileMap.TileMap;
 import TileMap.Background;
 import java.awt.*;
@@ -16,8 +16,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import Observer.*;
+
 
 import static java.lang.Math.abs;
 public class Level2State extends GameState{
@@ -41,7 +40,6 @@ public class Level2State extends GameState{
     private boolean exit;
     private boolean timeToSave;
     private boolean save;
-    private LinkedList<Observer> observers;
 
     public Level2State(GameStateManager gsm) {
         this.gsm=gsm;
@@ -78,13 +76,10 @@ public class Level2State extends GameState{
         populateRocks();
         populateTraps();
         PlayerLV2Score=player.getScore();
-        observers=new LinkedList<Observer>();
-        observers.add(new ObserverA());
+        player.removeObserver("obsB");
+
     }
-    private void notifyAllObservers(int sc,Graphics2D g)
-    {
-            observers.forEach(observer -> observer.update(sc,g));
-    }
+
     private void loadfromDataBase() {
         if(GamePanel.LoadState==true) {
 
@@ -651,7 +646,7 @@ public class Level2State extends GameState{
         player.draw(g);
         drawEnemies(g);
         hud.draw(g);
-        notifyAllObservers(player.getScore(),g);
+        player.notifyAllObservers(player.getScore(),g);
         drawProjectiles(g);
         drawTraps(g);
         drawSaving(g);

@@ -43,7 +43,7 @@ public abstract class MapObject {
     protected double maxFallSpeed;
     protected double jumpStart;
     protected double stopJumpSpeed;
-    public int Score;
+    protected int Score;
     public MapObject(TileMap tm) {
         tileMap = tm;
         tileSize = tm.getTileSize();
